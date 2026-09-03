@@ -418,7 +418,7 @@ SUPABASE_URL / SUPABASE_ANON_KEY injected by Supabase Edge automatically
 
 ## Replication Checklist — Step-by-Step
 
-- [ ] `git clone` + `npm ci` (Node 20+)
+- [ ] `git clone` + `npm ci` (Node 22+)
 - [ ] Copy `.env.example` → `.env` fill 3 `VITE_*` (create Supabase project, copy URL/anon key, create Formspree form)
 - [ ] Run `supabase/migrations/001`→`030` in SQL Editor (or `supabase db reset` if local)
 - [ ] In Supabase Dashboard → Storage → `attachments` Edit → **5MB**, `media`/`documents` remain admin-only

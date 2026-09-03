@@ -7,7 +7,7 @@ Stack: **React 19 + TypeScript 6 + Vite 6 + Tailwind 4 + Supabase (Auth/Postgres
 ## Quick Start
 
 ```bash
-# Node 20+ required
+# Node 22+ required
 npm ci
 cp .env.example .env   # fill 3 VITE_ vars below
 npm run dev            # http://localhost:5173
@@ -150,7 +150,7 @@ Netlify alternative: same envs → `https://gnab-solutions.netlify.app`.
 
 ## Replication Checklist
 
-- [ ] `npm ci` (Node 20+)
+- [ ] `npm ci` (Node 22+)
 - [ ] `cp .env.example .env` fill 3 `VITE_*`
 - [ ] Run `001`→`030` in SQL Editor
 - [ ] Storage → `attachments` Edit → 5MB
