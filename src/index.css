@@ -1,0 +1,195 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy-50: #eef3fa;
+  --color-navy-100: #d6e2f1;
+  --color-navy-200: #adc5e2;
+  --color-navy-300: #7ba0cd;
+  --color-navy-400: #4a76ad;
+  --color-navy-500: #235088;
+  --color-navy-600: #0b2e59;
+  --color-navy-700: #092649;
+  --color-navy-800: #071d3a;
+  --color-navy-900: #05142a;
+  --color-navy: #0B2E59;
+
+  --color-brand-green-50: #ecf7ed;
+  --color-brand-green-100: #d0ecd3;
+  --color-brand-green-200: #a3d9a9;
+  --color-brand-green-300: #6fbf78;
+  --color-brand-green-400: #47a354;
+  --color-brand-green-500: #2E7D32;
+  --color-brand-green-600: #256b29;
+  --color-brand-green-700: #1b5220;
+
+  --color-gold-50: #fbf6e7;
+  --color-gold-100: #f5ead0;
+  --color-gold-200: #ead5a0;
+  --color-gold-300: #ddbd6c;
+  --color-gold-400: #D4AF37;
+  --color-gold-500: #c39d2b;
+  --color-gold-600: #9d7d20;
+
+  --color-mist: #F5F7FA;
+  --color-ink: #333333;
+  --color-ink-light: #5b6572;
+
+  --font-display: "Sora", "Inter", system-ui, sans-serif;
+  --font-sans: "Inter", system-ui, sans-serif;
+
+  --shadow-soft: 0 2px 12px rgba(11,46,89,0.06), 0 12px 32px rgba(11,46,89,0.08);
+  --shadow-lift: 0 8px 24px rgba(11,46,89,0.10), 0 24px 56px rgba(11,46,89,0.14);
+
+  --animate-marquee: marquee 30s linear infinite;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-ink);
+  background-color: #fff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  /* Prevent iOS bounce overflow breaking layout */
+  overscroll-behavior-y: none;
+}
+
+img, video, iframe {
+  max-width: 100%;
+}
+
+/* Normalize form controls across browsers */
+input, textarea, select, button {
+  font: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+}
+input[type="checkbox"], input[type="radio"] {
+  -webkit-appearance: auto;
+  appearance: auto;
+}
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+::selection {
+  background: rgba(212,175,55,0.35);
+  color: var(--color-navy-800);
+}
+
+/* Scrollbar fades in while scrolling, fades back out when scrolling stops */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+  transition: scrollbar-color 0.45s ease;
+}
+html.is-scrolling {
+  scrollbar-color: #235088 #eef1f5;
+}
+
+.text-gradient-gold {
+  background: linear-gradient(120deg, #D4AF37 0%, #f0dc8a 45%, #D4AF37 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.glass {
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: saturate(180%) blur(18px);
+  -webkit-backdrop-filter: saturate(180%) blur(18px);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background: rgba(255,255,255,0.96);
+  }
+}
+
+.card-hover {
+  transition: transform 0.35s cubic-bezier(0.22,1,0.36,1), box-shadow 0.35s cubic-bezier(0.22,1,0.36,1), border-color 0.35s ease;
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lift);
+}
+
+/* Premium shine sweep for CTA */
+.btn-shine {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.btn-shine::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, transparent 20%, rgba(255,255,255,0.22) 50%, transparent 80%);
+  transform: translateX(-100%);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  z-index: 1;
+  pointer-events: none;
+}
+.btn-shine:hover::before {
+  transform: translateX(100%);
+}
+.btn-shine > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* iOS Safari: inputs <16px zoom on focus — keep 16px on small screens */
+@media (max-width: 640px) {
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+}
+
+/* Fallback for dvh where not supported (older Safari/Chrome) */
+@supports not (height: 100dvh) {
+  .h-\[min\(600px\,calc\(100dvh-120px\)\)\] {
+    height: min(600px, calc(100vh - 120px)) !important;
+  }
+}
+
+/* Leaflet: ensure tiles print and don't get filtered in some browsers — and never overlay sticky header */
+.leaflet-container {
+  font: inherit;
+  z-index: 1 !important;
+}
+.leaflet-pane {
+  z-index: 1 !important;
+}
+.leaflet-top, .leaflet-bottom {
+  z-index: 400 !important;
+}
+.leaflet-tile {
+  max-width: none !important;
+}
+/* Isolate map stacking context so it can never escape above header z-[1000] */
+.leaflet-isolate {
+  isolation: isolate;
+  z-index: 0;
+}
+
+/* Safe-area insets for notched devices (iPhone X+) */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+}
