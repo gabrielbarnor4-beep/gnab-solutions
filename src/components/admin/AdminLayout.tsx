@@ -36,7 +36,7 @@ const NAV = [
   { to: '/admin/home', label: 'Home Page', icon: HomeIcon },
   { to: '/admin/pages', label: 'Site Pages', icon: LayoutTemplate },
   { to: '/admin/footer', label: 'Footer', icon: Rows3 },
-  { to: '/admin/uploads', label: 'Visitor Uploads', icon: HardDrive },
+  { to: '/admin/uploads', label: 'Storage Manager', icon: HardDrive },
   { to: '/admin/quotes', label: 'Quote Requests', icon: ClipboardList },
   { to: '/admin/receipts', label: 'Receipts', icon: Receipt },
   { to: '/admin/pdf-templates', label: 'PDF Templates', icon: FileText },

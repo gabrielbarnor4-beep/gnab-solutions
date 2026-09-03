@@ -37,7 +37,7 @@ export const ADMIN_PAGES: AdminPageEntry[] = [
   { to: '/admin/home', label: 'Home Page', hint: 'hero, trust, about, stats, CTA' },
   { to: '/admin/pages', label: 'Site Pages', hint: 'page chrome + design' },
   { to: '/admin/footer', label: 'Footer', hint: 'columns, links, headings' },
-  { to: '/admin/uploads', label: 'Visitor Uploads', hint: 'attachments storage' },
+  { to: '/admin/uploads', label: 'Storage Manager', hint: 'all buckets, files + trash' },
   { to: '/admin/quotes', label: 'Quote Requests', hint: 'RFQ pipeline, PDFs' },
   { to: '/admin/receipts', label: 'Receipts', hint: 'RCPT numbers, payments' },
   { to: '/admin/pdf-templates', label: 'PDF Templates', hint: 'quotation, reply, receipt' },

@@ -46,7 +46,7 @@ export default function DashboardPage() {
     { label: 'Pending Suppliers', to: '/admin/suppliers', icon: Truck, tone: 'navy', count: null, hint: 'suppliers' },
     { label: 'Pending Testimonials', to: '/admin/testimonials', icon: Star, tone: 'green', count: null, hint: 'testimonials' },
     { label: 'Issued Receipts', to: '/admin/receipts', icon: Receipt, tone: 'green', count: null, hint: 'receipts' },
-    { label: 'Visitor Uploads', to: '/admin/uploads', icon: HardDrive, tone: 'amber', count: null, hint: 'storage attachments' },
+    { label: 'Storage Manager', to: '/admin/uploads', icon: HardDrive, tone: 'amber', count: null, hint: 'files + trash' },
     { label: 'PDF Templates', to: '/admin/pdf-templates', icon: FileText, tone: 'navy', count: null, hint: 'pdf_templates' },
   ])
   const [recent, setRecent] = useState<QuoteRow[]>([])
@@ -75,7 +75,7 @@ export default function DashboardPage() {
       next[3]!.count = await count('suppliers', { status: 'pending' })
       next[4]!.count = await count('testimonials', { status: 'pending' })
       next[5]!.count = await count('receipts', { status: 'issued' })
-      // storage — entire site (all buckets: attachments, media, documents) — mirrors Visitor Uploads
+      // storage — entire site (all buckets: attachments, media, documents) — mirrors Storage Manager
       try {
         const buckets = ['attachments', 'media', 'documents']
         let totalFiles = 0
@@ -234,7 +234,7 @@ export default function DashboardPage() {
             <Settings size={16} className="text-amber-600" />
           </Link>
           <Link to="/admin/uploads" className="flex items-center justify-between rounded-2xl border border-gray-100 bg-white p-4 shadow-soft">
-            <span className="text-sm font-semibold text-navy">Visitor Uploads — free up Supabase storage</span>
+            <span className="text-sm font-semibold text-navy">Storage Manager — free up Supabase storage</span>
             <HardDrive size={16} className="text-navy" />
           </Link>
         </div>

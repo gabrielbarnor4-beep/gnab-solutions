@@ -89,7 +89,7 @@ public/                # favicon.svg, og-image.png, sitemap.xml, robots.txt
 * **Site Pages (`/admin/pages`):** 11 tabs + ✨ Design tab — edits page hero/section/CTA chrome in `site_settings`, mirrored 1:1 with hardcoded fallback. Per-page CTA gold highlight + **feature strip (030, like Home CTA)** editable per tab. Feature cards stay in their own admins.
 * **Search anything (⌘K):** topbar palette in every admin page — filters all 22 pages instantly + live record search (quotes, receipts, messages, suppliers, products, services, industries, blog, testimonials, locations, assistant Q&A). Record hits deep-link with `?q=` — every list-page search box (incl. new Testimonials box) honours it via `useQuerySearch`.
 * **Footer:** toggles `footer_show_*` + `footer_quick_links` JSON + per-service `Show in footer` and custom `Footer label/path` (027).
-* **Uploads:** recursive `walk('')` + pagination 1000, bulk delete + DB cleanup (`contact_messages.attachment_urls` etc.), `totalBytes /1GB` bar.
+* **Storage Manager (`/admin/uploads`):** Files tab — recursive `walk('')` all 3 buckets + pagination 1000, bulk delete + DB cleanup (`contact_messages.attachment_urls` etc.), `totalBytes /1GB` bar. **Trash tab** — every soft-deleted item from all 17 admin tables with days-left to the nightly 03:22 purge; restore or permanently purge now (rows + referenced files removed from Supabase instantly).
 * **Quotes → Receipts:** RFQ `new→closed` 8 states → Generate PDF via template `fetchPdfTemplate('quotation')` → email via `send-email` edge → Issue Receipt (`RCPT-YYYY-XXXX`) when `won` → `Admin → PDF Templates` (3 tabs, live header preview, `interpolate {{vars}}`).
 
 ## Security

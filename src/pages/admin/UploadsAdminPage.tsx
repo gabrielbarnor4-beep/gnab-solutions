@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Download, FileText, HardDrive, Image as ImageIcon, Search, Trash2, ExternalLink, RefreshCw } from 'lucide-react'
+import { Download, FileText, HardDrive, Image as ImageIcon, Search, Trash2, ExternalLink, RefreshCw, Undo2 } from 'lucide-react'
 import { supabase, getPublicUrl } from '@/lib/supabase'
 import { PageIntro } from '@/components/admin/AdminLayout'
 import { ErrorBanner, Skeletons, EmptyState } from '@/components/admin/bits'
 import { inputClass } from '@/components/ui'
 import { useQuerySearch } from '@/components/admin/AdminSearch'
+import { Link } from 'react-router-dom'
+import { fetchTrash, purgeTrashItem, restoreTrashItem, type TrashItem } from '@/lib/trash'
 
 type StorageFile = {
   name: string
@@ -56,6 +58,12 @@ export default function UploadsAdminPage() {
   const [bucketFilter, setBucketFilter] = useState<string>('attachments')
   const [busy, setBusy] = useState<string | null>(null)
   const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [view, setView] = useState<'files' | 'trash'>('files')
+  const [trash, setTrash] = useState<TrashItem[]>([])
+  const [trashLoading, setTrashLoading] = useState(false)
+  const [trashErrors, setTrashErrors] = useState<string[]>([])
+  const [trashSelected, setTrashSelected] = useState<Set<string>>(new Set())
+  const [trashBusy, setTrashBusy] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     setLoading(true); setError('')
@@ -153,7 +161,14 @@ export default function UploadsAdminPage() {
     }
   }, [bucketFilter])
 
-  useEffect(() => { document.title = 'Visitor Uploads | GNAB Admin'; void load() }, [load])
+  const loadTrash = useCallback(async () => {
+    setTrashLoading(true); setTrashErrors([])
+    const { items, errors } = await fetchTrash()
+    setTrash(items); setTrashErrors(errors); setTrashSelected(new Set())
+    setTrashLoading(false)
+  }, [])
+
+  useEffect(() => { document.title = 'Storage Manager | GNAB Admin'; void load() }, [load])
 
   const totalBytes = useMemo(() => files.reduce((s, f) => s + (f.size || 0), 0), [files])
   const filtered = useMemo(() => {
@@ -293,6 +308,56 @@ export default function UploadsAdminPage() {
     else setSelected(new Set(filtered.map((f) => f.fullPath)))
   }
 
+  const trashFiltered = trash.filter((r) => {
+    const q = search.toLowerCase().trim()
+    if (!q) return true
+    return r.title.toLowerCase().includes(q) || r.sub.toLowerCase().includes(q) || r.tableLabel.toLowerCase().includes(q)
+  })
+
+  const purgeOne = async (item: TrashItem) => {
+    if (!window.confirm('Permanently delete "' + item.title + '" (' + item.tableLabel + ')? This removes it from Supabase instantly — it cannot be undone.')) return
+    setTrashBusy(item.key); setError('')
+    const { error } = await purgeTrashItem(item)
+    if (error) { setError('Could not permanently delete: ' + error); setTrashBusy(null); return }
+    setTrashSelected((prev) => { const n = new Set(prev); n.delete(item.key); return n })
+    setTrashBusy(null)
+    await loadTrash()
+  }
+
+  const restoreOne = async (item: TrashItem) => {
+    setTrashBusy(item.key); setError('')
+    const { error } = await restoreTrashItem(item)
+    if (error) { setError('Could not restore: ' + error); setTrashBusy(null); return }
+    setTrashSelected((prev) => { const n = new Set(prev); n.delete(item.key); return n })
+    setTrashBusy(null)
+    await loadTrash()
+  }
+
+  const purgeSelectedTrash = async () => {
+    const targets = trashFiltered.filter((r) => trashSelected.has(r.key))
+    if (targets.length === 0) return
+    if (!window.confirm('Permanently delete ' + targets.length + ' trashed item(s)? They will be removed from Supabase instantly — this cannot be undone.')) return
+    setTrashBusy('bulk'); setError('')
+    for (const item of targets) {
+      const { error } = await purgeTrashItem(item)
+      if (error) { setError('Stopped early: ' + error); break }
+    }
+    setTrashSelected(new Set()); setTrashBusy(null)
+    await loadTrash()
+  }
+
+  const emptyTrash = async () => {
+    if (trash.length === 0) return
+    if (!window.confirm('Empty the entire trash (' + trash.length + ' items across all of admin)? Everything is permanently removed from Supabase instantly — this cannot be undone.')) return
+    setTrashBusy('bulk'); setError('')
+    for (const item of trash) {
+      const { error } = await purgeTrashItem(item)
+      if (error) { setError('Stopped early: ' + error); break }
+    }
+    setTrashSelected(new Set()); setTrashBusy(null)
+    await loadTrash()
+  }
+
   const freeBytes = Math.max(0, 1024 * 1024 * 1024 - totalAllBytes)
   const pctUsed = Math.min(100, (totalAllBytes / (1024 * 1024 * 1024)) * 100)
 
@@ -300,7 +365,7 @@ export default function UploadsAdminPage() {
     <div>
       <PageIntro
         title="Storage Manager"
-        description="Entire site storage (all buckets) + Visitor Uploads (attachments). Delete anything to instantly free Supabase Storage — visitor deletes also clean the DB link. Use the bucket switcher to manage media (site images) and documents (PDFs) as well."
+        description="Entire site storage (all buckets) + Trash from every admin page. Delete files to instantly free Supabase Storage — or purge trashed records before their 30-day reconsideration ends."
         action={
           <div className="flex gap-2">
             <button onClick={load} disabled={loading} className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-ink-light hover:border-navy hover:text-navy disabled:opacity-50">
@@ -315,6 +380,14 @@ export default function UploadsAdminPage() {
 
       <ErrorBanner message={error} onDismiss={() => setError('')} />
 
+      {/* Files | Trash tabs */}
+      <div className="mb-6 flex flex-wrap items-center gap-2 rounded-2xl border border-gray-100 bg-white p-2 shadow-soft">
+        <button onClick={() => setView('files')} className={`rounded-xl px-4 py-2.5 text-sm font-semibold ${view === 'files' ? 'bg-navy text-white shadow' : 'bg-mist text-ink-light hover:bg-navy-50 hover:text-navy'}`}>Files</button>
+        <button onClick={() => { setView('trash'); void loadTrash() }} className={`rounded-xl px-4 py-2.5 text-sm font-semibold ${view === 'trash' ? 'bg-navy text-white shadow' : 'bg-mist text-ink-light hover:bg-navy-50 hover:text-navy'}`}>Trash{trash.length > 0 ? ` (${trash.length})` : ''}</button>
+        <span className="ml-auto hidden px-2 text-xs text-ink-light sm:inline">Soft-deleted items auto-purge after 30 days — Trash lets you restore or purge them now</span>
+      </div>
+
+      {view === 'files' ? (<>
       {/* Entire site storage overview */}
       <div className="mb-6 grid gap-4 lg:grid-cols-3">
         <div className="rounded-[20px] border border-gray-100 bg-white p-5 shadow-soft lg:col-span-2">
@@ -344,11 +417,11 @@ export default function UploadsAdminPage() {
             <span className="text-xs font-semibold text-ink-light">Manage space:</span>
             <button onClick={() => deleteLargest(5)} disabled={filtered.length === 0 || busy === 'bulk'} className="rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-700 hover:bg-amber-100 disabled:opacity-40">Delete largest 5 in {bucketFilter}</button>
             <button onClick={() => { const oldest = [...filtered].sort((a, b) => (a.created_at || '').localeCompare(b.created_at || '')).slice(0, 5); if (oldest.length) { if (window.confirm(`Delete oldest ${oldest.length} in ${bucketFilter}?`)) { setSelected(new Set(oldest.map((f) => f.fullPath))); setTimeout(() => deleteSelected(), 100) } } }} disabled={filtered.length === 0} className="rounded-full border border-gray-200 bg-white px-3 py-1 text-xs font-semibold text-ink-light hover:border-navy">Delete oldest 5</button>
-            <span className="text-xs text-ink-light">Supabase free tier is 1 GB — when bar hits 80% consider cleaning Visitor Uploads.</span>
+            <span className="text-xs text-ink-light">Supabase free tier is 1 GB — when bar hits 80% consider cleaning Attachments.</span>
           </div>
         </div>
         <div className="rounded-[20px] border border-gray-100 bg-white p-5 shadow-soft">
-          <p className="text-xs font-semibold uppercase tracking-wide text-ink-light">Current bucket: {bucketFilter} — Visitor Uploads</p>
+          <p className="text-xs font-semibold uppercase tracking-wide text-ink-light">Current bucket: {bucketFilter}</p>
           <p className="mt-1 font-display text-xl font-bold text-navy">{formatBytes(totalBytes)} <span className="text-xs font-normal text-ink-light">in {bucketFilter}</span></p>
           <div className="mt-3 space-y-1.5 text-sm">
             {['contact','quotes','suppliers','root'].map((p) => {
@@ -359,7 +432,7 @@ export default function UploadsAdminPage() {
             })}
             {files.length === 0 && <p className="text-sm text-ink-light">No files in {bucketFilter}</p>}
           </div>
-          <p className="mt-3 text-xs leading-relaxed text-ink-light">Visitor Uploads are capped at 5MB/file and 5/files per submission (see 020 guards). Images are auto-compressed to 1280w webp — new uploads are tiny.</p>
+          <p className="mt-3 text-xs leading-relaxed text-ink-light">Attachments are capped at 5MB/file and 5/files per submission (see 020 guards). Images are auto-compressed to 1280w webp — new uploads are tiny.</p>
         </div>
       </div>
 
@@ -367,7 +440,7 @@ export default function UploadsAdminPage() {
       <div className="mb-5 flex flex-col gap-3 lg:flex-row">
         <div className="flex gap-2">
           {[
-            { id: 'attachments', label: 'Visitor Uploads' },
+            { id: 'attachments', label: 'Attachments' },
             { id: 'media', label: 'Media' },
             { id: 'documents', label: 'Documents' },
           ].map((b) => (
@@ -398,7 +471,7 @@ export default function UploadsAdminPage() {
       </div>
 
       {loading ? <Skeletons count={6} /> : filtered.length === 0 ? (
-        <EmptyState title={files.length === 0 ? 'No visitor uploads' : 'No matches'} hint={files.length === 0 ? 'When visitors attach files via Contact/Quote/Supplier forms, they appear here. You can delete them to free Supabase storage (1 GB free).' : 'Try a different search or folder filter.'} />
+        <EmptyState title={files.length === 0 ? 'No files' : 'No matches'} hint={files.length === 0 ? 'When visitors attach files via Contact/Quote/Supplier forms, they appear here in Attachments. You can delete them to free Supabase storage (1 GB free).' : 'Try a different search or folder filter.'} />
       ) : (
         <div className="overflow-hidden rounded-[24px] border border-gray-100 bg-white shadow-soft">
           <div className="overflow-x-auto">
@@ -446,6 +519,87 @@ export default function UploadsAdminPage() {
             Showing {filtered.length} of {files.length} file(s) · {formatBytes(filtered.reduce((s, f) => s + f.size, 0))} selected: {formatBytes(files.filter((f) => selected.has(f.fullPath)).reduce((s, f) => s + f.size, 0))}
           </div>
         </div>
+      )}
+      </>) : (
+      <>
+      {/* Trash — every soft-deleted item anywhere in admin */}
+      <div className="mb-5 flex flex-col gap-3 lg:flex-row">
+        <div className="relative flex-1">
+          <Search size={16} className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search trashed items…" aria-label="Search trash" className={inputClass + ' pl-11'} />
+        </div>
+        <button onClick={() => void loadTrash()} disabled={trashLoading} className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-ink-light hover:border-navy hover:text-navy disabled:opacity-50">
+          <RefreshCw size={14} className={trashLoading ? 'animate-spin' : ''} /> Refresh trash
+        </button>
+        <button onClick={emptyTrash} disabled={trash.length === 0 || trashBusy === 'bulk'} className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50">
+          <Trash2 size={14} /> Empty trash{trash.length > 0 ? ' (' + trash.length + ')' : ''}
+        </button>
+      </div>
+      {trashErrors.length > 0 && (
+        <p className="mb-4 rounded-xl bg-amber-50 px-4 py-3 text-xs text-amber-700 ring-1 ring-amber-200">Some tables could not be read: {trashErrors.join('; ')}</p>
+      )}
+      {trashLoading ? <Skeletons count={4} /> : trashFiltered.length === 0 ? (
+        <EmptyState title={trash.length === 0 ? 'Trash is empty' : 'No matches'} hint={trash.length === 0 ? 'Deleted items from anywhere in admin wait here for 30 days before the nightly purge removes them forever. Restore them, or purge them now.' : 'Try a different search.'} />
+      ) : (
+        <div className="overflow-hidden rounded-[24px] border border-gray-100 bg-white shadow-soft">
+          <div className="flex flex-wrap items-center gap-3 border-b border-gray-100 bg-mist/40 px-4 py-3">
+            <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-navy">
+              <input type="checkbox" checked={trashSelected.size === trashFiltered.length && trashFiltered.length > 0} onChange={() => { if (trashSelected.size === trashFiltered.length) setTrashSelected(new Set()); else setTrashSelected(new Set(trashFiltered.map((r) => r.key))) }} className="h-4 w-4 accent-brand-green-500" />
+              Select all
+            </label>
+            <button onClick={purgeSelectedTrash} disabled={trashSelected.size === 0 || trashBusy === 'bulk'} className="inline-flex items-center gap-2 rounded-xl bg-red-500 px-4 py-2 text-sm font-semibold text-white hover:bg-red-600 disabled:opacity-50">
+              <Trash2 size={14} /> Delete forever ({trashSelected.size})
+            </button>
+            <span className="ml-auto text-xs text-ink-light">Showing {trashFiltered.length} of {trash.length} trashed item(s)</span>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[760px] text-left text-sm">
+              <thead>
+                <tr className="border-b border-gray-100 bg-mist/50 text-[11px] uppercase tracking-wider text-ink-light">
+                  <th className="px-4 py-3" aria-label="Select"></th>
+                  <th className="px-3 py-3 font-bold">Item</th>
+                  <th className="px-3 py-3 font-bold">Location</th>
+                  <th className="px-3 py-3 font-bold">Deleted</th>
+                  <th className="px-3 py-3 font-bold">Days left</th>
+                  <th className="px-3 py-3 text-right font-bold">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-50">
+                {trashFiltered.map((r) => (
+                  <tr key={r.key} className="hover:bg-mist/40">
+                    <td className="px-4 py-3">
+                      <input type="checkbox" checked={trashSelected.has(r.key)} onChange={() => { setTrashSelected((prev) => { const n = new Set(prev); if (n.has(r.key)) n.delete(r.key); else n.add(r.key); return n }) }} className="h-4 w-4 accent-brand-green-500" aria-label={'Select ' + r.title} />
+                    </td>
+                    <td className="px-3 py-3">
+                      <p className="max-w-[280px] truncate font-medium text-navy" title={r.title}>{r.title}</p>
+                      {r.sub && <p className="max-w-[280px] truncate text-xs text-gray-400">{r.sub}</p>}
+                    </td>
+                    <td className="px-3 py-3">
+                      <Link to={r.page} className="rounded-full bg-navy-50 px-3 py-1 text-xs font-semibold text-navy ring-1 ring-navy-100 hover:bg-navy hover:text-white">{r.tableLabel}</Link>
+                    </td>
+                    <td className="px-3 py-3 text-xs text-gray-400">{new Date(r.deletedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}</td>
+                    <td className="px-3 py-3">
+                      <span className={"rounded-full px-3 py-1 text-xs font-bold " + (r.daysLeft <= 0 ? 'bg-red-100 text-red-700 ring-1 ring-red-200' : r.daysLeft <= 7 ? 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' : 'bg-mist text-ink-light ring-1 ring-gray-200')}>
+                        {r.daysLeft <= 0 ? 'Due today' : r.daysLeft + 'd left'}
+                      </span>
+                    </td>
+                    <td className="px-3 py-3">
+                      <div className="flex justify-end gap-1">
+                        <button onClick={() => restoreOne(r)} disabled={trashBusy === r.key} title="Restore" aria-label={'Restore ' + r.title} className="rounded-lg p-2 text-brand-green-600 hover:bg-brand-green-50 disabled:opacity-40"><Undo2 size={14} /></button>
+                        <button onClick={() => purgeOne(r)} disabled={trashBusy === r.key} title="Delete forever" aria-label={'Delete forever ' + r.title} className="rounded-lg p-2 text-red-500 hover:bg-red-50 disabled:opacity-40"><Trash2 size={14} /></button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="border-t border-gray-100 bg-mist/30 px-4 py-3 text-xs text-ink-light">
+            The nightly purge (03:22) permanently removes anything past 30 days. Purging here removes the row — and any files it references — from Supabase instantly.
+          </div>
+        </div>
+      )}
+      </>
       )}
     </div>
   )
