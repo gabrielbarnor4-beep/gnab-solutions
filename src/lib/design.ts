@@ -22,6 +22,23 @@ export function slugify(v: string): string {
   return v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 }
 
+/** Fuzzy slug match — exact, substring, or token overlap either way.
+ *  Used everywhere a card links to a filtered page (Services/Industries
+ *  highlight, service → products category), so "ppe-safety-equipment"
+ *  still matches the "ppe-safety" group — and "custom-procurement-sourcing"
+ *  still matches "custom-sourcing" — instead of showing nothing. */
+export function matchSlug(a: string, b: string): boolean {
+  const sa = slugify(a)
+  const sb = slugify(b)
+  if (!sa || !sb) return false
+  if (sa === sb || sa.includes(sb) || sb.includes(sa)) return true
+  const ta = sa.split('-').filter(Boolean)
+  const tb = sb.split('-').filter(Boolean)
+  if (ta.length === 0 || tb.length === 0) return false
+  const [shorter, longer] = ta.length <= tb.length ? [ta, tb] : [tb, ta]
+  return shorter.every((tok) => longer.includes(tok))
+}
+
 /** Split "Ready to Simplify Your Procurement?" + highlight "Your Procurement?" into prefix/gold parts.
  *  If highlight is empty or not found, returns the full title as prefix with no gold part. */
 export function splitHighlight(title: string, highlight: string): { prefix: string; gold: string } {

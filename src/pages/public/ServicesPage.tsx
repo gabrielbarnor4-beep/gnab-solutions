@@ -15,6 +15,7 @@ import {
   Zap,
 } from 'lucide-react'
 import { IMAGES } from '@/lib/utils'
+import { matchSlug } from '@/lib/design'
 import { CATALOGUE } from '@/lib/catalogue'
 import { fetchPublicServices, setPageMeta, type PublicService, useSiteImage, useSiteSettings } from '@/lib/siteData'
 import { PageHero, PremiumCTA, SectionHeading } from '@/components/ui'
@@ -182,7 +183,7 @@ export default function ServicesPage() {
 
   const orderedCatalogue = useMemo(() => {
     if (!highlightSlug) return CATALOGUE
-    const idx = CATALOGUE.findIndex((c) => c.slug === highlightSlug)
+    const idx = CATALOGUE.findIndex((c) => matchSlug(c.slug, highlightSlug) || matchSlug(c.title, highlightSlug))
     if (idx <= 0) return CATALOGUE
     const copy = [...CATALOGUE]
     const [hit] = copy.splice(idx, 1) as [typeof copy[number]]
@@ -290,7 +291,7 @@ export default function ServicesPage() {
             {orderedCatalogue.map((cat, i) => {
               const meta = serviceMeta[cat.slug]!
               const Icon = meta?.icon ?? PackageCheck
-              const isHighlighted = !!highlightSlug && i === 0 && cat.slug === highlightSlug
+              const isHighlighted = !!highlightSlug && i === 0 && (matchSlug(cat.slug, highlightSlug) || matchSlug(cat.title, highlightSlug))
               return (
                 <motion.article
                   key={cat.slug}

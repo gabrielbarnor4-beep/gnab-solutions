@@ -1,5 +1,24 @@
 import { describe, it, expect } from 'vitest'
-import { slugify, splitHighlight, titleSizeClass, ctaThemeClass } from '@/lib/design'
+import { matchSlug, slugify, splitHighlight, titleSizeClass, ctaThemeClass } from '@/lib/design'
+
+describe('matchSlug (fuzzy card → filtered page matching)', () => {
+  it('matches exact slugs', () => {
+    expect(matchSlug('ppe-safety', 'ppe-safety')).toBe(true)
+  })
+  it('matches when service name is longer than the group slug', () => {
+    expect(matchSlug('ppe-safety-equipment', 'ppe-safety')).toBe(true)
+    expect(matchSlug('custom-procurement-sourcing', 'custom-sourcing')).toBe(true)
+  })
+  it('matches raw names, not just slugs', () => {
+    expect(matchSlug('PPE & Safety Equipment', 'ppe-safety')).toBe(true)
+    expect(matchSlug('Corporate Organisations', 'Corporate')).toBe(true)
+  })
+  it('rejects unrelated slugs and empties', () => {
+    expect(matchSlug('ppe-safety', 'office-furniture')).toBe(false)
+    expect(matchSlug('', 'ppe-safety')).toBe(false)
+    expect(matchSlug('ppe-safety', '')).toBe(false)
+  })
+})
 
 describe('slugify (shared: services + industries + home cards)', () => {
   it('slugifies industry names like IndustriesPage', () => {

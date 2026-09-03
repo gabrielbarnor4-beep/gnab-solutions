@@ -105,13 +105,19 @@ export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate |
   doc.setFillColor(primary)
   doc.rect(0, 0, W, 72, 'F')
 
-  // Logo
-  const logoData = await loadImageAsDataUrl(logoUrl)
-  if (logoData) {
+  // Logo — try the template logo first, then fall back to the default brand
+  // logo. Each candidate is attempted in turn: a broken template URL (or an
+  // SVG, which jsPDF cannot embed) must never blank the header — the next
+  // candidate is tried until one actually renders.
+  const logoCandidates = [...new Set([logoUrl, LOGO_URL].filter(Boolean))]
+  for (const candidate of logoCandidates) {
+    const logoData = await loadImageAsDataUrl(candidate)
+    if (!logoData || logoData.startsWith('data:image/svg')) continue
     try {
-      doc.addImage(logoData, 'PNG', margin, 14, 44, 44)
+      doc.addImage(logoData, logoData.startsWith('data:image/jpeg') ? 'JPEG' : 'PNG', margin, 14, 44, 44)
+      break
     } catch {
-      /* ignore */
+      /* try next candidate */
     }
   }
   doc.setTextColor('#FFFFFF')

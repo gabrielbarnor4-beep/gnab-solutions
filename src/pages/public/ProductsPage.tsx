@@ -5,6 +5,7 @@ import { ArrowRight, PackageSearch, Search, X } from 'lucide-react'
 import { CATALOGUE } from '@/lib/catalogue'
 import { fetchPublicProducts, setPageMeta, type PublicProduct, useSiteSettings } from '@/lib/siteData'
 import { IMAGES, cn } from '@/lib/utils'
+import { matchSlug } from '@/lib/design'
 import { PageHero, PremiumCTA, Reveal } from '@/components/ui'
 
 interface Group {
@@ -71,7 +72,7 @@ export default function ProductsPage() {
   }
 
   const visible = useMemo(() => {
-    const cats = activeSlug ? catalogue.filter((c) => c.slug === activeSlug) : catalogue
+    const cats = activeSlug ? catalogue.filter((c) => matchSlug(c.slug, activeSlug) || matchSlug(c.title, activeSlug)) : catalogue
     if (!query.trim()) return cats
     const q = query.toLowerCase()
     return cats
@@ -117,10 +118,10 @@ export default function ProductsPage() {
                 <button
                   key={c.slug}
                   onClick={() => selectCategory(c.slug)}
-                  aria-selected={activeSlug === c.slug}
+                  aria-selected={!!activeSlug && (matchSlug(c.slug, activeSlug) || matchSlug(c.title, activeSlug))}
                   className={cn(
                     'flex-shrink-0 rounded-full px-5 py-2 text-sm font-semibold transition-all duration-200',
-                    activeSlug === c.slug
+                    activeSlug && (matchSlug(c.slug, activeSlug) || matchSlug(c.title, activeSlug))
                       ? 'bg-navy text-white shadow-md'
                       : 'bg-mist text-ink-light hover:bg-navy-50 hover:text-navy'
                   )}
@@ -160,7 +161,7 @@ export default function ProductsPage() {
           <Reveal>
             <p className="mb-12 text-sm font-medium uppercase tracking-wide text-ink-light">
               Showing <span className="font-bold text-navy">{resultCount}</span>{' '}
-              {activeSlug ? `product${resultCount !== 1 ? 's' : ''} in ${catalogue.find((c) => c.slug === activeSlug)?.title}` : `of ${totalCount} products`}
+              {activeSlug ? `product${resultCount !== 1 ? 's' : ''} in ${catalogue.find((c) => matchSlug(c.slug, activeSlug) || matchSlug(c.title, activeSlug))?.title}` : `of ${totalCount} products`}
             </p>
           </Reveal>
 
