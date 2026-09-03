@@ -59,13 +59,35 @@ export async function fetchAllPdfTemplates(): Promise<PdfTemplate[]> {
 async function loadImageAsDataUrl(url: string): Promise<string | null> {
   try {
     const res = await fetch(url)
+    if (!res.ok) return null
     const blob = await res.blob()
-    return await new Promise((resolve) => {
-      const reader = new FileReader()
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = () => resolve(null)
-      reader.readAsDataURL(blob)
-    })
+    if (!blob.type.startsWith('image/')) return null
+    // SVG has no reliable bitmap path for jsPDF — skip it so a raster fallback is tried
+    if (blob.type.includes('svg')) return null
+    // Convert to PNG via canvas so JPEG/WEBP/PNG all embed reliably in jsPDF
+    try {
+      const bitmap = await createImageBitmap(blob)
+      const MAX = 440
+      const scale = Math.min(1, MAX / Math.max(bitmap.width || 1, bitmap.height || 1))
+      const w = Math.max(1, Math.round((bitmap.width || 1) * scale))
+      const h = Math.max(1, Math.round((bitmap.height || 1) * scale))
+      const canvas = document.createElement('canvas')
+      canvas.width = w
+      canvas.height = h
+      const ctx = canvas.getContext('2d')
+      if (!ctx) throw new Error('no 2d context')
+      ctx.drawImage(bitmap, 0, 0, w, h)
+      if (typeof bitmap.close === 'function') bitmap.close()
+      return canvas.toDataURL('image/png')
+    } catch {
+      // Fall back to raw data URL (works for plain JPEG/PNG when canvas is unavailable)
+      return await new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = () => resolve(null)
+        reader.readAsDataURL(blob)
+      })
+    }
   } catch {
     return null
   }
@@ -81,6 +103,8 @@ interface PdfOpts {
   totals?: { label: string; value: string }[]
   terms?: string
   footerNote?: string
+  /** Live site logo (site_settings.logo_url) — tried between the template logo and the built-in default */
+  logoUrl?: string
 }
 
 export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate | null }): Promise<Blob> {
@@ -105,16 +129,16 @@ export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate |
   doc.setFillColor(primary)
   doc.rect(0, 0, W, 72, 'F')
 
-  // Logo — try the template logo first, then fall back to the default brand
-  // logo. Each candidate is attempted in turn: a broken template URL (or an
-  // SVG, which jsPDF cannot embed) must never blank the header — the next
-  // candidate is tried until one actually renders.
-  const logoCandidates = [...new Set([logoUrl, LOGO_URL].filter(Boolean))]
+  // Logo — try in order: template logo → live site logo → built-in default.
+  // Each candidate is attempted in turn: a broken template URL, an SVG, or a
+  // WEBP (all of which jsPDF cannot embed raw) must never blank the header —
+  // the next candidate is tried until one actually renders.
+  const logoCandidates = [...new Set([logoUrl, tpl?.header_logo_url, opts.logoUrl, LOGO_URL].filter((u): u is string => !!u))]
   for (const candidate of logoCandidates) {
     const logoData = await loadImageAsDataUrl(candidate)
     if (!logoData || logoData.startsWith('data:image/svg')) continue
     try {
-      doc.addImage(logoData, logoData.startsWith('data:image/jpeg') ? 'JPEG' : 'PNG', margin, 14, 44, 44)
+      doc.addImage(logoData, 'PNG', margin, 14, 44, 44)
       break
     } catch {
       /* try next candidate */

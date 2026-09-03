@@ -5,6 +5,7 @@ import { PageIntro } from '@/components/admin/AdminLayout'
 import { Badge, Drawer, EmptyState, ErrorBanner, Skeletons, type Tone } from '@/components/admin/bits'
 import { inputClass } from '@/components/ui'
 import { fetchPdfTemplate, generateGnabPdf, interpolate, uploadPdfAndGetUrl } from '@/lib/pdf'
+import { useSiteSettings } from '@/lib/siteData'
 import { useQuerySearch } from '@/components/admin/AdminSearch'
 
 interface Row {
@@ -26,6 +27,7 @@ interface Row {
 const TONE: Record<Row['status'], Tone> = { new: 'gold', replied: 'green', closed: 'gray' }
 
 export default function MessagesAdminPage() {
+  const settings = useSiteSettings()
   const [rows, setRows] = useState<Row[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -91,6 +93,7 @@ export default function MessagesAdminPage() {
         bodyHtml: interpolate(tpl?.body_template || reply, vars),
         footerNote: tpl?.footer_note || 'This is an official response from GNAB Business Solutions.',
         template: tpl,
+      logoUrl: settings.logo_url || undefined,
       })
       const pdfPath = `replies/contact-${selected.id}-${Date.now()}.pdf`
       const pdfUrl = await uploadPdfAndGetUrl(pdfBlob, pdfPath)

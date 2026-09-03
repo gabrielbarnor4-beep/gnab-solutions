@@ -5,6 +5,7 @@ import { PageIntro } from '@/components/admin/AdminLayout'
 import { Badge, Drawer, EmptyState, ErrorBanner, Pagination, Skeletons, type Tone } from '@/components/admin/bits'
 import { inputClass } from '@/components/ui'
 import { fetchPdfTemplate, generateGnabPdf, interpolate, uploadPdfAndGetUrl } from '@/lib/pdf'
+import { useSiteSettings } from '@/lib/siteData'
 import { useQuerySearch } from '@/components/admin/AdminSearch'
 
 const PAGE_SIZE = 25
@@ -57,6 +58,7 @@ const TONE: Record<string, Tone> = {
 const LABEL = Object.fromEntries(STATUSES)
 
 export default function QuotesAdminPage() {
+  const settings = useSiteSettings()
   const [rows, setRows] = useState<Row[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -197,6 +199,7 @@ export default function QuotesAdminPage() {
       terms: interpolate(tpl?.terms_template || quoteMeta.terms, vars),
       bodyHtml: tpl?.body_template ? interpolate(tpl.body_template, vars) : (quoteMeta.notes || undefined),
       template: tpl,
+      logoUrl: settings.logo_url || undefined,
     })
     const pdfPath = `quotations/${qNumber}.pdf`
     const pdfUrl = await uploadPdfAndGetUrl(pdfBlob, pdfPath)

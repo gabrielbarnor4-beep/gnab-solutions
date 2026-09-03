@@ -7,6 +7,7 @@ import { PageIntro } from '@/components/admin/AdminLayout'
 import { Badge, Drawer, EmptyState, ErrorBanner, Skeletons } from '@/components/admin/bits'
 import { inputClass } from '@/components/ui'
 import { fetchPdfTemplate, generateGnabPdf, interpolate, uploadPdfAndGetUrl } from '@/lib/pdf'
+import { useSiteSettings } from '@/lib/siteData'
 import { useQuerySearch } from '@/components/admin/AdminSearch'
 
 interface ReceiptRow {
@@ -57,6 +58,7 @@ interface Quotation {
 const EMPTY_ITEMS = [{ description: '', quantity: 1, unit_price: 0 }]
 
 export default function ReceiptsAdminPage() {
+  const settings = useSiteSettings()
   const [rows, setRows] = useState<ReceiptRow[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -231,6 +233,7 @@ export default function ReceiptsAdminPage() {
       terms,
       bodyHtml: body,
       template: tpl,
+      logoUrl: settings.logo_url || undefined,
     })
     const pdfPath = `receipts/${receiptNumber}.pdf`
     const pdfUrl = await uploadPdfAndGetUrl(pdfBlob, pdfPath)
