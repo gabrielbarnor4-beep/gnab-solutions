@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   CheckCircle2,
@@ -187,6 +187,8 @@ export default function ContactPage() {
     setPageMeta('Contact Us | GNAB Business Solutions', 'Questions, requests or partnerships — our team responds within hours, not days.')
   }, [])
   const [locations, setLocations] = useState<Loc[]>([])
+  const [locLoading, setLocLoading] = useState(true)
+  const [mapError, setMapError] = useState('')
   const [selectedIdx, setSelectedIdx] = useState<number | null>(null)
   const [userPos, setUserPos] = useState<{ lat: number; lng: number } | null>(null)
   const [locating, setLocating] = useState(false)
@@ -196,18 +198,34 @@ export default function ContactPage() {
   const [routeLoading, setRouteLoading] = useState(false)
   const [locErr, setLocErr] = useState('')
 
-  useEffect(() => {
-    supabase
-      .from('locations')
-      .select('name, address, latitude, longitude, google_maps_url, is_primary')
-      .eq('is_active', true)
-      .is('deleted_at', null)
-      .order('sort_order')
-      .order('created_at')
-      .then(({ data }) => {
+  const loadLocations = useCallback(() => {
+    setLocLoading(true)
+    setMapError('')
+    void (async () => {
+      try {
+        const { data, error } = await supabase
+          .from('locations')
+          .select('name, address, latitude, longitude, google_maps_url, is_primary')
+          .eq('is_active', true)
+          .is('deleted_at', null)
+          .order('sort_order')
+          .order('created_at')
+        if (error) {
+          setMapError(error.message)
+          return
+        }
         if (data) setLocations((data as Loc[]).filter((r) => r.latitude !== null && r.longitude !== null))
-      })
+      } catch (e: unknown) {
+        setMapError(e instanceof Error ? e.message : 'Network error while loading locations.')
+      } finally {
+        setLocLoading(false)
+      }
+    })()
   }, [])
+
+  useEffect(() => {
+    loadLocations()
+  }, [loadLocations])
 
   const selectedLoc = selectedIdx !== null ? locations[selectedIdx] : null
 
@@ -461,7 +479,11 @@ export default function ContactPage() {
       <section className="bg-mist py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <Reveal>
-            {hasLocations ? (
+            {locLoading ? (
+              <div className="overflow-hidden rounded-[32px] border border-gray-100 bg-white shadow-soft" aria-busy="true" aria-label="Loading map">
+                <div className="h-[380px] w-full animate-pulse bg-mist md:h-[520px]" />
+              </div>
+            ) : hasLocations ? (
               <div className="overflow-hidden rounded-[32px] border border-gray-100 bg-white shadow-soft">
                 {/* Toolbar */}
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 bg-white px-5 py-4 md:px-8">
@@ -532,6 +554,14 @@ export default function ContactPage() {
                     )
                   })}
                 </div>
+              </div>
+            ) : mapError ? (
+              <div className="relative flex min-h-72 flex-col items-center justify-center overflow-hidden rounded-[32px] border border-gray-100 bg-white px-6 py-10 text-center shadow-soft">
+                <MapPin size={36} className="text-gray-300" />
+                <p className="mt-4 font-display text-lg font-bold text-navy">Map couldn&apos;t load</p>
+                <p className="mt-2 max-w-md text-sm leading-relaxed text-ink-light">Your browser blocked the map data request — usually an ad-blocker, Brave Shields, strict tracking prevention or a VPN. Your locations are safe; this device just couldn&apos;t fetch them.</p>
+                <button onClick={loadLocations} className="mt-5 rounded-full bg-navy px-6 py-2.5 text-sm font-semibold text-white hover:bg-navy-600">Retry</button>
+                <p className="mt-3 max-w-md truncate font-mono text-[11px] text-gray-400" title={mapError}>{mapError}</p>
               </div>
             ) : (
               <div className="relative flex h-72 flex-col items-center justify-center overflow-hidden rounded-[32px] border border-gray-100 bg-white px-6 py-10 text-center shadow-soft">
