@@ -534,34 +534,12 @@ export default function ContactPage() {
                 </div>
               </div>
             ) : (
-              (() => {
-                const raw = s.google_maps_embed_url?.trim() ?? ''
-                const srcMatch = raw.match(/src="([^"]+)"/)
-                const embedSrc = (srcMatch ? srcMatch[1] : raw) ?? ''
-                const hasEmbed = embedSrc.startsWith('http')
-                const linkUrl = s.google_maps_url?.trim() || ''
-                if (hasEmbed) {
-                  return (
-                    <div className="overflow-hidden rounded-[32px] border border-gray-100 bg-white shadow-soft">
-                      <div className="relative h-[420px] overflow-hidden md:h-[480px]">
-                        <iframe title="GNAB Business Solutions location" src={embedSrc} loading="lazy" referrerPolicy="no-referrer-when-downgrade" allowFullScreen className="absolute inset-0 h-full w-full border-0" />
-                      </div>
-                      <div className="flex flex-col items-center justify-between gap-4 border-t border-gray-100 bg-white px-6 py-5 sm:flex-row">
-                        <div className="flex items-center gap-3 text-sm"><span className="flex h-10 w-10 items-center justify-center rounded-xl bg-navy-50 text-navy"><MapPin size={18} /></span><span className="font-medium text-navy">{s.address}</span></div>
-                        {linkUrl && <a href={linkUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-full bg-navy px-6 py-2.5 text-sm font-semibold text-white hover:bg-navy-600">Open in Google Maps</a>}
-                      </div>
-                    </div>
-                  )
-                }
-                return (
-                  <div className="relative flex h-72 flex-col items-center justify-center overflow-hidden rounded-[32px] border border-gray-100 bg-white px-6 py-10 text-center shadow-soft">
-                    <MapPin size={36} className="text-gold-500" />
-                    <p className="mt-4 font-display text-lg font-bold text-navy">{s.address}</p>
-                    <p className="mt-2 max-w-md text-sm leading-relaxed text-ink-light">Interactive map will appear here once you add locations in <span className="font-semibold text-navy">Admin → Locations</span> or paste a Google Maps embed URL in <span className="font-semibold text-navy">Admin → Settings → Location & Map</span>.</p>
-                    <p className="mt-3 text-xs text-ink-light">Tip: Add multiple locations — all pins show on one Leaflet map with free routing.</p>
-                  </div>
-                )
-              })()
+              <div className="relative flex h-72 flex-col items-center justify-center overflow-hidden rounded-[32px] border border-gray-100 bg-white px-6 py-10 text-center shadow-soft">
+                <MapPin size={36} className="text-gold-500" />
+                <p className="mt-4 font-display text-lg font-bold text-navy">{s.address}</p>
+                <p className="mt-2 max-w-md text-sm leading-relaxed text-ink-light">Our interactive Leaflet map will appear here once you add locations in <span className="font-semibold text-navy">Admin → Locations</span>.</p>
+                <p className="mt-3 text-xs text-ink-light">Tip: Add multiple locations — all pins show on one Leaflet-OpenStreetMap with free routing, identical in every browser.</p>
+              </div>
             )}
           </Reveal>
         </div>

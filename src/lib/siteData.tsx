@@ -25,6 +25,8 @@ export interface SiteSettings {
   footer_text: string
   favicon_url: string
   og_image_url: string
+  // Deprecated: global Google embed retired — the contact map is Leaflet-OpenStreetMap
+  // driven solely by Admin → Locations. Keys stay so old DB rows merge harmlessly.
   google_maps_embed_url: string
   google_maps_url: string
   hours_weekday: string

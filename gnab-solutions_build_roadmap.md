@@ -291,7 +291,7 @@ All `ProtectedRoute` + `AdminLayout` **22 links** (Dashboard/Home/Site Pages/✨
 | Blog | `/admin/blog` | `blog_posts` | title*, slug* unique, excerpt, content, featured_image, author, category 5, tags text[], status, meta, published_at, `show_in_footer` |
 | Testimonials | `/admin/testimonials` | `testimonials` | `pending→approved` (public) / rejected 30d, rating, quote, name/role/company |
 | Downloads | `/admin/downloads` | `company_documents` + `documents` bucket | Upload PDF → `documents`, `is_active` only one active, soft-delete, preview `getPublicUrl` |
-| Settings | `/admin/settings` | `site_settings` key-value | 6 sections (Company, Contact, Social 4, SEO, Location & Maps, Hours 3) + **Header Display** card (show top bar + `header_show_phone/email/tagline` toggles + phone/email/tagline inputs), Branding `logo_url` via `ImageUploader`, Administrator Account (change password `supabase.auth.updateUser`, sign out) |
+| Settings | `/admin/settings` | `site_settings` key-value | 5 sections (Company, Contact, Social 4, SEO, Hours 3) + **Header Display** card (show top bar + `header_show_phone/email/tagline` toggles + phone/email/tagline inputs), Branding `logo_url` via `ImageUploader`, Administrator Account (change password `supabase.auth.updateUser`, sign out) |
 
 ---
 

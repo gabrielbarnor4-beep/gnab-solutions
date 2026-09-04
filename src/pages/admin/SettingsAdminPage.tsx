@@ -46,13 +46,6 @@ const SECTIONS: { title: string; fields: { key: keyof SiteSettings; label: strin
     ],
   },
   {
-    title: 'Location & Map',
-    fields: [
-      { key: 'google_maps_embed_url', label: 'Google Maps Embed URL (for interactive map)', type: 'textarea', placeholder: 'Paste the iframe src from Google Maps → Share → Embed → copy src, e.g. https://www.google.com/maps/embed?pb=...' },
-      { key: 'google_maps_url', label: 'Google Maps Link URL (opens in new tab)', placeholder: 'https://maps.google.com/... or https://goo.gl/maps/...' },
-    ],
-  },
-  {
     title: 'Business Hours',
     fields: [
       { key: 'hours_weekday', label: 'Monday – Friday', placeholder: 'e.g. 8:00 – 17:00' },
