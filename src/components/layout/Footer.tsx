@@ -1,9 +1,17 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Download, Lock, Mail, Phone, MapPin, ArrowUpRight } from 'lucide-react'
-import { COMPANY, NAV_LINKS } from '@/lib/utils'
+import { Clock, Download, Info, Link as LinkIcon, Lock, Mail, MapPin, ArrowUpRight, MessageCircle, Phone } from 'lucide-react'
+import { COMPANY } from '@/lib/utils'
 import { FooterHeading } from '@/components/ui'
-import { fetchActiveCompanyProfile, fetchFooterServices, useSiteSettings, type PublicService } from '@/lib/siteData.tsx'
+import {
+  fetchActiveCompanyProfile,
+  fetchFooterServices,
+  parseFooterContactItems,
+  parseFooterQuickLinks,
+  useSiteSettings,
+  type FooterContactItem,
+  type PublicService,
+} from '@/lib/siteData.tsx'
 
 const FALLBACK_SERVICE_LINKS = [
   { name: 'Office Stationery & Consumables', slug: 'office-stationery' },
@@ -12,7 +20,31 @@ const FALLBACK_SERVICE_LINKS = [
   { name: 'PPE & Safety', slug: 'ppe-safety' },
   { name: 'Office Furniture', slug: 'office-furniture' },
   { name: 'Printing & Branding', slug: 'printing-branding' },
+  { name: 'Electrical Materials', slug: 'electrical-materials' },
+  { name: 'Automobile Services & Spares', slug: 'automobile-services' },
+  { name: 'Custom Procurement & Sourcing', slug: 'custom-sourcing' },
 ]
+
+function contactHref(item: FooterContactItem): string | null {
+  const v = item.value.trim()
+  if (!v) return null
+  if (item.kind === 'email') return `mailto:${v}`
+  if (item.kind === 'phone') return `tel:${v.replace(/\s/g, '')}`
+  if (item.kind === 'whatsapp') return v.startsWith('http') ? v : `https://wa.me/${v.replace(/[^0-9]/g, '')}`
+  if (item.kind === 'link') return v
+  return null
+}
+
+function ContactIcon({ kind }: { kind: FooterContactItem['kind'] }) {
+  const cls = 'mt-0.5 flex-shrink-0 text-gold-400'
+  if (kind === 'email') return <Mail size={16} className={cls} />
+  if (kind === 'phone') return <Phone size={16} className={cls} />
+  if (kind === 'whatsapp') return <MessageCircle size={16} className={cls} />
+  if (kind === 'address') return <MapPin size={16} className={cls} />
+  if (kind === 'hours') return <Clock size={16} className={cls} />
+  if (kind === 'link') return <LinkIcon size={16} className={cls} />
+  return <Info size={16} className={cls} />
+}
 
 export default function Footer() {
   const year = new Date().getFullYear()
@@ -41,16 +73,19 @@ export default function Footer() {
   const showContact = (s.footer_show_contact ?? 'true') !== 'false'
   const showSocials = (s.footer_show_socials ?? 'true') !== 'false'
   const showBottom = (s.footer_show_bottom ?? 'true') !== 'false'
-  let quickLinks: { name: string; path: string }[] = [...NAV_LINKS.slice(0, 8)] as unknown as { name: string; path: string }[]
-  const ALL_FOOTER_LINKS: { name: string; path: string }[] = [...(NAV_LINKS as unknown as { name: string; path: string }[]), { name: 'Become a Supplier', path: '/supplier-registration' }]
-  try {
-    const parsed = JSON.parse(s.footer_quick_links || '[]')
-    if (Array.isArray(parsed) && parsed.length > 0) {
-      const set = new Set(parsed as string[])
-      quickLinks = ALL_FOOTER_LINKS.filter((l) => set.has(l.path))
-      if (quickLinks.length === 0) quickLinks = [...NAV_LINKS.slice(0, 8)] as unknown as { name: string; path: string }[]
-    }
-  } catch { /* fallback */ }
+  // Supports legacy string[] + new object[] with per-item visible toggles.
+  const quickLinks = parseFooterQuickLinks(s.footer_quick_links).filter((l) => l.visible !== false)
+
+  // Contact column: admin-managed items win; otherwise legacy email/phone/address settings.
+  const storedContacts = parseFooterContactItems((s as unknown as { footer_contact_items?: string }).footer_contact_items).filter((c) => c.visible !== false && c.value.trim())
+  const legacyContacts: FooterContactItem[] = [
+    ...(s.email?.trim() ? [{ id: 'email', kind: 'email' as const, label: 'Email', value: s.email.trim(), visible: true }] : []),
+    ...(s.phone?.trim() ? [{ id: 'phone', kind: 'phone' as const, label: 'Phone', value: s.phone.trim(), visible: true }] : []),
+    ...(s.address?.trim() ? [{ id: 'address', kind: 'address' as const, label: 'Address', value: s.address.trim(), visible: true }] : []),
+  ]
+  // If admin has saved explicit items (even hidden ones), respect them; else legacy fallback.
+  const rawStored = parseFooterContactItems((s as unknown as { footer_contact_items?: string }).footer_contact_items)
+  const contactItems = rawStored.length > 0 ? storedContacts : legacyContacts
 
   const downloadProfile = async () => {
     setProfileMsg('')
@@ -149,22 +184,26 @@ export default function Footer() {
             <div>
               <FooterHeading title={s.footer_contact_title || 'Contact'} style={s.footer_heading_style || 'gold-bar'} />
               <ul className="space-y-4 text-[15px]">
-                <li>
-                  <a href={`mailto:${s.email}`} className="flex items-start gap-3 text-navy-100/70 transition-colors hover:text-gold-400">
-                    <Mail size={16} className="mt-0.5 flex-shrink-0 text-gold-400" />
-                    {s.email}
-                  </a>
-                </li>
-                <li>
-                  <a href={`tel:${s.phone.replace(/\s/g, '')}`} className="flex items-start gap-3 text-navy-100/70 transition-colors hover:text-gold-400">
-                    <Phone size={16} className="mt-0.5 flex-shrink-0 text-gold-400" />
-                    {s.phone}
-                  </a>
-                </li>
-                <li className="flex items-start gap-3 text-navy-100/70">
-                  <MapPin size={16} className="mt-0.5 flex-shrink-0 text-gold-400" />
-                  {s.address}
-                </li>
+                {contactItems.map((c) => {
+                  const href = contactHref(c)
+                  const body = (
+                    <>
+                      <ContactIcon kind={c.kind} />
+                      <span className="break-words">{c.value}</span>
+                    </>
+                  )
+                  return (
+                    <li key={c.id}>
+                      {href ? (
+                        <a href={href} target={c.kind === 'link' || c.kind === 'whatsapp' ? '_blank' : undefined} rel={c.kind === 'link' || c.kind === 'whatsapp' ? 'noopener noreferrer' : undefined} className="flex items-start gap-3 text-navy-100/70 transition-colors hover:text-gold-400">
+                          {body}
+                        </a>
+                      ) : (
+                        <span className="flex items-start gap-3 text-navy-100/70">{body}</span>
+                      )}
+                    </li>
+                  )
+                })}
               </ul>
 
               {showSocials && socials.length > 0 && (

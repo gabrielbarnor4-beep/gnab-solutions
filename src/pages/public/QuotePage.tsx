@@ -3,11 +3,10 @@ import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { CheckCircle2, Send, ShieldCheck, Timer, Wallet } from 'lucide-react'
 import { ALLOWED_ATTACHMENT_EXTS, canSubmit, CONTACT, FORMSPREE_ENDPOINT, IMAGES, INDUSTRIES_LIST, isAllowedAttachment, isHoneypotFilled, PRODUCT_CATEGORIES, recordSubmit, formStr} from '@/lib/utils'
-import { catalogueBySlug, CATALOGUE } from '@/lib/catalogue'
+import { catalogueTitleForSlug } from '@/lib/catalogue'
 import { setPageMeta, useSiteSettings } from '@/lib/siteData'
 import { supabase } from '@/lib/supabase'
 
-const CATALOGUE_SLUGS = new Set(CATALOGUE.map((c) => c.slug))
 import { Button, Field, PageHero, Reveal, inputClass } from '@/components/ui'
 
 export default function QuotePage() {
@@ -17,11 +16,14 @@ export default function QuotePage() {
   }, [])
   const [params] = useSearchParams()
   const catParam = params.get('category') ?? ''
-  const prefillCategory =
-    catalogueBySlug(catParam)?.title ??
-    (catParam && !CATALOGUE_SLUGS.has(catParam) ? catParam.replace(/-/g, ' ') : '')
+  // Resolve any slug/title variant (e.g. "automobile-services-spares",
+  // "Automobile Services & Spares", "automobile-services") to the exact
+  // PRODUCT_CATEGORIES title so the dropdown always pre-selects correctly.
+  const prefillCategory = catParam ? catalogueTitleForSlug(catParam, PRODUCT_CATEGORIES) : ''
   const prefillProduct = params.get('product') ?? ''
   const [selectedCategory, setSelectedCategory] = useState(prefillCategory)
+  // Keep in sync when navigating between product → quote links without remount.
+  useEffect(() => { if (prefillCategory) setSelectedCategory(prefillCategory) }, [prefillCategory])
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -213,6 +215,9 @@ export default function QuotePage() {
                           <select name="product_category" required value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)} className={`${inputClass} appearance-none`}>
                             <option value="" disabled>What do you need sourced?</option>
                             {PRODUCT_CATEGORIES.map((c) => <option key={c}>{c}</option>)}
+                            {selectedCategory && !(PRODUCT_CATEGORIES as readonly string[]).includes(selectedCategory) && (
+                              <option value={selectedCategory}>{selectedCategory}</option>
+                            )}
                           </select>
                         </Field>
                       </div>

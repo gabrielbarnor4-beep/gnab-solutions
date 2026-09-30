@@ -41,6 +41,7 @@ export interface SiteSettings {
   footer_quick_links: string
   footer_show_services: string
   footer_show_contact: string
+  footer_contact_items: string
   footer_show_socials: string
   footer_show_bottom: string
   // Other pages — editable via Admin → Pages (mirrored)
@@ -216,9 +217,10 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   header_show_tagline: 'true',
   footer_show_brand: 'true',
   footer_show_quick_links: 'true',
-  footer_quick_links: JSON.stringify(["/","/about","/services","/industries","/products","/process","/why-us","/blog","/supplier-registration"]),
+  footer_quick_links: JSON.stringify([{name:"Home",path:"/",visible:true},{name:"About",path:"/about",visible:true},{name:"Services",path:"/services",visible:true},{name:"Industries",path:"/industries",visible:true},{name:"Products",path:"/products",visible:true},{name:"Process",path:"/process",visible:true},{name:"Why Us",path:"/why-us",visible:true},{name:"Blog",path:"/blog",visible:true},{name:"Reviews",path:"/testimonials",visible:true},{name:"Contact",path:"/contact",visible:true},{name:"Become a Supplier",path:"/supplier-registration",visible:true}]),
   footer_show_services: 'true',
   footer_show_contact: 'true',
+  footer_contact_items: JSON.stringify([{id:"email",kind:"email",label:"Email",value:"",visible:true},{id:"phone",kind:"phone",label:"Phone",value:"",visible:true},{id:"address",kind:"address",label:"Address",value:"",visible:true}]),
   footer_show_socials: 'true',
   footer_show_bottom: 'true',
   about_hero_title: 'The Partner Behind Seamless Procurement',
@@ -422,6 +424,73 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
 }
 
 export const useSiteSettings = () => useContext(SETTINGS_CTX)
+
+/* ------------------------------------------------------------------ */
+/* Footer — shared parsers (admin + public must agree)                 */
+/* ------------------------------------------------------------------ */
+
+export interface FooterQuickLink { name: string; path: string; visible?: boolean }
+
+export const ALL_FOOTER_LINK_DEFS: FooterQuickLink[] = [
+  { name: 'Home', path: '/' },
+  { name: 'About', path: '/about' },
+  { name: 'Services', path: '/services' },
+  { name: 'Industries', path: '/industries' },
+  { name: 'Products', path: '/products' },
+  { name: 'Process', path: '/process' },
+  { name: 'Why Us', path: '/why-us' },
+  { name: 'Blog', path: '/blog' },
+  { name: 'Reviews', path: '/testimonials' },
+  { name: 'Contact', path: '/contact' },
+  { name: 'Become a Supplier', path: '/supplier-registration' },
+]
+
+/** Accepts legacy string[] (018), object[] (admin), or mixed — always returns objects. */
+export function parseFooterQuickLinks(raw: string | null | undefined): FooterQuickLink[] {
+  const fallback = ALL_FOOTER_LINK_DEFS.map((l) => ({ ...l, visible: true }))
+  try {
+    const arr = raw ? JSON.parse(raw) : null
+    if (!Array.isArray(arr) || arr.length === 0) return fallback
+    if (typeof arr[0] === 'string') {
+      const set = new Set(arr as string[])
+      // Legacy stored only paths: restore labels from defs, keep stored order first
+      const ordered = (arr as string[])
+        .map((p) => ALL_FOOTER_LINK_DEFS.find((d) => d.path === p))
+        .filter(Boolean)
+        .map((d) => ({ ...(d as FooterQuickLink), visible: true }))
+      // append any missing defs that were never stored (Reviews/Contact/Supplier) as visible
+      for (const d of ALL_FOOTER_LINK_DEFS) {
+        if (!set.has(d.path) && (d.path === '/testimonials' || d.path === '/contact' || d.path === '/supplier-registration')) {
+          ordered.push({ ...d, visible: true })
+        }
+      }
+      return ordered.length > 0 ? ordered : fallback
+    }
+    return (arr as FooterQuickLink[]).filter((x) => x && typeof x.path === 'string').map((x) => ({ name: x.name || x.path, path: x.path, visible: x.visible !== false }))
+  } catch {
+    return fallback
+  }
+}
+
+export type FooterContactKind = 'email' | 'phone' | 'whatsapp' | 'address' | 'hours' | 'link' | 'text'
+
+export interface FooterContactItem { id: string; kind: FooterContactKind; label: string; value: string; visible?: boolean }
+
+export function parseFooterContactItems(raw: string | null | undefined): FooterContactItem[] {
+  try {
+    const arr = raw ? JSON.parse(raw) : null
+    if (!Array.isArray(arr)) return []
+    return (arr as FooterContactItem[]).filter((x) => x && typeof x.value === 'string').map((x, i) => ({
+      id: x.id || `item-${i}`,
+      kind: (['email','phone','whatsapp','address','hours','link','text'] as FooterContactKind[]).includes(x.kind) ? x.kind : 'text',
+      label: x.label || x.kind,
+      value: x.value,
+      visible: x.visible !== false,
+    }))
+  } catch {
+    return []
+  }
+}
 
 /* ------------------------------------------------------------------ */
 /* Products / services / blog — public readers with graceful fallbacks */

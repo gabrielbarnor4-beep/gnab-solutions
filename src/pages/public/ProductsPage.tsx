@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, PackageSearch, Search, X } from 'lucide-react'
-import { CATALOGUE } from '@/lib/catalogue'
+import { CATALOGUE, canonicalCatalogueSlug } from '@/lib/catalogue'
 import { fetchPublicProducts, setPageMeta, type PublicProduct, useSiteSettings } from '@/lib/siteData'
 import { IMAGES, cn } from '@/lib/utils'
 import { matchSlug } from '@/lib/design'
@@ -49,19 +49,31 @@ export default function ProductsPage() {
       }))
     }
     const groups: Group[] = []
+    const staticBySlug = new Map(CATALOGUE.map((c) => [c.slug, c]))
     for (const p of dbProducts) {
-      let g = groups.find((x) => x.title === p.category)
+      const rawTitle = (p.category ?? 'Other Products').trim() || 'Other Products'
+      // Canonical slug merges DB variants ("automobile-services-spares") with
+      // static slugs ("automobile-services") so automobile never falls into stationery.
+      const canonSlug = canonicalCatalogueSlug(rawTitle)
+      const staticCat = staticBySlug.get(canonSlug)
+      const title = staticCat?.title ?? rawTitle
+      let g = groups.find((x) => x.slug === canonSlug)
       if (!g) {
-        g = { slug: (p.category ?? 'other').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, ''), title: p.category ?? 'Other Products', shortTitle: shortTitleOf(p.category ?? 'Other'), intro: '', products: [] }
+        g = { slug: canonSlug, title, shortTitle: staticCat?.shortTitle ?? shortTitleOf(title), intro: staticCat?.intro ?? '', products: [] }
         groups.push(g)
+      } else if (staticCat && g.title !== staticCat.title) {
+        g.title = staticCat.title
+        g.shortTitle = staticCat.shortTitle
+        if (!g.intro) g.intro = staticCat.intro
       }
-      groups.splice(groups.findIndex((x) => x.slug === g.slug), 1)
-      // keep CATALOGUE ordering when possible
-      const staticIdx = CATALOGUE.findIndex((c) => c.title === g!.title)
-      const insertAt = staticIdx === -1 ? groups.length : Math.min(staticIdx, groups.length)
-      groups.splice(insertAt, 0, g)
       g.products.push({ name: p.name, desc: p.short_description ?? '', image_url: p.image_url })
     }
+    // Stable order follows CATALOGUE, unknown groups appended at the end.
+    groups.sort((a, b) => {
+      const ia = CATALOGUE.findIndex((c) => c.slug === a.slug)
+      const ib = CATALOGUE.findIndex((c) => c.slug === b.slug)
+      return (ia === -1 ? 999 : ia) - (ib === -1 ? 999 : ib)
+    })
     return groups
   }, [dbProducts])
 

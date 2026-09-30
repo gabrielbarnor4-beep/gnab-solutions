@@ -6,6 +6,7 @@ import { Drawer, EmptyState, ErrorBanner, Skeletons } from '@/components/admin/b
 import { ImageUploader } from '@/components/admin/ImageUploader'
 import { inputClass } from '@/components/ui'
 import { useQuerySearch } from '@/components/admin/AdminSearch'
+import { SERVICE_CATEGORY_OPTIONS } from '@/lib/catalogue'
 
 interface Service {
   id: string
@@ -22,17 +23,7 @@ interface Service {
   deleted_at: string | null
 }
 
-const CATEGORY_OPTIONS = [
-  'Office Stationery & Consumables',
-  'IT Equipment & Accessories',
-  'Cleaning & Janitorial Supplies',
-  'PPE & Safety',
-  'Office Furniture',
-  'Electrical Materials',
-  'Printing & Branding',
-  'General Office Consumables',
-  'Custom Sourcing',
-]
+const CATEGORY_OPTIONS = SERVICE_CATEGORY_OPTIONS
 
 const EMPTY: Service = {
   id: '', name: '', category: '', short_description: '', full_description: '',
@@ -183,7 +174,7 @@ export default function ServicesAdminPage() {
         </div>
         <select value={catFilter} onChange={(e) => setCatFilter(e.target.value)} aria-label="Filter by category" className={`${inputClass} sm:w-64`}>
           <option value="all">All categories</option>
-          {CATEGORY_OPTIONS.map((c) => <option key={c}>{c}</option>)}
+          {[...new Set([...CATEGORY_OPTIONS, ...rows.map((r) => r.category).filter(Boolean) as string[]])].map((c) => <option key={c}>{c}</option>)}
         </select>
       </div>
 
@@ -260,7 +251,7 @@ export default function ServicesAdminPage() {
               <span className="mb-2 block text-[13px] font-semibold uppercase tracking-wide text-ink-light">Category</span>
               <select value={editing.category ?? ''} onChange={(e) => setEditing({ ...editing, category: e.target.value })} className={inputClass}>
                 <option value="">— None —</option>
-                {CATEGORY_OPTIONS.map((c) => <option key={c}>{c}</option>)}
+                {[...new Set([...CATEGORY_OPTIONS, ...(editing.category ? [editing.category] : [])])].map((c) => <option key={c}>{c}</option>)}
               </select>
             </label>
             <ImageUploader value={editing.image_url ?? ''} onChange={(url) => setEditing({ ...editing, image_url: url })} label="Service Image" folder="services" />

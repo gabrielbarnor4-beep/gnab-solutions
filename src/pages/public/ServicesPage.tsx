@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   ArrowRight,
+  Car,
   Check,
   ClipboardCheck,
   FileText,
@@ -16,7 +17,7 @@ import {
 } from 'lucide-react'
 import { IMAGES } from '@/lib/utils'
 import { matchSlug } from '@/lib/design'
-import { CATALOGUE } from '@/lib/catalogue'
+import { CATALOGUE, canonicalCatalogueSlug } from '@/lib/catalogue'
 import { fetchPublicServices, setPageMeta, type PublicService, useSiteImage, useSiteSettings } from '@/lib/siteData'
 import { PageHero, PremiumCTA, SectionHeading } from '@/components/ui'
 
@@ -35,6 +36,8 @@ const SERVICE_IMAGES: Record<string, string> = {
     'https://images.unsplash.com/photo-1562408590-e32931084e23?q=80&w=1200&auto=format&fit=crop',
   'electrical-materials':
     'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=1200&auto=format&fit=crop',
+  'automobile-services':
+    'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1200&auto=format&fit=crop',
   'custom-sourcing':
     'https://images.unsplash.com/photo-1553413077-190dd305871c?q=80&w=1200&auto=format&fit=crop',
 }
@@ -141,6 +144,20 @@ const serviceMeta: Record<
       'Solar solutions: panels, inverters, batteries',
     ],
   },
+  'automobile-services': {
+    icon: Car,
+    tag: 'Mobility',
+    overview:
+      'Your fleet and vehicles are business-critical — we keep them running. We source brand-new and quality pre-owned vehicles, genuine spare parts and accessories, and coordinate scheduled servicing for single cars or full fleets. Every vehicle is inspected, documented and delivered road-ready with transparent pricing.',
+    bullets: [
+      'Brand-new and pre-owned vehicles, inspected and documented',
+      'Genuine spare parts: brakes, suspension, engine, electrical',
+      'Tyres, batteries, lubricants and fluids in bulk',
+      'Accessories: trackers, dashcams, racks, detailing',
+      'Scheduled servicing and fleet maintenance plans',
+      'Registration, insurance and roadworthy support',
+    ],
+  },
   'custom-sourcing': {
     icon: Handshake,
     tag: 'Tailored For You',
@@ -173,7 +190,7 @@ export default function ServicesPage() {
   const highlightSlug = highlight ? slugify(highlight) : ''
   const orderedDbServices = useMemo(() => {
     if (!dbServices || !highlightSlug) return dbServices
-    const idx = dbServices.findIndex((s) => slugify(s.name) === highlightSlug || slugify(s.category ?? '') === highlightSlug || slugify(s.name).includes(highlightSlug) || highlightSlug.includes(slugify(s.name)))
+    const idx = dbServices.findIndex((s) => matchSlug(canonicalCatalogueSlug(s.name), highlightSlug) || matchSlug(s.name, highlightSlug) || matchSlug(s.category ?? '', highlightSlug))
     if (idx <= 0) return dbServices
     const copy = [...dbServices]
     const [hit] = copy.splice(idx, 1) as [typeof copy[number]]
@@ -210,7 +227,7 @@ export default function ServicesPage() {
               subtitle={s.services_section_subtitle || "Click any service to browse its full product catalogue."}
             />
             <div className="space-y-10">
-              {(orderedDbServices ?? dbServices).map((sItem, i) => { const isHighlighted = !!highlightSlug && i === 0 && (slugify(sItem.name) === highlightSlug || slugify(sItem.category ?? '') === highlightSlug); return (
+              {(orderedDbServices ?? dbServices).map((sItem, i) => { const canonSlug = canonicalCatalogueSlug(sItem.category || sItem.name); const isHighlighted = !!highlightSlug && i === 0 && (matchSlug(canonSlug, highlightSlug) || matchSlug(sItem.name, highlightSlug) || matchSlug(sItem.category ?? '', highlightSlug)); return (
                 <motion.article
                   key={sItem.id}
                   initial={{ opacity: 0, y: 32 }}
@@ -219,7 +236,7 @@ export default function ServicesPage() {
                   transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
                 >
                     <Link
-                    to={`/products?category=${encodeURIComponent((sItem.category ?? '').toLowerCase().replace(/[^a-z0-9]+/g, '-'))}`}
+                    to={`/products?category=${encodeURIComponent(canonSlug)}`}
                     className={`card-hover group relative grid overflow-hidden rounded-[32px] border bg-white shadow-soft lg:grid-cols-[1fr_1.25fr] ${isHighlighted ? 'border-gold-400 ring-2 ring-gold-400' : 'border-gray-100'} ${i % 2 === 1 ? 'lg:[&>*:first-child]:order-2' : ''}`}
                   >
                     {isHighlighted && <span className="absolute left-6 top-6 z-10 rounded-full bg-gold-400 px-3 py-1 text-xs font-bold text-navy shadow">Selected</span>}
@@ -227,7 +244,7 @@ export default function ServicesPage() {
                       {sItem.image_url ? (
                         <img src={sItem.image_url} alt={sItem.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]" />
                       ) : (
-                        <img src={SERVICE_IMAGES['custom-sourcing']} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-60" />
+                        <img src={SERVICE_IMAGES[canonSlug] ?? SERVICE_IMAGES['custom-sourcing']} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-60" />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/25 to-transparent" aria-hidden />
                       {sItem.category && (

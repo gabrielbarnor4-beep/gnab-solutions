@@ -160,6 +160,27 @@ export const CATALOGUE: CatalogueCategory[] = [
     ],
   },
   {
+    slug: 'automobile-services',
+    title: 'Automobile Services & Spares',
+    shortTitle: 'Automobile',
+    intro:
+      'Complete vehicle sourcing and support — from brand-new and pre-owned vehicles to genuine parts, accessories and scheduled servicing.',
+    products: [
+      { name: 'Brand-New Vehicles', desc: 'Saloon cars, SUVs, pickups and buses sourced from authorised dealers.' },
+      { name: 'Pre-Owned Vehicles', desc: 'Inspected used cars with service history and roadworthy certification.' },
+      { name: 'Genuine Spare Parts', desc: 'OEM engine, brake, suspension and electrical parts for major brands.' },
+      { name: 'Tyres & Batteries', desc: 'All sizes of tyres, alloy wheels, batteries and wheel-alignment support.' },
+      { name: 'Lubricants & Fluids', desc: 'Engine oils, coolants, brake and transmission fluids in bulk.' },
+      { name: 'Vehicle Accessories', desc: 'Seat covers, floor mats, roof racks, dashcams and security trackers.' },
+      { name: 'Scheduled Servicing', desc: 'Routine maintenance plans: oil service, filters, brakes and diagnostics.' },
+      { name: 'Fleet Supply & Management', desc: 'Multi-vehicle sourcing, branding, servicing schedules and records.' },
+      { name: 'Vehicle Branding & Detailing', desc: 'Wraps, decals, interior detailing and paint protection.' },
+      { name: 'Emergency & Roadside Kits', desc: 'Jump starters, jacks, warning triangles, first-aid and tool kits.' },
+      { name: 'Air-Conditioning Service', desc: 'AC gas refill, compressor parts and cabin-filter replacement.' },
+      { name: 'Inspection & Registration Support', desc: 'Roadworthy, insurance and DVLA documentation assistance.' },
+    ],
+  },
+  {
     slug: 'custom-sourcing',
     title: 'Custom Procurement & Sourcing',
     shortTitle: 'Custom Sourcing',
@@ -186,3 +207,73 @@ export const catalogueBySlug = (slug: string | null) =>
   CATALOGUE.find((c) => c.slug === slug)
 
 export const TOTAL_PRODUCTS = CATALOGUE.reduce((n, c) => n + c.products.length, 0)
+
+/* ------------------------------------------------------------------ */
+/* Slug unification — DB rows use full titles ("Automobile Services & */
+/* Spares" → "automobile-services-spares") while static slugs are      */
+/* shorter ("automobile-services"). Every cross-page link (Services →  */
+/* Products → Quote, Home → Services) must resolve through these       */
+/* helpers so an automobile product never lands on the stationery      */
+/* catalogue. Fuzzy token-overlap mirrors matchSlug in design.ts.      */
+/* ------------------------------------------------------------------ */
+
+export function slugifyCategory(v: string): string {
+  return v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
+function slugTokens(slug: string): string[] {
+  return slug.split('-').filter(Boolean)
+}
+
+/** Canonical static slug for any DB title / slug variant. Falls back to a clean slug. */
+export function canonicalCatalogueSlug(titleOrSlug: string | null | undefined): string {
+  if (!titleOrSlug) return 'other'
+  const raw = slugifyCategory(titleOrSlug)
+  if (!raw) return 'other'
+  const exact = CATALOGUE.find((c) => c.slug === raw || c.title.toLowerCase() === (titleOrSlug ?? '').toLowerCase())
+  if (exact) return exact.slug
+  // substring either way (handles "automobile-services-spares" ↔ "automobile-services")
+  const sub = CATALOGUE.find((c) => raw.includes(c.slug) || c.slug.includes(raw))
+  if (sub) return sub.slug
+  // token overlap: every token of the shorter side appears in the longer side
+  const rawToks = slugTokens(raw)
+  let best: string | null = null
+  let bestScore = 0
+  for (const c of CATALOGUE) {
+    const ct = slugTokens(c.slug)
+    const [shorter, longer] = rawToks.length <= ct.length ? [rawToks, ct] : [ct, rawToks]
+    if (shorter.length === 0) continue
+    if (shorter.every((t) => longer.includes(t))) {
+      const score = shorter.length
+      if (score > bestScore) { bestScore = score; best = c.slug }
+    }
+  }
+  if (best) return best
+  return raw
+}
+
+/** Canonical display title for any slug/title variant (Quote dropdown needs exact titles). */
+export function catalogueTitleForSlug(titleOrSlug: string | null | undefined, extraTitles: readonly string[] = []): string {
+  if (!titleOrSlug) return ''
+  const direct = CATALOGUE.find((c) => c.slug === slugifyCategory(titleOrSlug) || c.title.toLowerCase() === titleOrSlug.toLowerCase())
+  if (direct) return direct.title
+  const canon = canonicalCatalogueSlug(titleOrSlug)
+  const staticHit = CATALOGUE.find((c) => c.slug === canon)
+  if (staticHit && canon !== slugifyCategory(titleOrSlug)) return staticHit.title
+  // match against extra title lists (e.g. PRODUCT_CATEGORIES) fuzzily
+  const raw = slugifyCategory(titleOrSlug)
+  for (const t of extraTitles) {
+    const ts = slugifyCategory(t)
+    if (ts === raw || raw.includes(ts) || ts.includes(raw)) return t
+  }
+  // humanize fallback: "automobile-services-spares" → "Automobile Services Spares"
+  return titleOrSlug.replace(/-/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase())
+}
+
+/** Single source of truth for service/product category dropdowns (keeps Admin in sync). */
+export const SERVICE_CATEGORY_OPTIONS: string[] = [
+  ...CATALOGUE.filter((c) => c.slug !== 'custom-sourcing').map((c) => c.title),
+  'General Office Consumables',
+  'Custom Sourcing',
+  'Custom Procurement & Sourcing',
+]

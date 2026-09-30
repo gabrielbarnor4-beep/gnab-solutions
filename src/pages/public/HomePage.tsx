@@ -11,6 +11,7 @@ import {
   ArrowRight,
   BadgeCheck,
   Building2,
+  Car,
   ClipboardCheck,
   Clock,
   FileText,
@@ -56,6 +57,7 @@ import {
   useSiteSettings,
 } from '@/lib/siteData'
 import { ICON_MAP } from '@/lib/iconOptions'
+import { canonicalCatalogueSlug } from '@/lib/catalogue'
 
 const HERO_IMAGES = [IMAGES.hero1, IMAGES.hero2, IMAGES.hero3]
 
@@ -74,6 +76,7 @@ const services = [
   { icon: ShieldCheck, title: 'PPE & Safety', slug: 'ppe-safety', desc: 'Certified protective equipment for every industry standard.' },
   { icon: Store, title: 'Office Furniture', slug: 'office-furniture', desc: 'Ergonomic desks, chairs and complete workspace setups.' },
   { icon: ClipboardCheck, title: 'Printing & Branding', slug: 'printing-branding', desc: 'Custom printing and corporate branding that gets you noticed.' },
+  { icon: Car, title: 'Automobile Services', slug: 'automobile-services', desc: 'Vehicles, genuine parts, accessories and servicing for fleets and individuals.' },
   { icon: Handshake, title: 'Custom Procurement', slug: 'custom-sourcing', desc: 'Tailored sourcing for requirements beyond the catalogue.' },
 ]
 
@@ -239,8 +242,10 @@ export default function HomePage() {
     })
     void fetchPublicServices().then((rows) => {
       if (rows.length > 0) {
-        const iconByName: Record<string, typeof FileText> = { 'Office Stationery & Consumables': FileText, 'IT Equipment & Accessories': Layers, 'Cleaning & Janitorial Supplies': Sparkles, 'PPE & Safety': ShieldCheck, 'Office Furniture': Store, 'Printing & Branding': ClipboardCheck, 'Electrical Materials': Layers, 'Custom Procurement & Sourcing': Handshake, 'Custom Sourcing': Handshake }
-        setServicesLive(rows.slice(0, 7).map((r) => ({ icon: iconByName[r.name] ?? FileText, title: r.name, slug: r.name.toLowerCase().replace(/[^a-z0-9]+/g, '-'), desc: r.short_description ?? '' })))
+        const iconByName: Record<string, typeof FileText> = { 'Office Stationery & Consumables': FileText, 'IT Equipment & Accessories': Layers, 'Cleaning & Janitorial Supplies': Sparkles, 'PPE & Safety': ShieldCheck, 'PPE & Safety Equipment': ShieldCheck, 'Office Furniture': Store, 'Printing & Branding': ClipboardCheck, 'Electrical Materials': Layers, 'Automobile Services & Spares': Car, 'Automobile Services': Car, 'Custom Procurement & Sourcing': Handshake, 'Custom Sourcing': Handshake }
+        // Show every published service (no slice) so Automobile is never cut off;
+        // slug via canonical helper so Services highlight + Products filter always match.
+        setServicesLive(rows.map((r) => ({ icon: iconByName[r.name] ?? iconByName[r.category ?? ''] ?? FileText, title: r.name, slug: canonicalCatalogueSlug(r.name), desc: r.short_description ?? '' })))
       }
     })
     setPageMeta('GNAB Business Solutions | One Partner. Endless Solutions.', 'Ghana\'s trusted partner for corporate procurement, sourcing and supply — reliable sourcing, competitive pricing, timely delivery.')

@@ -98,6 +98,7 @@ export const PRODUCT_CATEGORIES = [
   'PPE & Safety',
   'Office Furniture',
   'Electrical Materials',
+  'Automobile Services & Spares',
   'Printing & Branding',
   'General Office Consumables',
   'Custom Sourcing',
