@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Eye, FileText, Mail, Receipt, Save } from 'lucide-react'
+import { Eye, ClipboardList, Code2, FileText, Mail, Plus, Receipt, Save, Trash2 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
 import { PageIntro } from '@/components/admin/AdminLayout'
 import { ErrorBanner, Skeletons } from '@/components/admin/bits'
@@ -8,9 +8,13 @@ import { fetchAllPdfTemplates, type PdfTemplate } from '@/lib/pdf'
 
 const TYPE_LABEL: Record<PdfTemplate['type'], { label: string; icon: typeof FileText; desc: string }> = {
   quotation: { label: 'Quotation', icon: FileText, desc: 'Sent from Quotes → New Quotation → Save & Email PDF. Header, table, totals and terms are editable.' },
+  website_package: { label: 'Website Package', icon: Code2, desc: 'Standard website package (pages / CMS / care plan). Offered in the Quotes builder for IT Solutions RFQs; standard line items load in one click. Fully editable.' },
+  erp_discovery: { label: 'ERP Discovery', icon: ClipboardList, desc: 'Fixed-fee ERP discovery (requirements, vendor selection, coordination). Offered in the Quotes builder for ERP RFQs; implementation is quoted separately.' },
   message_reply: { label: 'Message Reply', icon: Mail, desc: 'Sent from Messages → Reply → Send as PDF Email. Body is the admin reply.' },
   receipt: { label: 'Receipt', icon: Receipt, desc: 'Sent from Receipts → Issue Receipt → Save & Email PDF. Shows payment and balance.' },
 }
+
+const isPackageType = (t: PdfTemplate['type']) => t === 'website_package' || t === 'erp_discovery'
 
 function TemplateForm({ tpl, onSaved }: { tpl: PdfTemplate; onSaved: () => void }) {
   const [draft, setDraft] = useState<PdfTemplate>(tpl)
@@ -37,9 +41,13 @@ function TemplateForm({ tpl, onSaved }: { tpl: PdfTemplate; onSaved: () => void 
       table_head: draft.table_head,
       totals_template: draft.totals_template,
       terms_template: draft.terms_template,
+      default_items: draft.default_items ?? [],
       footer_text: draft.footer_text,
       footer_note: draft.footer_note,
       is_active: true,
+      // default_items only exists after 036 — never send it for the original
+      // three types so saving still works on databases where 036 hasn't run
+      ...(isPackageType(draft.type) ? { default_items: draft.default_items ?? [] } : {}),
     }
     const { error } = await supabase.from('pdf_templates').update(payload).eq('id', draft.id)
     setSaving(false)
@@ -111,6 +119,24 @@ function TemplateForm({ tpl, onSaved }: { tpl: PdfTemplate; onSaved: () => void 
           </>
         )}
 
+        {isPackageType(draft.type) && (
+          <div className="rounded-2xl border border-gold-200 bg-gold-50/60 p-4">
+            <p className="text-sm font-bold text-navy">Standard line items — load into the Quotes builder in one click</p>
+            <p className="mt-1 text-xs text-ink-light">Prices here are starting points; the admin sets final prices per RFQ. Keep quantities and unit prices editable below.</p>
+            <div className="mt-3 space-y-2">
+              {(draft.default_items ?? []).map((it, idx) => (
+                <div key={idx} className="grid gap-2 rounded-xl border border-gray-100 bg-white p-3 sm:grid-cols-[1fr_80px_110px_40px]">
+                  <input value={it.description} onChange={(e) => { const c = [...(draft.default_items ?? [])]; c[idx] = { ...c[idx]!, description: e.target.value }; set('default_items', c) }} placeholder="Description" className={inputClass} />
+                  <input type="number" value={it.quantity} onChange={(e) => { const c = [...(draft.default_items ?? [])]; c[idx] = { ...c[idx]!, quantity: Number(e.target.value) }; set('default_items', c) }} placeholder="Qty" className={inputClass} />
+                  <input type="number" value={it.unit_price} onChange={(e) => { const c = [...(draft.default_items ?? [])]; c[idx] = { ...c[idx]!, unit_price: Number(e.target.value) }; set('default_items', c) }} placeholder="Unit Price" className={inputClass} />
+                  <button onClick={() => set('default_items', (draft.default_items ?? []).filter((_, i) => i !== idx))} disabled={(draft.default_items ?? []).length <= 1} aria-label="Remove item" className="rounded-lg p-2 text-red-400 hover:bg-red-50 disabled:opacity-30"><Trash2 size={14} /></button>
+                </div>
+              ))}
+            </div>
+            <button onClick={() => set('default_items', [...(draft.default_items ?? []), { description: '', quantity: 1, unit_price: 0 }])} className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-brand-green-600 hover:underline"><Plus size={12} /> Add standard item</button>
+          </div>
+        )}
+
         <label className="block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-ink-light">Body template (optional — if set, appears as body in PDF)</span><textarea rows={3} value={draft.body_template ?? ''} onChange={(e) => set('body_template', e.target.value)} className={`${inputClass} resize-none`} placeholder="Leave blank to use admin's per-PDF notes/reply. Use {{variables}}." /></label>
         <label className="block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-ink-light">Terms template</span><textarea rows={3} value={draft.terms_template ?? ''} onChange={(e) => set('terms_template', e.target.value)} className={`${inputClass} resize-none`} placeholder="Prices valid for 14 days..." /></label>
         <label className="block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-ink-light">Footer text</span><input value={draft.footer_text} onChange={(e) => set('footer_text', e.target.value)} className={inputClass} /></label>
@@ -132,7 +158,7 @@ export default function PdfTemplatesAdminPage() {
   const load = useCallback(async () => {
     setLoading(true); setErr('')
     const data = await fetchAllPdfTemplates()
-    if (data.length === 0) setErr('No templates found — run supabase/migrations/022_receipts_and_pdf_templates.sql first. Defaults will be used until then.')
+    if (data.length === 0) setErr('No templates found — run supabase/migrations/022_receipts_and_pdf_templates.sql (then 036_quote_package_templates.sql for package types) first. Defaults will be used until then.')
     setRows(data)
     setLoading(false)
   }, [])
@@ -145,7 +171,7 @@ export default function PdfTemplatesAdminPage() {
     <div>
       <PageIntro
         title="PDF Templates"
-        description="Edit what appears in every PDF — quotation, message reply and receipt. Header, colors, title, table, totals, terms and footer are all editable and well mirrored: the preview below is exactly what the PDF will look like."
+        description="Edit what appears in every PDF — quotation, website package, ERP discovery, message reply and receipt. Header, colors, title, table, totals, terms and footer are all editable and well mirrored: the preview below is exactly what the PDF will look like."
         action={<a href="/admin/quotes" className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-semibold text-navy hover:border-navy"><Eye size={14} /> Preview in Quotes</a>}
       />
       {err && <ErrorBanner message={err} onDismiss={() => setErr('')} />}

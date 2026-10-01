@@ -4,7 +4,8 @@ import { supabase } from '@/lib/supabase'
 import { PageIntro } from '@/components/admin/AdminLayout'
 import { Badge, Drawer, EmptyState, ErrorBanner, Pagination, Skeletons, type Tone } from '@/components/admin/bits'
 import { inputClass } from '@/components/ui'
-import { fetchPdfTemplate, generateGnabPdf, interpolate, uploadPdfAndGetUrl } from '@/lib/pdf'
+import { fetchPdfTemplate, generateGnabPdf, interpolate, suggestQuotePackage, uploadPdfAndGetUrl, type QuotePackageType } from '@/lib/pdf'
+import { isITSolutionsCategory } from '@/lib/catalogue'
 import { useSiteSettings } from '@/lib/siteData'
 import { useQuerySearch } from '@/components/admin/AdminSearch'
 
@@ -74,6 +75,9 @@ export default function QuotesAdminPage() {
   const [quoteEmailSubject, setQuoteEmailSubject] = useState('')
   const [quoteEmailBody, setQuoteEmailBody] = useState('')
   const [quoteSaving, setQuoteSaving] = useState(false)
+  // Package template for IT Solutions RFQs (standard quotation otherwise)
+  const [pkgType, setPkgType] = useState<QuotePackageType>('quotation')
+  const [pkgLoading, setPkgLoading] = useState(false)
 
   useEffect(() => {
     document.title = 'Quote Requests | GNAB Admin'
@@ -186,8 +190,10 @@ export default function QuotesAdminPage() {
     setQuoteSaving(true); setError('')
     const validItems = items.map((it) => ({ description: it.description.trim(), quantity: Number(it.quantity) || 0, unit_price: Number(it.unit_price) || 0, total: (Number(it.quantity) || 0) * (Number(it.unit_price) || 0) }))
     const qNumber = `QT-${new Date().getFullYear()}-${Math.random().toString(36).slice(2, 7).toUpperCase()}`
-    // Generate PDF — uses editable Quotation template (well mirrored)
-    const tpl = await fetchPdfTemplate('quotation')
+    // Generate PDF — package template for IT RFQs (falls back to standard quotation)
+    const usePkg: QuotePackageType = selected && isITSolutionsCategory(selected.product_category) ? pkgType : 'quotation'
+    let tpl = await fetchPdfTemplate(usePkg)
+    if (!tpl && usePkg !== 'quotation') tpl = await fetchPdfTemplate('quotation')
     const vars = { quotation_number: qNumber, rfq_number: selected.rfq_number, customer_name: selected.full_name, company_name: selected.company_name ?? '', email: selected.email, date: new Date().toLocaleDateString('en-GB'), products_preview: selected.products_or_services.slice(0, 80) }
     const pdfBlob = await generateGnabPdf({
       title: interpolate(tpl?.title_template || `Quotation ${qNumber}`, vars),
@@ -464,6 +470,8 @@ export default function QuotesAdminPage() {
                   if (willOpen && selected) {
                     setQuoteEmailSubject(`Your GNAB Quotation — ${selected.rfq_number}`)
                     setQuoteEmailBody('')
+                    // Pre-select the matching package template for IT RFQs
+                    setPkgType(suggestQuotePackage(selected.product_category, selected.products_or_services))
                   }
                   setShowQuoteBuilder(willOpen)
                 }} className="inline-flex items-center gap-1.5 rounded-full bg-navy px-4 py-1.5 text-xs font-bold text-white hover:bg-navy-600"><Plus size={12}/> {showQuoteBuilder ? 'Close' : 'New Quotation'}</button>
@@ -497,6 +505,33 @@ export default function QuotesAdminPage() {
               {showQuoteBuilder && (
                 <div className="mt-6 space-y-4 rounded-2xl border border-navy-100 bg-mist/50 p-4">
                   <p className="text-xs font-bold uppercase tracking-wide text-navy">Quotation Builder — add line items</p>
+                  {selected && isITSolutionsCategory(selected.product_category) && (
+                    <div className="rounded-xl border border-gold-200 bg-gold-50 p-3">
+                      <label className="block"><span className="mb-1 block text-xs font-semibold text-ink-light">Package template — decides PDF terms, body and subject</span>
+                        <select value={pkgType} onChange={(e) => setPkgType(e.target.value as QuotePackageType)} className={inputClass}>
+                          <option value="quotation">Standard quotation</option>
+                          <option value="website_package">Standard website package</option>
+                          <option value="erp_discovery">ERP discovery (fixed fee)</option>
+                        </select>
+                      </label>
+                      <button
+                        onClick={async () => {
+                          setPkgLoading(true); setError('')
+                          const tpl = await fetchPdfTemplate(pkgType)
+                          setPkgLoading(false)
+                          if (tpl && tpl.default_items.length > 0) {
+                            setItems(tpl.default_items.map((it) => ({ description: it.description, quantity: it.quantity || 1, unit_price: it.unit_price || 0 })))
+                          } else {
+                            setError('No standard items saved on this template yet — add them in Admin → PDF Templates.')
+                          }
+                        }}
+                        disabled={pkgLoading}
+                        className="mt-2 inline-flex items-center gap-1.5 rounded-xl bg-navy px-4 py-2 text-xs font-bold text-white hover:bg-navy-600 disabled:opacity-60"
+                      >
+                        <Plus size={12} /> {pkgLoading ? 'Loading…' : 'Load standard package items'}
+                      </button>
+                    </div>
+                  )}
                   {items.map((it, idx) => (
                     <div key={idx} className="grid gap-2 rounded-xl border border-gray-100 bg-white p-3 sm:grid-cols-[1fr_80px_110px_40px]">
                       <input value={it.description} onChange={(e) => { const c=[...items]; c[idx]!.description=e.target.value; setItems(c)}} placeholder="Description" className={inputClass} />

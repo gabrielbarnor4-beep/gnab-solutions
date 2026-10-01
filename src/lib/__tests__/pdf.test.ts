@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { interpolate } from '@/lib/pdf'
+import { interpolate, suggestQuotePackage } from '@/lib/pdf'
 
 describe('pdf interpolate edge cases', () => {
   it('returns empty for null/undefined', () => {
@@ -52,5 +52,22 @@ describe('pdf number formats', () => {
     const total = subtotal - discount + tax
     const amountPaid = 500
     expect(total - amountPaid).toBe(427)
+  })
+})
+
+describe('suggestQuotePackage', () => {
+  it('routes ERP-flavoured IT RFQs to erp_discovery', () => {
+    expect(suggestQuotePackage('IT Solutions & Digital Services', 'Need ERP for 20 users')).toBe('erp_discovery')
+    expect(suggestQuotePackage('IT Solutions & Digital Services', '--- IT project details ---\nScope: ERP rollout')).toBe('erp_discovery')
+  })
+  it('routes other IT RFQs to website_package', () => {
+    expect(suggestQuotePackage('IT Solutions & Digital Services', 'Company website rebuild')).toBe('website_package')
+    expect(suggestQuotePackage('it-solutions-digital-services', '')).toBe('website_package')
+  })
+  it('keeps standard quotation for everything else', () => {
+    expect(suggestQuotePackage('Office Stationery & Consumables', 'A4 paper')).toBe('quotation')
+    expect(suggestQuotePackage('IT Equipment & Accessories', 'laptops')).toBe('quotation')
+    expect(suggestQuotePackage(null, 'erp software')).toBe('quotation')
+    expect(suggestQuotePackage(null, null)).toBe('quotation')
   })
 })

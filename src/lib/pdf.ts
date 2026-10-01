@@ -1,12 +1,18 @@
+import { canonicalCatalogueSlug } from '@/lib/catalogue'
+
 const NAVY = '#0B2E59'
 const GOLD = '#D4AF37'
 // Default brand logo — admin can override per-template via Admin → PDF Templates → header_logo_url
 // Also overridden at call sites by site_settings.logo_url when provided
 const LOGO_URL = 'https://dkbzvndtolkvuuxeaooh.supabase.co/storage/v1/object/public/media/branding/1788397307996-wb35sl.jpg'
 
+export type PdfTemplateType = 'quotation' | 'message_reply' | 'receipt' | 'website_package' | 'erp_discovery'
+
+export interface PdfTemplateItem { description: string; quantity: number; unit_price: number }
+
 export interface PdfTemplate {
   id: string
-  type: 'quotation' | 'message_reply' | 'receipt'
+  type: PdfTemplateType
   name: string
   subject_template: string
   title_template: string
@@ -23,6 +29,20 @@ export interface PdfTemplate {
   terms_template: string | null
   footer_text: string
   footer_note: string
+  /** Standard line items (package templates) the quote builder can load in one click */
+  default_items: PdfTemplateItem[]
+}
+
+export type QuotePackageType = 'quotation' | 'website_package' | 'erp_discovery'
+
+/** Which quotation template an RFQ should start from. IT Solutions RFQs
+ *  mentioning ERP get the discovery template, other IT RFQs the website
+ *  package, everything else the standard quotation. Pure + tested. */
+export function suggestQuotePackage(productCategory: string | null | undefined, requirementText: string | null | undefined): QuotePackageType {
+  const hay = `${productCategory ?? ''} ${requirementText ?? ''}`.toLowerCase()
+  const isIT = canonicalCatalogueSlug(productCategory) === 'it-solutions-digital-services' || hay.includes('it solutions')
+  if (!isIT) return 'quotation'
+  return hay.includes('erp') ? 'erp_discovery' : 'website_package'
 }
 
 export function interpolate(template: string | null | undefined, vars: Record<string, string>): string {
@@ -37,10 +57,17 @@ export async function fetchPdfTemplate(type: PdfTemplate['type']): Promise<PdfTe
     if (!error && data) {
       // normalize jsonb arrays
       const t = data as any
+      const normItems = (v: unknown): PdfTemplateItem[] => {
+        const arr = Array.isArray(v) ? v : (() => { try { return JSON.parse((v as string) || '[]') } catch { return [] } })()
+        return (Array.isArray(arr) ? arr : [])
+          .filter((it) => it && typeof it.description === 'string')
+          .map((it) => ({ description: it.description, quantity: Number(it.quantity) || 0, unit_price: Number(it.unit_price) || 0 }))
+      }
       return {
         ...t,
         table_head: Array.isArray(t.table_head) ? t.table_head : JSON.parse(t.table_head || '[]'),
         totals_template: Array.isArray(t.totals_template) ? t.totals_template : JSON.parse(t.totals_template || '[]'),
+        default_items: normItems(t.default_items),
       } as PdfTemplate
     }
   } catch { /* fallback */ }
