@@ -272,67 +272,79 @@ export default function Header() {
             </div>
           </div>
         </div>
-
-        {/* Mobile — premium overlay + spring sheet */}
-        <AnimatePresence>
-          {open && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.25 }}
-                className="fixed inset-0 top-[64px] z-40 bg-navy/20 backdrop-blur-sm xl:hidden"
-                aria-hidden
-                onClick={() => setOpen(false)}
-              />
-              <motion.nav
-                id="mobile-nav"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-                className="relative z-50 overflow-hidden border-t border-gray-100 bg-white/95 backdrop-blur-xl xl:hidden supports-[backdrop-filter]:bg-white/85"
-                aria-label="Mobile"
-              >
-                <motion.div
-                  initial="hidden"
-                  animate="show"
-                  exit="hidden"
-                  variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04, delayChildren: 0.06 } } }}
-                  className="space-y-1 px-4 py-6 sm:px-6"
-                >
-                  {NAV_LINKS.map((link) => (
-                    <motion.div key={link.path} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] } } }}>
-                      <NavLink
-                        to={link.path}
-                        end={link.path === '/'}
-                        className={({ isActive }) =>
-                          cn(
-                            'flex items-center justify-between rounded-2xl px-4 py-3.5 text-[15px] font-medium transition-all',
-                            isActive ? 'bg-navy text-white shadow-md' : 'bg-mist/60 text-ink hover:bg-navy-50 hover:text-navy'
-                          )
-                        }
-                      >
-                        {link.name}
-                      </NavLink>
-                    </motion.div>
-                  ))}
-                  <motion.div variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }} className="pt-3">
-                    <Link
-                      to="/quote"
-                      className="btn-shine flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-green-500 px-4 py-4 text-[15px] font-semibold text-white shadow-lg shadow-green-900/20"
-                    >
-                      Request a Quote <ArrowRight size={18} />
-                    </Link>
-                    <p className="mt-3 text-center text-xs text-ink-light">Mon–Fri 8am–5pm GMT · Replies in hours</p>
-                  </motion.div>
-                </motion.div>
-              </motion.nav>
-            </>
-          )}
-        </AnimatePresence>
       </div>
+
+      {/* Mobile — viewport-fixed overlay + sheet, rendered OUTSIDE the glass
+          bar on purpose: the scrolled `.glass` bar uses backdrop-filter,
+          which would trap any `fixed` descendant inside the header box
+          (invisible menu + taps swallowed = "frozen" page). As direct
+          children of the sticky header they stay viewport-anchored at any
+          scroll depth, on any phone browser. */}
+      <AnimatePresence>
+        {open && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className={cn(
+                'fixed inset-x-0 bottom-0 z-40 bg-navy/20 backdrop-blur-sm xl:hidden',
+                scrolled ? 'top-[64px]' : 'top-[76px] sm:top-[80px]'
+              )}
+              aria-hidden
+              onClick={() => setOpen(false)}
+            />
+            <motion.nav
+              id="mobile-nav"
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+              className={cn(
+                'fixed inset-x-0 bottom-0 z-50 flex flex-col border-t border-gray-100 bg-white/95 backdrop-blur-xl xl:hidden supports-[backdrop-filter]:bg-white/90',
+                scrolled ? 'top-[64px]' : 'top-[76px] sm:top-[80px]'
+              )}
+              aria-label="Mobile"
+            >
+              <motion.div
+                initial="hidden"
+                animate="show"
+                exit="hidden"
+                variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04, delayChildren: 0.06 } } }}
+                className="flex-1 space-y-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-6"
+                style={{ WebkitOverflowScrolling: 'touch' }}
+              >
+                {NAV_LINKS.map((link) => (
+                  <motion.div key={link.path} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] } } }}>
+                    <NavLink
+                      to={link.path}
+                      end={link.path === '/'}
+                      className={({ isActive }) =>
+                        cn(
+                          'flex items-center justify-between rounded-2xl px-4 py-3.5 text-[15px] font-medium transition-all',
+                          isActive ? 'bg-navy text-white shadow-md' : 'bg-mist/60 text-ink hover:bg-navy-50 hover:text-navy'
+                        )
+                      }
+                    >
+                      {link.name}
+                    </NavLink>
+                  </motion.div>
+                ))}
+                <motion.div variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }} className="pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                  <Link
+                    to="/quote"
+                    className="btn-shine flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-green-500 px-4 py-4 text-[15px] font-semibold text-white shadow-lg shadow-green-900/20"
+                  >
+                    Request a Quote <ArrowRight size={18} />
+                  </Link>
+                  <p className="mt-3 text-center text-xs text-ink-light">Mon–Fri 8am–5pm GMT · Replies in hours</p>
+                </motion.div>
+              </motion.div>
+            </motion.nav>
+          </>
+        )}
+      </AnimatePresence>
     </header>
   )
 }
