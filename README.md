@@ -78,7 +78,7 @@ src/
   components/chat      # AssistantWidget
   pages/public         # Home (9 sections) + 12 others + Blog
   pages/admin          # 22 admin pages incl. Site Pages, Uploads/Receipts/PDF Templates
-supabase/migrations    # 001→031
+supabase/migrations    # 001→033 (032 automobile catalogue, 033 footer toggles + automobile backfill)
 supabase/functions     # gemini-chat, send-email (Brevo→Resend, CORS + auth + 5MB pdf guard)
 public/                # favicon.svg, og-image.png, sitemap.xml, robots.txt
 ```
@@ -88,7 +88,7 @@ public/                # favicon.svg, og-image.png, sitemap.xml, robots.txt
 * **Home:** 9 tabs (hero/trust/about/services/industries/why/process/stats/cta) — C/R/U with soft-delete 30d.
 * **Site Pages (`/admin/pages`):** 11 tabs + ✨ Design tab — edits page hero/section/CTA chrome in `site_settings`, mirrored 1:1 with hardcoded fallback. Per-page CTA gold highlight + **feature strip (030, like Home CTA)** editable per tab. Feature cards stay in their own admins.
 * **Search anything (⌘K):** topbar palette in every admin page — filters all 22 pages instantly + live record search (quotes, receipts, messages, suppliers, products, services, industries, blog, testimonials, locations, assistant Q&A). Record hits deep-link with `?q=` — every list-page search box (incl. new Testimonials box) honours it via `useQuerySearch`.
-* **Footer:** toggles `footer_show_*` + `footer_quick_links` JSON + per-service `Show in footer` and custom `Footer label/path` (027).
+* **Footer:** toggles `footer_show_*` + per-item Quick Link Shown/Hidden + reorder (11 defaults incl. Reviews + Become a Supplier) + managed Contact items (email/phone/whatsapp/address/hours/link/text, each with toggle + order) + per-service `Show in footer` and custom `Footer label/path` (027).
 * **Storage Manager (`/admin/uploads`):** Files tab — recursive `walk('')` all 3 buckets + pagination 1000, bulk delete + DB cleanup (`contact_messages.attachment_urls` etc.), `totalBytes /1GB` bar. **Trash tab** — every soft-deleted item from all 17 admin tables with days-left to the nightly 03:22 purge; restore or permanently purge now (rows + referenced files removed from Supabase instantly).
 * **Quotes → Receipts:** RFQ `new→closed` 8 states → Generate PDF via template `fetchPdfTemplate('quotation')` → email via `send-email` edge → Issue Receipt (`RCPT-YYYY-XXXX`) when `won` → `Admin → PDF Templates` (3 tabs, live header preview, `interpolate {{vars}}`).
 
@@ -143,7 +143,7 @@ Netlify alternative: same envs → `https://gnab-solutions.netlify.app`.
 
 ## Operational Runbook
 
-* **First run:** migrations 001→031 → dashboard 5MB → `/admin/login` claim → verify `Admin → Settings` toggles, `Admin → PDF Templates` 3 active, `Admin → Services` footer custom label/path, `Admin → Site Pages` 11 tabs.
+* **First run:** migrations 001→033 → dashboard 5MB → `/admin/login` claim → verify `Admin → Settings` toggles, `Admin → PDF Templates` 3 active, `Admin → Services` footer custom label/path, `Admin → Site Pages` 11 tabs, `Admin → Footer` per-item quick-link/contact toggles.
 * **Daily:** `/admin/dashboard` counts + `/admin/quotes` pipeline + `/admin/uploads` bar.
 * **Weekly:** empty Trash (auto 30d). Archive `contact_messages`/`quote_requests` >6 months if needed.
 * **On “5000”/“attachments” DB error:** user hit 5000 char or 5-file cap — shown, no data loss.
@@ -152,7 +152,7 @@ Netlify alternative: same envs → `https://gnab-solutions.netlify.app`.
 
 - [ ] `npm ci` (Node 22+)
 - [ ] `cp .env.example .env` fill 3 `VITE_*`
-- [ ] Run `001`→`030` in SQL Editor
+- [ ] Run `001`→`033` in SQL Editor
 - [ ] Storage → `attachments` Edit → 5MB
 - [ ] `supabase secrets set GEMINI_API_KEY=...`
 - [ ] `supabase functions deploy gemini-chat --no-verify-jwt && supabase functions deploy send-email`
