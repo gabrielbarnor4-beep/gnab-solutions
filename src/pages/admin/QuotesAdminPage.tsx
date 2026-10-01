@@ -204,6 +204,7 @@ export default function QuotesAdminPage() {
       totals: [{ label: (tpl?.totals_template?.[0] ?? 'Subtotal'), value: `GHS ${subtotal.toFixed(2)}` }, { label: (tpl?.totals_template?.[1] ?? 'Total Amount'), value: `GHS ${totalAmount.toFixed(2)}` }],
       terms: interpolate(tpl?.terms_template || quoteMeta.terms, vars),
       bodyHtml: tpl?.body_template ? interpolate(tpl.body_template, vars) : (quoteMeta.notes || undefined),
+      payment: { options: tpl?.payment_options_template || undefined, accounts: tpl?.account_details_template || undefined },
       template: tpl,
       logoUrl: settings.logo_url || undefined,
     })

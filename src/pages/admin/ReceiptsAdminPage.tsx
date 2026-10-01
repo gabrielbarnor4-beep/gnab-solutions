@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { PageIntro } from '@/components/admin/AdminLayout'
 import { Badge, Drawer, EmptyState, ErrorBanner, Skeletons } from '@/components/admin/bits'
 import { inputClass } from '@/components/ui'
-import { fetchPdfTemplate, generateGnabPdf, interpolate, uploadPdfAndGetUrl } from '@/lib/pdf'
+import { fetchPdfTemplate, formatPaymentLine, generateGnabPdf, interpolate, uploadPdfAndGetUrl } from '@/lib/pdf'
 import { useSiteSettings } from '@/lib/siteData'
 import { useQuerySearch } from '@/components/admin/AdminSearch'
 
@@ -27,6 +27,7 @@ interface ReceiptRow {
   amount_paid: number
   balance_due: number
   payment_method: string | null
+  payment_reference: string | null
   payment_date: string | null
   status: 'draft' | 'issued' | 'paid' | 'cancelled'
   pdf_url: string | null
@@ -56,6 +57,16 @@ interface Quotation {
 }
 
 const EMPTY_ITEMS = [{ description: '', quantity: 1, unit_price: 0 }]
+
+const PAYMENT_METHODS = ['Cash', 'Cheque', 'Mobile Money', 'Bank Transfer', 'Other'] as const
+
+/** Cheque → cheque number, MoMo → transaction ID, transfer → bank ref. */
+function referencePlaceholder(method: string | null | undefined): string {
+  if (method === 'Cheque') return 'Cheque number'
+  if (method === 'Mobile Money') return 'MoMo transaction ID'
+  if (method === 'Bank Transfer') return 'Bank reference (if any)'
+  return 'Cheque no. / MoMo txn ID / bank ref (if any)'
+}
 
 export default function ReceiptsAdminPage() {
   const settings = useSiteSettings()
@@ -210,6 +221,7 @@ export default function ReceiptsAdminPage() {
     const tableHead = tpl?.table_head?.length ? tpl.table_head : ['Description', 'Qty', 'Unit Price (GHS)', 'Total (GHS)']
     const totalsLabels = tpl?.totals_template?.length ? tpl.totals_template : ['Subtotal', 'Discount', 'Tax', 'Total Amount', 'Amount Paid', 'Balance Due']
 
+    const paidVia = formatPaymentLine(editing.payment_method, editing.payment_reference)
     const pdfBlob = await generateGnabPdf({
       title,
       subtitle,
@@ -218,7 +230,7 @@ export default function ReceiptsAdminPage() {
         'Receipt Number': receiptNumber,
         'Date': vars.date,
         'RFQ': vars.rfq_number || '—',
-        'Payment Method': editing.payment_method || '—',
+        'Paid Via': paidVia,
         'Payment Date': editing.payment_date || vars.date,
       },
       table: { head: tableHead, rows: validItems.map((it) => [it.description, String(it.quantity), it.unit_price.toFixed(2), it.total.toFixed(2)]) },
@@ -254,13 +266,25 @@ export default function ReceiptsAdminPage() {
       amount_paid: Number(editing.amount_paid) || 0,
       balance_due: balanceDue,
       payment_method: editing.payment_method || null,
+      payment_reference: editing.payment_reference?.trim() ? editing.payment_reference.trim() : null,
       payment_date: editing.payment_date || null,
       status: editing.status || 'issued',
       pdf_url: pdfUrl,
       notes: editing.notes || null,
       terms: editing.terms || null,
     }
-    const { error: insErr } = editing.id ? await supabase.from('receipts').update(payload).eq('id', editing.id) : await supabase.from('receipts').insert(payload)
+    let insErr: { message: string; code?: string } | null = null
+    {
+      const { error } = editing.id ? await supabase.from('receipts').update(payload).eq('id', editing.id) : await supabase.from('receipts').insert(payload)
+      insErr = error as typeof insErr
+      // Pre-037 databases lack payment_reference — retry without it so saving still works
+      if (insErr?.code === '42703') {
+        const { payment_reference: _dropped, ...legacyPayload } = payload
+        const retry = editing.id ? await supabase.from('receipts').update(legacyPayload).eq('id', editing.id) : await supabase.from('receipts').insert(legacyPayload)
+        insErr = retry.error as typeof insErr
+        if (!insErr) setError('Receipt saved, but the payment reference was not stored — run migration 037_payment_options_and_package_reseeds.sql first.')
+      }
+    }
     if (insErr) { setError(`Could not save receipt: ${insErr.message}`); setSaving(false); return }
 
     if (send) {
@@ -268,7 +292,8 @@ export default function ReceiptsAdminPage() {
       const subjectTpl = tpl?.subject_template || 'Your GNAB Receipt {{receipt_number}} — {{rfq_number}}'
       const subject = emailSubject.trim() || interpolate(subjectTpl, vars)
       const customBody = emailBody.trim()
-      const bodyHtml = customBody ? `<div style="white-space:pre-wrap">${customBody.replace(/\n/g, '<br>')}</div>` : `<p>Dear ${editing.customer_name},</p><p>Thank you for your payment. Please find your receipt <strong>${receiptNumber}</strong> attached as a premium PDF and linked below.</p>`
+      const paidViaLine = paidVia !== '—' ? `<p>Paid via <strong>${paidVia}</strong>.</p>` : ''
+      const bodyHtml = customBody ? `<div style="white-space:pre-wrap">${customBody.replace(/\n/g, '<br>')}</div>` : `<p>Dear ${editing.customer_name},</p><p>Thank you for your payment. Please find your receipt <strong>${receiptNumber}</strong> attached as a premium PDF and linked below.</p>${paidViaLine}`
       const emailHtml = `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:${tpl?.primary_color || '#0B2E59'};color:white;padding:24px;border-radius:16px 16px 0 0"><h2 style="margin:0;color:white">${tpl?.header_company_name || 'GNAB Business Solutions'}</h2><p style="margin:4px 0 0;color:${tpl?.accent_color || '#D4AF37'};font-size:12px;letter-spacing:1px">${tpl?.header_tagline || 'One Partner. Endless Solutions.'}</p></div><div style="padding:24px;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 16px 16px"><p>Dear ${editing.customer_name},</p>${bodyHtml}${pdfUrl ? `<p style="margin-top:16px"><a href="${pdfUrl}" style="display:inline-block;background:${tpl?.primary_color || '#0B2E59'};color:white;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:600">Download Receipt PDF</a></p>` : ''}<p style="color:#64748B;font-size:12px;margin-top:24px">${tpl?.header_contact || 'gnabsolutions@gmail.com • +233 55 427 3445 • Accra, Ghana'}</p></div></div>`
       try {
         const { data, error: fnErr } = await supabase.functions.invoke('send-email', { body: { to: editing.email, subject, html: emailHtml, pdfUrl } })
@@ -338,7 +363,7 @@ export default function ReceiptsAdminPage() {
                 <tr key={r.id} className="hover:bg-mist/60">
                   <td className="whitespace-nowrap px-5 py-3 font-mono text-xs font-bold text-brand-green-600">{r.receipt_number}</td>
                   <td className="px-5 py-3"><p className="font-semibold text-navy">{r.customer_name}</p><p className="text-xs text-ink-light">{r.company_name || r.email}</p></td>
-                  <td className="px-5 py-3 font-semibold text-navy">GHS {Number(r.total_amount).toFixed(2)}</td>
+                  <td className="px-5 py-3"><p className="font-semibold text-navy">GHS {Number(r.total_amount).toFixed(2)}</p><p className="text-xs text-ink-light">{formatPaymentLine(r.payment_method, (r as unknown as { payment_reference?: string | null }).payment_reference)}</p></td>
                   <td className="px-5 py-3"><Badge tone={r.status === 'paid' ? 'green' : r.status === 'issued' ? 'navy' : r.status === 'cancelled' ? 'red' : 'gray'}>{r.status}</Badge></td>
                   <td className="px-5 py-3 text-xs text-gray-400">{new Date(r.created_at).toLocaleDateString('en-GB')}</td>
                   <td className="px-5 py-3 text-right">
@@ -420,7 +445,16 @@ export default function ReceiptsAdminPage() {
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2">
-              <label className="block"><span className="mb-1 block text-xs font-semibold text-ink-light">Payment Method</span><input value={editing.payment_method ?? ''} onChange={(e) => setEditing({ ...editing, payment_method: e.target.value })} placeholder="Bank Transfer / Cash / MoMo" className={inputClass} /></label>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-ink-light">Payment Method</span>
+                <select value={editing.payment_method ?? ''} onChange={(e) => setEditing({ ...editing, payment_method: e.target.value })} className={`${inputClass} appearance-none`}>
+                  <option value="" disabled>Select method…</option>
+                  {PAYMENT_METHODS.map((m) => <option key={m} value={m}>{m}</option>)}
+                  {editing.payment_method && !PAYMENT_METHODS.includes(editing.payment_method as (typeof PAYMENT_METHODS)[number]) && <option value={editing.payment_method}>{editing.payment_method}</option>}
+                </select>
+              </label>
+              <label className="block"><span className="mb-1 block text-xs font-semibold text-ink-light">Payment Reference</span><input value={editing.payment_reference ?? ''} onChange={(e) => setEditing({ ...editing, payment_reference: e.target.value })} placeholder={referencePlaceholder(editing.payment_method)} className={inputClass} /></label>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
               <label className="block"><span className="mb-1 block text-xs font-semibold text-ink-light">Payment Date</span><input type="date" value={editing.payment_date ?? ''} onChange={(e) => setEditing({ ...editing, payment_date: e.target.value })} className={inputClass} /></label>
             </div>
 

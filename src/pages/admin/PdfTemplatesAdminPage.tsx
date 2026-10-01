@@ -41,15 +41,26 @@ function TemplateForm({ tpl, onSaved }: { tpl: PdfTemplate; onSaved: () => void 
       table_head: draft.table_head,
       totals_template: draft.totals_template,
       terms_template: draft.terms_template,
-      default_items: draft.default_items ?? [],
       footer_text: draft.footer_text,
       footer_note: draft.footer_note,
       is_active: true,
       // default_items only exists after 036 — never send it for the original
       // three types so saving still works on databases where 036 hasn't run
       ...(isPackageType(draft.type) ? { default_items: draft.default_items ?? [] } : {}),
+      // payment columns only exist after 037 — same guard
+      payment_options_template: draft.payment_options_template ?? '',
+      account_details_template: draft.account_details_template ?? '',
     }
-    const { error } = await supabase.from('pdf_templates').update(payload).eq('id', draft.id)
+    let error = (await supabase.from('pdf_templates').update(payload).eq('id', draft.id)).error
+    if (error?.code === '42703') {
+      const { payment_options_template: _p, account_details_template: _a, default_items: _d, ...legacyPayload } = payload
+      error = (await supabase.from('pdf_templates').update(legacyPayload).eq('id', draft.id)).error
+      if (!error) {
+        setSaving(false); setOk(true); setTimeout(() => setOk(false), 2500); onSaved()
+        setErr('Saved basic fields. Run migrations 036 + 037 to enable package items and payment options.')
+        return
+      }
+    }
     setSaving(false)
     if (error) setErr(error.message)
     else { setOk(true); setTimeout(() => setOk(false), 2500); onSaved() }
@@ -138,6 +149,15 @@ function TemplateForm({ tpl, onSaved }: { tpl: PdfTemplate; onSaved: () => void 
         )}
 
         <label className="block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-ink-light">Body template (optional — if set, appears as body in PDF)</span><textarea rows={3} value={draft.body_template ?? ''} onChange={(e) => set('body_template', e.target.value)} className={`${inputClass} resize-none`} placeholder="Leave blank to use admin's per-PDF notes/reply. Use {{variables}}." /></label>
+
+        {draft.type !== 'message_reply' && (
+          <div className="rounded-2xl border border-navy-100 bg-navy-50/60 p-4">
+            <p className="text-sm font-bold text-navy">Payment — modes + account details (shows as “How to Pay” in the PDF)</p>
+            <p className="mt-1 text-xs text-ink-light">Leave either blank to hide it. Account details are the real destination the customer pays to — fill them once here and every PDF carries them.</p>
+            <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Accepted modes *</span><input value={draft.payment_options_template ?? ''} onChange={(e) => set('payment_options_template', e.target.value)} className={inputClass} placeholder="Cash • Cheque • Mobile Money • Bank Transfer" /></label>
+            <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Account details (bank / MoMo)</span><textarea rows={3} value={draft.account_details_template ?? ''} onChange={(e) => set('account_details_template', e.target.value)} className={`${inputClass} resize-none`} placeholder={'Bank: GCB Bank • Account: 1234567890 • Name: GNAB Business Solutions\nMoMo: 055 427 3445 (GNAB Business Solutions)'} /></label>
+          </div>
+        )}
         <label className="block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-ink-light">Terms template</span><textarea rows={3} value={draft.terms_template ?? ''} onChange={(e) => set('terms_template', e.target.value)} className={`${inputClass} resize-none`} placeholder="Prices valid for 14 days..." /></label>
         <label className="block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-ink-light">Footer text</span><input value={draft.footer_text} onChange={(e) => set('footer_text', e.target.value)} className={inputClass} /></label>
         <label className="block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-ink-light">Footer note (small)</span><input value={draft.footer_note} onChange={(e) => set('footer_note', e.target.value)} className={inputClass} /></label>

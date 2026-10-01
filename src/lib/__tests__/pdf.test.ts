@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { interpolate, suggestQuotePackage } from '@/lib/pdf'
+import { formatPaymentLine, interpolate, suggestQuotePackage } from '@/lib/pdf'
 
 describe('pdf interpolate edge cases', () => {
   it('returns empty for null/undefined', () => {
@@ -69,5 +69,22 @@ describe('suggestQuotePackage', () => {
     expect(suggestQuotePackage('IT Equipment & Accessories', 'laptops')).toBe('quotation')
     expect(suggestQuotePackage(null, 'erp software')).toBe('quotation')
     expect(suggestQuotePackage(null, null)).toBe('quotation')
+  })
+  it('never routes IT Equipment RFQs to a package — even ERP-flavoured ones', () => {
+    expect(suggestQuotePackage('IT Equipment & Accessories', 'ERP workstation laptops')).toBe('quotation')
+    expect(suggestQuotePackage('it-equipment', 'erp')).toBe('quotation')
+  })
+})
+
+describe('formatPaymentLine', () => {
+  it('combines method and reference', () => {
+    expect(formatPaymentLine('Mobile Money', 'ABC123')).toBe('Mobile Money · Ref: ABC123')
+    expect(formatPaymentLine('Cheque', '001234')).toBe('Cheque · Ref: 001234')
+  })
+  it('handles method-only, empty and null', () => {
+    expect(formatPaymentLine('Cash', '')).toBe('Cash')
+    expect(formatPaymentLine('', '')).toBe('—')
+    expect(formatPaymentLine(null, null)).toBe('—')
+    expect(formatPaymentLine(null, 'TXN9')).toBe('TXN9')
   })
 })

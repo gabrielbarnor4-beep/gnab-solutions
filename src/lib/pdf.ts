@@ -31,10 +31,22 @@ export interface PdfTemplate {
   footer_note: string
   /** Standard line items (package templates) the quote builder can load in one click */
   default_items: PdfTemplateItem[]
+  /** Accepted payment modes shown as "How to Pay" (blank = hidden) */
+  payment_options_template: string
+  /** Bank / MoMo account details the customer pays to (blank = hidden) */
+  account_details_template: string
 }
 
 export type QuotePackageType = 'quotation' | 'website_package' | 'erp_discovery'
 
+/** "Mobile Money · Ref: ABC123" / "Cash" / "—" — one line for receipts. */
+export function formatPaymentLine(method: string | null | undefined, reference: string | null | undefined): string {
+  const m = (method ?? '').trim()
+  const r = (reference ?? '').trim()
+  if (!m && !r) return '—'
+  if (m && r) return `${m} · Ref: ${r}`
+  return m || r
+}
 /** Which quotation template an RFQ should start from. IT Solutions RFQs
  *  mentioning ERP get the discovery template, other IT RFQs the website
  *  package, everything else the standard quotation. Pure + tested. */
@@ -68,6 +80,8 @@ export async function fetchPdfTemplate(type: PdfTemplate['type']): Promise<PdfTe
         table_head: Array.isArray(t.table_head) ? t.table_head : JSON.parse(t.table_head || '[]'),
         totals_template: Array.isArray(t.totals_template) ? t.totals_template : JSON.parse(t.totals_template || '[]'),
         default_items: normItems(t.default_items),
+        payment_options_template: typeof t.payment_options_template === 'string' ? t.payment_options_template : '',
+        account_details_template: typeof t.account_details_template === 'string' ? t.account_details_template : '',
       } as PdfTemplate
     }
   } catch { /* fallback */ }
@@ -130,6 +144,8 @@ interface PdfOpts {
   totals?: { label: string; value: string }[]
   terms?: string
   footerNote?: string
+  /** "How to Pay" block — rendered only when options or accounts are set */
+  payment?: { options?: string; accounts?: string }
   /** Live site logo (site_settings.logo_url) — tried between the template logo and the built-in default */
   logoUrl?: string
 }
@@ -300,6 +316,38 @@ export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate |
       y += 14
     }
     y += 6
+  }
+
+  // How to Pay — payment options + account details from the template
+  const payOptions = opts.payment?.options?.trim() ?? ''
+  const payAccounts = opts.payment?.accounts?.trim() ?? ''
+  if (payOptions || payAccounts) {
+    if (y > H - 140) { doc.addPage(); y = 40 }
+    doc.setFont('helvetica', 'bold')
+    doc.setFontSize(9)
+    doc.setTextColor(primary)
+    doc.text('How to Pay', margin, y)
+    y += 12
+    doc.setFont('helvetica', 'normal')
+    doc.setFontSize(9)
+    doc.setTextColor('#334155')
+    if (payOptions) {
+      const lines = doc.splitTextToSize(`We accept: ${payOptions}`, W - margin * 2)
+      doc.text(lines, margin, y)
+      y += lines.length * 11 + 4
+    }
+    if (payAccounts) {
+      const lines = doc.splitTextToSize(payAccounts, W - margin * 2 - 24)
+      const boxH = lines.length * 11 + 20
+      if (y + boxH > H - 80) { doc.addPage(); y = 40 }
+      doc.setFillColor('#F8FAFC')
+      doc.setDrawColor('#E2E8F0')
+      doc.roundedRect(margin, y, W - margin * 2, boxH, 6, 6, 'FD')
+      doc.text(lines, margin + 12, y + 15)
+      y += boxH + 12
+    } else {
+      y += 4
+    }
   }
 
   // Terms

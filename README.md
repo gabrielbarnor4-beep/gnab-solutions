@@ -78,7 +78,7 @@ src/
   components/chat      # AssistantWidget
   pages/public         # Home (9 sections) + 12 others + Blog
   pages/admin          # 22 admin pages incl. Site Pages, Uploads/Receipts/PDF Templates
-supabase/migrations    # 001→036 (+ 035 copy split, 036 website/ERP quote templates)
+supabase/migrations    # 001→037 (+ 036 website/ERP quote templates, 037 payments + reseeds)
 supabase/functions     # gemini-chat, send-email (Brevo→Resend, CORS + auth + 5MB pdf guard)
 public/                # favicon.svg, og-image.png, sitemap.xml, robots.txt
 ```
@@ -143,7 +143,7 @@ Netlify alternative: same envs → `https://gnab-solutions.netlify.app`.
 
 ## Operational Runbook
 
-* **First run:** migrations 001→036 → dashboard 5MB → `/admin/login` claim → verify `Admin → Settings` toggles, `Admin → PDF Templates` 3 active, `Admin → Services` footer custom label/path, `Admin → Site Pages` 11 tabs, `Admin → Footer` per-item quick-link/contact toggles.
+* **First run:** migrations 001→037 → dashboard 5MB → `/admin/login` claim → verify `Admin → Settings` toggles, `Admin → PDF Templates` 3 active, `Admin → Services` footer custom label/path, `Admin → Site Pages` 11 tabs, `Admin → Footer` per-item quick-link/contact toggles.
 * **Daily:** `/admin/dashboard` counts + `/admin/quotes` pipeline + `/admin/uploads` bar.
 * **Weekly:** empty Trash (auto 30d). Archive `contact_messages`/`quote_requests` >6 months if needed.
 * **On “5000”/“attachments” DB error:** user hit 5000 char or 5-file cap — shown, no data loss.
