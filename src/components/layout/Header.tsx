@@ -274,75 +274,95 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile — viewport-fixed overlay + sheet, rendered OUTSIDE the glass
-          bar on purpose: the scrolled `.glass` bar uses backdrop-filter,
-          which would trap any `fixed` descendant inside the header box
-          (invisible menu + taps swallowed = "frozen" page). As direct
-          children of the sticky header they stay viewport-anchored at any
-          scroll depth, on any phone browser. */}
+      {/* Mobile — full-screen sheet with its OWN top bar (logo + close).
+          Rendered OUTSIDE the glass bar: the scrolled `.glass` bar uses
+          backdrop-filter, which traps `fixed` descendants inside the header
+          box. And phone browsers can unstick/reset the sticky page header
+          while body scroll is locked — so the sheet carries its own nav bar
+          (same look as the hero state) and always shows the close option,
+          even opened from the footer. */}
       <AnimatePresence>
         {open && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.25 }}
-              className={cn(
-                'fixed inset-x-0 bottom-0 z-40 bg-navy/20 backdrop-blur-sm xl:hidden',
-                scrolled ? 'top-[64px]' : 'top-[76px] sm:top-[80px]'
-              )}
-              aria-hidden
-              onClick={() => setOpen(false)}
-            />
-            <motion.nav
-              id="mobile-nav"
-              initial={{ opacity: 0, y: -12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className={cn(
-                'fixed inset-x-0 bottom-0 z-50 flex flex-col border-t border-gray-100 bg-white/95 backdrop-blur-xl xl:hidden supports-[backdrop-filter]:bg-white/90',
-                scrolled ? 'top-[64px]' : 'top-[76px] sm:top-[80px]'
-              )}
-              aria-label="Mobile"
-            >
-              <motion.div
-                initial="hidden"
-                animate="show"
-                exit="hidden"
-                variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04, delayChildren: 0.06 } } }}
-                className="flex-1 space-y-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-6"
-                style={{ WebkitOverflowScrolling: 'touch' }}
+          <motion.nav
+            id="mobile-nav"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-[70] flex flex-col bg-white xl:hidden"
+          >
+            {/* Sheet top bar — mirrors the page nav bar so it looks the same
+                at any scroll depth */}
+            <div className="flex h-[64px] flex-shrink-0 items-center justify-between border-b border-gray-100 bg-white px-2 sm:px-4">
+              <Link
+                to="/"
+                onClick={() => setOpen(false)}
+                className="flex min-w-0 items-center gap-2 rounded-xl focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold-300/50 sm:gap-3"
+                aria-label={`${s.company_name} home`}
               >
-                {NAV_LINKS.map((link) => (
-                  <motion.div key={link.path} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] } } }}>
-                    <NavLink
-                      to={link.path}
-                      end={link.path === '/'}
-                      className={({ isActive }) =>
-                        cn(
-                          'flex items-center justify-between rounded-2xl px-4 py-3.5 text-[15px] font-medium transition-all',
-                          isActive ? 'bg-navy text-white shadow-md' : 'bg-mist/60 text-ink hover:bg-navy-50 hover:text-navy'
-                        )
-                      }
-                    >
-                      {link.name}
-                    </NavLink>
-                  </motion.div>
-                ))}
-                <motion.div variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }} className="pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-                  <Link
-                    to="/quote"
-                    className="btn-shine flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-green-500 px-4 py-4 text-[15px] font-semibold text-white shadow-lg shadow-green-900/20"
+                <img
+                  src={s.logo_url}
+                  alt={s.company_name}
+                  width={48}
+                  height={48}
+                  decoding="async"
+                  className="h-9 w-auto flex-shrink-0 object-contain"
+                />
+                <span className="flex min-w-0 flex-col leading-[0.95]">
+                  <span className="truncate font-display text-[14px] font-bold tracking-tight text-navy sm:text-[15px]">
+                    GNAB <span className="font-semibold text-brand-green-500">Business Solutions</span>
+                  </span>
+                  <span className="flex w-full justify-between text-[7px] font-medium uppercase tracking-[0.14em] text-gold-600 sm:text-[7.5px]" aria-hidden>
+                    <span>One</span><span>Partner.</span><span>Endless</span><span>Solutions.</span>
+                  </span>
+                </span>
+              </Link>
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close navigation menu"
+                className="inline-flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-mist text-navy transition-all hover:bg-white hover:shadow-soft focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold-300/50"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <motion.div
+              initial="hidden"
+              animate="show"
+              exit="hidden"
+              variants={{ hidden: {}, show: { transition: { staggerChildren: 0.04, delayChildren: 0.06 } } }}
+              className="flex-1 space-y-1 overflow-y-auto overscroll-contain px-4 py-6 sm:px-6"
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
+              {NAV_LINKS.map((link) => (
+                <motion.div key={link.path} variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0, transition: { duration: 0.32, ease: [0.22, 1, 0.36, 1] } } }}>
+                  <NavLink
+                    to={link.path}
+                    end={link.path === '/'}
+                    className={({ isActive }) =>
+                      cn(
+                        'flex items-center justify-between rounded-2xl px-4 py-3.5 text-[15px] font-medium transition-all',
+                        isActive ? 'bg-navy text-white shadow-md' : 'bg-mist/60 text-ink hover:bg-navy-50 hover:text-navy'
+                      )
+                    }
                   >
-                    Request a Quote <ArrowRight size={18} />
-                  </Link>
-                  <p className="mt-3 text-center text-xs text-ink-light">Mon–Fri 8am–5pm GMT · Replies in hours</p>
+                    {link.name}
+                  </NavLink>
                 </motion.div>
+              ))}
+              <motion.div variants={{ hidden: { opacity: 0, y: 8 }, show: { opacity: 1, y: 0 } }} className="pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                <Link
+                  to="/quote"
+                  className="btn-shine flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-green-500 px-4 py-4 text-[15px] font-semibold text-white shadow-lg shadow-green-900/20"
+                >
+                  Request a Quote <ArrowRight size={18} />
+                </Link>
+                <p className="mt-3 text-center text-xs text-ink-light">Mon–Fri 8am–5pm GMT · Replies in hours</p>
               </motion.div>
-            </motion.nav>
-          </>
+            </motion.div>
+          </motion.nav>
         )}
       </AnimatePresence>
     </header>
