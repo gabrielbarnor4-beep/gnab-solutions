@@ -46,6 +46,7 @@ describe('assistant localBrain intents', () => {
     const r = localBrain('I need a website for my business')
     expect(r.text).toContain('/quote?category=it-solutions-digital-services')
     expect(r.text).toMatch(/scoping/i)
+    expect(r.text).toMatch(/Hardware.*remains under/i)
   })
   it('answers ERP questions via IT Solutions intent', () => {
     const r = localBrain('Do you do ERP systems?')

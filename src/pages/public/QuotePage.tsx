@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { CheckCircle2, Send, ShieldCheck, Timer, Wallet } from 'lucide-react'
 import { ALLOWED_ATTACHMENT_EXTS, canSubmit, CONTACT, FORMSPREE_ENDPOINT, IMAGES, INDUSTRIES_LIST, isAllowedAttachment, isHoneypotFilled, PRODUCT_CATEGORIES, recordSubmit, formStr} from '@/lib/utils'
-import { catalogueTitleForSlug } from '@/lib/catalogue'
+import { catalogueTitleForSlug, formatITProjectDetails, isITSolutionsCategory } from '@/lib/catalogue'
 import { setPageMeta, useSiteSettings } from '@/lib/siteData'
 import { supabase } from '@/lib/supabase'
 
@@ -24,6 +24,8 @@ export default function QuotePage() {
   const [selectedCategory, setSelectedCategory] = useState(prefillCategory)
   // Keep in sync when navigating between product → quote links without remount.
   useEffect(() => { if (prefillCategory) setSelectedCategory(prefillCategory) }, [prefillCategory])
+  // IT Solutions quotes carry project scope instead of looking like goods orders.
+  const isITService = isITSolutionsCategory(selectedCategory)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -35,7 +37,13 @@ export default function QuotePage() {
     const fd = new FormData(form)
     if (isHoneypotFilled(fd)) return
     if (!canSubmit('quote', 5)) { setError('Too many requests — please wait a minute.'); return }
-    if (formStr(fd, 'products_or_services').length > 5000 || formStr(fd, 'message').length > 5000) { setError('Message too long (max 5000).'); return }
+    // IT Solutions RFQs must carry a scope so they read as service enquiries, not goods orders
+    const itBlock = isITService
+      ? formatITProjectDetails({ scope: formStr(fd, 'it_scope'), current: formStr(fd, 'it_current'), users: formStr(fd, 'it_users'), timeline: formStr(fd, 'it_timeline') })
+      : ''
+    if (isITService && !itBlock) { setError('Please describe your project scope so we can prepare an accurate proposal.'); return }
+    const requirementText = formStr(fd, 'products_or_services') + (itBlock ? `\n\n${itBlock}` : '')
+    if (requirementText.length > 5000 || formStr(fd, 'message').length > 5000) { setError('Message too long (max 5000).'); return }
     if (files.length > 5) { setError('Too many files (max 5).'); return }
     for (const f of files) {
       if (!isAllowedAttachment(f)) { setError(`File type not allowed: ${f.name}. Allowed: ${[...ALLOWED_ATTACHMENT_EXTS].join(', ')}`); return }
@@ -67,7 +75,7 @@ export default function QuotePage() {
       whatsapp: formStr(fd, 'whatsapp') || null,
       industry: formStr(fd, 'industry') || null,
       product_category: selectedCategory || null,
-      products_or_services: formStr(fd, 'products_or_services'),
+      products_or_services: requirementText,
       quantity: formStr(fd, 'quantity') || null,
       delivery_location: formStr(fd, 'delivery_location') || null,
       message: formStr(fd, 'message') || null,
@@ -228,11 +236,52 @@ export default function QuotePage() {
                             rows={4}
                             required
                             defaultValue={prefillProduct}
-                            placeholder="Describe exactly what you need — item types, specifications, brands..."
+                            placeholder={isITService ? 'Briefly list what you need — e.g., company website rebuild + maintenance...' : 'Describe exactly what you need — item types, specifications, brands...'}
                             className={`${inputClass} resize-none`}
                           />
                         </Field>
                       </div>
+                      {isITService && (
+                        <div className="rounded-2xl border border-navy-100 bg-navy-50/60 p-5 md:col-span-2">
+                          <p className="font-display text-sm font-bold text-navy">About your project</p>
+                          <p className="mt-1 text-xs text-ink-light">Digital work is scoped, not shipped — these details let us prepare an accurate proposal.</p>
+                          <div className="mt-4">
+                            <Field label="Project Scope" required>
+                              <textarea
+                                name="it_scope"
+                                rows={3}
+                                required
+                                placeholder="What should be built or set up? Key pages, features, systems involved..."
+                                className={`${inputClass} resize-none`}
+                              />
+                            </Field>
+                          </div>
+                          <div className="mt-6 grid gap-6 md:grid-cols-2">
+                            <Field label="Current Website / System">
+                              <input type="text" name="it_current" placeholder="e.g., none yet, www.example.com, Tally..." className={inputClass} />
+                            </Field>
+                            <Field label="Expected Users / Traffic">
+                              <select name="it_users" defaultValue="" className={`${inputClass} appearance-none`}>
+                                <option value="" disabled>Select a range</option>
+                                <option>Up to 100 monthly users</option>
+                                <option>100 – 1,000 monthly users</option>
+                                <option>1,000 – 10,000 monthly users</option>
+                                <option>10,000+ monthly users</option>
+                                <option>Not sure yet</option>
+                              </select>
+                            </Field>
+                            <Field label="Desired Timeline">
+                              <select name="it_timeline" defaultValue="" className={`${inputClass} appearance-none`}>
+                                <option value="" disabled>Select a timeline</option>
+                                <option>As soon as possible</option>
+                                <option>Within 1 month</option>
+                                <option>1 – 3 months</option>
+                                <option>Flexible / still exploring</option>
+                              </select>
+                            </Field>
+                          </div>
+                        </div>
+                      )}
                       <Field label="Quantity">
                         <input type="text" name="quantity" placeholder="e.g., 50 units" className={inputClass} />
                       </Field>

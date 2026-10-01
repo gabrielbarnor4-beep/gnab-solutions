@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { formStr, isHoneypotFilled, isAllowedAttachment, canSubmit, recordSubmit } from '@/lib/utils'
+import { formatITProjectDetails, isITSolutionsCategory } from '@/lib/catalogue'
 
 describe('formStr safe getter', () => {
   it('returns string values', () => {
@@ -65,5 +66,29 @@ describe('quote validation guards (mirror DB 020 + client)', () => {
     expect('x'.repeat(20).length >= 20).toBe(true)
     expect('x'.repeat(2000).length <= 2000).toBe(true)
     expect('x'.repeat(2001).length <= 2000).toBe(false)
+  })
+})
+
+describe('IT Solutions quote fields', () => {
+  it('detects the IT category from any slug/title variant', () => {
+    expect(isITSolutionsCategory('IT Solutions & Digital Services')).toBe(true)
+    expect(isITSolutionsCategory('it-solutions-digital-services')).toBe(true)
+    expect(isITSolutionsCategory('IT Solutions')).toBe(true)
+    expect(isITSolutionsCategory('Office Stationery & Consumables')).toBe(false)
+    expect(isITSolutionsCategory('IT Equipment & Accessories')).toBe(false)
+    expect(isITSolutionsCategory('')).toBe(false)
+    expect(isITSolutionsCategory(null)).toBe(false)
+  })
+  it('formats the labeled IT details block', () => {
+    const block = formatITProjectDetails({ scope: 'Rebuild + care plan', current: 'www.example.com', users: '100 – 1,000 monthly users', timeline: 'Within 1 month' })
+    expect(block).toContain('Scope: Rebuild + care plan')
+    expect(block).toContain('Current website/system: www.example.com')
+    expect(block).toContain('Expected users: 100 – 1,000 monthly users')
+    expect(block).toContain('Timeline: Within 1 month')
+  })
+  it('uses — placeholders and rejects empty scope', () => {
+    const block = formatITProjectDetails({ scope: 'New site', current: '', users: '', timeline: '' })
+    expect(block).toContain('Current website/system: —')
+    expect(formatITProjectDetails({ scope: '   ', current: '', users: '', timeline: '' })).toBe('')
   })
 })

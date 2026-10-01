@@ -165,7 +165,7 @@ const serviceMeta: Record<
     icon: Code2,
     tag: 'Digital',
     overview:
-      'Your online presence and back-office systems deserve the same single-partner treatment as everything else you procure. We design, build and maintain business websites in-house — and source ERP, CRM and other business systems through vetted specialist partners. Every engagement starts with a scoping call, follows with a written proposal, and ends with training and a care or support plan, all with transparent pricing.',
+      'Your online presence and back-office systems deserve the same single-partner treatment as everything else you procure. Corporate websites designed, built and maintained in-house. ERP and business systems specified and sourced with specialist partners. Hardware remains under IT Equipment. Every engagement starts with a scoping call, follows with a written proposal, and ends with training and a care or support plan, all with transparent pricing.',
     bullets: [
       'Business websites: design, development, maintenance',
       'E-commerce stores with MoMo and card payments',

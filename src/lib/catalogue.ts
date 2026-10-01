@@ -185,13 +185,13 @@ export const CATALOGUE: CatalogueCategory[] = [
     title: 'IT Solutions & Digital Services',
     shortTitle: 'IT Solutions',
     intro:
-      'Websites we design, build and maintain in-house — plus ERP and business systems sourced through vetted partners. Scoping call, written proposal, build or rollout, training, then care and support.',
+      'Websites we design, build and maintain in-house — plus ERP and business systems sourced through vetted partners. Scoping call, written proposal, build or rollout, training, then care and support. Hardware remains under IT Equipment.',
     products: [
       { name: 'Business Website Design', desc: 'Modern, mobile-first designs matched to your brand and goals.' },
       { name: 'Website Development', desc: 'Custom builds — corporate sites, portals and e-commerce stores.' },
       { name: 'Website Maintenance & Care Plans', desc: 'Updates, backups, security monitoring and monthly retainers.' },
       { name: 'E-Commerce Stores', desc: 'Product catalogues with MoMo/card payments and order management.' },
-      { name: 'ERP & Business Systems', desc: 'ERP/CRM selection, setup and rollout for SMEs and institutions.' },
+      { name: 'ERP & Business Systems', desc: 'Discovery, vendor selection and implementation coordination for ERP, CRM and business systems.' },
       { name: 'Custom Web Applications', desc: 'Dashboards, booking systems and internal business tools.' },
       { name: 'UI/UX Design', desc: 'Wireframes, prototypes and usability reviews before build.' },
       { name: 'Domain, Hosting & Business Email', desc: 'Registration, hosting setup and Google/Microsoft business email.' },
@@ -289,6 +289,36 @@ export function catalogueTitleForSlug(titleOrSlug: string | null | undefined, ex
   }
   // humanize fallback: "automobile-services-spares" → "Automobile Services Spares"
   return titleOrSlug.replace(/-/g, ' ').replace(/\b\w/g, (m) => m.toUpperCase())
+}
+
+/** True when the selected quote/product category is the IT Solutions service
+ *  (accepts any slug/title variant via the canonical resolver). Drives the
+ *  IT-only fieldset on the quote form so a digital RFQ carries scope,
+ *  current system, users and timeline instead of looking like a goods order. */
+export function isITSolutionsCategory(titleOrSlug: string | null | undefined): boolean {
+  if (!titleOrSlug) return false
+  return canonicalCatalogueSlug(titleOrSlug) === 'it-solutions-digital-services'
+}
+
+export interface ITProjectDetails {
+  scope: string
+  current: string
+  users: string
+  timeline: string
+}
+
+/** Labeled block appended to the RFQ requirement text for IT Solutions quotes.
+ *  Returns '' when there is no scope (caller treats that as a validation error). */
+export function formatITProjectDetails(d: ITProjectDetails): string {
+  const scope = d.scope.trim()
+  if (!scope) return ''
+  return [
+    '--- IT project details ---',
+    `Scope: ${scope}`,
+    `Current website/system: ${d.current.trim() || '—'}`,
+    `Expected users: ${d.users.trim() || '—'}`,
+    `Timeline: ${d.timeline.trim() || '—'}`,
+  ].join('\n')
 }
 
 /** Single source of truth for service/product category dropdowns (keeps Admin in sync). */
