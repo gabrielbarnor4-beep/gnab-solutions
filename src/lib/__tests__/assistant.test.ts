@@ -42,6 +42,46 @@ describe('assistant localBrain intents', () => {
     expect(r.cards?.length).toBeGreaterThan(0)
     expect(r.chips?.length).toBeGreaterThan(0)
   })
+  it('answers website questions with IT Solutions scoping path', () => {
+    const r = localBrain('I need a website for my business')
+    expect(r.text).toContain('/quote?category=it-solutions-digital-services')
+    expect(r.text).toMatch(/scoping/i)
+  })
+  it('answers ERP questions via IT Solutions intent', () => {
+    const r = localBrain('Do you do ERP systems?')
+    expect(r.text).toMatch(/IT Solutions|trusted specialists|own team/i)
+  })
+  it('answers payment questions without inventing methods', () => {
+    const r = localBrain('What payment methods do you accept?')
+    expect(r.text).toMatch(/quotation/i)
+    expect(r.text).not.toMatch(/MoMo|bank transfer|credit card/i)
+  })
+  it('answers bulk and standing-order questions', () => {
+    const r = localBrain('Do you offer bulk discounts and standing orders?')
+    expect(r.text).toMatch(/standing|recurring|bulk/i)
+    expect(r.text).toContain('/quote')
+  })
+  it('points blog questions to the blog', () => {
+    const r = localBrain('Do you have a blog?')
+    expect(r.text).toContain('/blog')
+  })
+  it('handles damaged-item reports with after-sales path', () => {
+    const r = localBrain('I received a damaged item, what do I do?')
+    expect(r.text).toMatch(/after-sales|WhatsApp/i)
+  })
+  it('closes dismissive replies warmly without product cards', () => {
+    const r = localBrain('Not for now')
+    expect(r.text).toMatch(/No problem|Got it/)
+    expect(r.cards).toBeUndefined()
+  })
+  it('invites follow-ups on Ask another question', () => {
+    const r = localBrain('Ask another question')
+    expect(r.text).toMatch(/Fire away/)
+  })
+  it('answers Custom sourcing chip directly', () => {
+    const r = localBrain('Custom sourcing')
+    expect(r.text).toContain('/quote?category=custom-sourcing')
+  })
 })
 
 describe('assistant product search', () => {
@@ -58,5 +98,16 @@ describe('assistant product search', () => {
     const res = findProducts('office chair')
     // at least weak results; strong path covered in localBrain
     expect(Array.isArray(res)).toBe(true)
+  })
+  it('expands plurals so toners finds Toner', () => {
+    const res = findProducts('toners')
+    expect(res.length).toBeGreaterThan(0)
+    expect(res[0]!.score).toBeGreaterThanOrEqual(3)
+    expect(res[0]!.card.name).toMatch(/toner/i)
+  })
+  it('rewards consecutive phrase matches in product names', () => {
+    const res = findProducts('business website design')
+    expect(res.length).toBeGreaterThan(0)
+    expect(res[0]!.card.name).toBe('Business Website Design')
   })
 })

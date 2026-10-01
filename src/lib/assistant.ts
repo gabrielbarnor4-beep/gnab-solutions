@@ -78,6 +78,19 @@ function buildRelevantGeneric(input: string): Reply {
 export function findProducts(query: string) {
   const words = tokenize(query)
   if (words.length === 0) return []
+  // Expand plurals: "chairs" also tries "chair", "toners" tries "toner"
+  const expanded: string[] = []
+  for (const w of words) {
+    expanded.push(w)
+    if (w.length > 3 && w.endsWith('s') && !w.endsWith('ss')) {
+      const singular = w.endsWith('ies')
+        ? `${w.slice(0, -3)}y`
+        : /([sxz]es|ches|shes)$/.test(w)
+          ? w.slice(0, -2)
+          : w.slice(0, -1)
+      if (singular !== w && singular.length > 2) expanded.push(singular)
+    }
+  }
   const scored = new Map<string, { score: number; name: string; desc: string; slug: string; title: string; shortTitle: string }>()
 
   for (const cat of CATALOGUE) {
@@ -86,10 +99,20 @@ export function findProducts(query: string) {
       const hayTokens = `${p.name} ${p.desc} ${cat.title}`.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean)
       const haySet = new Set(hayTokens)
       let score = 0
-      for (const w of words) {
-        if (p.name.toLowerCase() === w) score += 5
-        else if (nameTokens.includes(w)) score += 3
+      for (const w of expanded) {
+        if (nameTokens.includes(w)) score += 3
         else if (haySet.has(w)) score += 1
+      }
+      // Phrase bonus: consecutive query words in the product name ("business website design")
+      if (words.length > 1) {
+        const nameStr = ` ${nameTokens.join(' ')} `
+        for (let len = Math.min(words.length, 4); len >= 2; len--) {
+          let found = false
+          for (let i = 0; i + len <= words.length; i++) {
+            if (nameStr.includes(` ${words.slice(i, i + len).join(' ')} `)) { found = true; break }
+          }
+          if (found) { score += 4; break }
+        }
       }
       if (score > 0) {
         const prev = scored.get(p.name)
@@ -221,6 +244,23 @@ async function logUnansweredQuestion(question: string): Promise<void> {
 export function localBrain(rawInput: string): Reply {
   const q = rawInput.toLowerCase().trim()
 
+  /* dismissive / conversational dead-ends — friendly close, never logged as unanswered */
+  if (/^(not? for now|nothing?( else)?|nope?|nah|ok(ay)?|alright|fine|cool|great|sure|done)\.?$/.test(q)) {
+    return {
+      text: pick([
+        `No problem at all! 😊 I'm here whenever you need anything — products, quotes or delivery info.`,
+        `Got it! I'll be right here if something comes up 🙌`,
+      ]),
+      chips: ['Request a quote', 'Browse services'],
+    }
+  }
+  if (/^ask another question\.?$/.test(q)) {
+    return {
+      text: `Fire away — I'm all ears! 👂 Ask about any product, service, quote or delivery question.`,
+      chips: ['What do you supply?', 'How does quoting work?', 'Talk to a human'],
+    }
+  }
+
   /* small talk */
   if (/\b(how are you|how's it going|how are things)\b/.test(q)) {
     return {
@@ -287,6 +327,19 @@ export function localBrain(rawInput: string): Reply {
         `Sure! The fastest route to a real person is WhatsApp 👉 [${CONTACT.whatsapp}](${CONTACT.whatsappLink}). Prefer email? It's [${CONTACT.email}](mailto:${CONTACT.email}) — or call [${CONTACT.phone}](tel:${CONTACT.phoneRaw}).`,
       ]),
       chips: ['Business hours', 'Where are you located?'],
+    }
+  }
+
+  /* IT Solutions & Digital Services — websites built in-house, systems sourced.
+     Placed before contact/product matching so "business email setup" etc.
+     don't get swallowed by the generic email intent. */
+  if (/\b(websites?|web (design|development|developer|app|application|site|shop)|webdesign|erp|crm|e-?commerce|online stores?|seo|hosting|domains?|business emails?|email (setup|hosting)|ui\/?ux|software|web application)\b/.test(q)) {
+    return {
+      text: pick([
+        `Yes — that's our **IT Solutions & Digital Services** catalogue! 💻 We **design, build and maintain business websites in-house**, and source ERP, CRM and other business systems through vetted partners.\n\nHow it works: a quick **scoping call** → written **proposal** → build or rollout → **training** → care or support plan.\n\nTell us what you need via the [quote form](/quote?category=it-solutions-digital-services) and we'll respond within 24 hours — or browse all 12 items in the [IT Solutions catalogue](/products?category=it-solutions-digital-services).`,
+        `Great news — we do exactly that! 🌐 Websites are designed, built and looked after by our own team; ERP and business systems are sourced through trusted specialists.\n\nIt starts with a scoping conversation so we can send a proper proposal — kick it off on the [quote form](/quote?category=it-solutions-digital-services), or explore the [full catalogue](/products?category=it-solutions-digital-services) first.`,
+      ]),
+      chips: ['Request a quote', 'What do you supply?', 'Talk to a human'],
     }
   }
 
@@ -409,6 +462,52 @@ export function localBrain(rawInput: string): Reply {
     }
   }
 
+  /* custom sourcing — also catches the "Custom sourcing" quick-reply chip directly */
+  if (/\bcustom sourcing\b/.test(q)) {
+    return {
+      text: `That's our speciality! 🎯 If it exists, our sourcing team will track it down — locally or internationally — and price it competitively.\n\nSend the specification through the [custom request form](/quote?category=custom-sourcing) and expect your quotation within 24 hours.`,
+      chips: ['Browse all products', 'Talk to a human'],
+    }
+  }
+
+  /* quote validity + payment — only states what quotations/invoices themselves carry */
+  if (/\b(validity|valid (for|until)|how long.*(quote|quotation|valid)|expire[sd]?|payment|pay(ment|ing)?|deposit|invoice|bank|momo|mobile money)\b/.test(q)) {
+    return {
+      text: pick([
+        `Good question! Every quotation we send **states its own validity period, itemised pricing and delivery timeline** — so you'll always know exactly how long your price holds.\n\nPayment and invoice details come with the quotation paperwork. For anything specific, our team can clarify in minutes on [WhatsApp](${CONTACT.whatsappLink}) or via the [quote form](/quote).`,
+        `Here's how it works 💳 Your quotation shows the price, how long it stays valid, and the delivery timeline — no hidden extras. Payment arrangements are confirmed with the paperwork, and our team is happy to walk you through options: [${CONTACT.phone}](tel:${CONTACT.phoneRaw}) or [WhatsApp](${CONTACT.whatsappLink}).`,
+      ]),
+      chips: ['Request a quote', 'Talk to a human'],
+    }
+  }
+
+  /* bulk + standing orders */
+  if (/\b(bulk|wholesale|standing orders?|recurring|monthly suppl|contract suppl|large (orders?|quantit))\b/.test(q)) {
+    return {
+      text: pick([
+        `Absolutely — bulk is where we shine! 📦 Our purchasing power means better unit prices on volume, and we run **standing/monthly supply orders** so essentials never run out.\n\nShare quantities and frequency on the [quote form](/quote) (there's a quantity field) and we'll price it within 24 hours.`,
+        `Yes! We handle one-off bulk buys and **recurring supply contracts** alike — consumables, PPE, stationery, you name it. Tell us volumes + how often on the [quote form](/quote) and we'll come back with sharp pricing 📋`,
+      ]),
+      chips: ['Request a quote', 'What do you supply?'],
+    }
+  }
+
+  /* blog / insights */
+  if (/\b(blog|articles?|news|insights?|guides?)\b/.test(q)) {
+    return {
+      text: `We publish procurement guides, trends and company news on the [Blog](/blog) 📰 — handy if you want to buy smarter. Anything specific you're researching?`,
+      chips: ['What do you supply?', 'How does quoting work?'],
+    }
+  }
+
+  /* after-sales + issues — sticks to published promises only */
+  if (/\b(warranty|guarantee|returns?|refunds?|after.?sales|faulty|damaged|wrong item|missing item|complaint)\b/.test(q)) {
+    return {
+      text: `Sorry to hear something's off — let's fix it 🛠️ Every order goes through quality checks, and our **after-sales support stays with you** long after delivery.\n\nPlease message us right away on [WhatsApp](${CONTACT.whatsappLink}) or via the [contact form](/contact) with your order details (and a photo if relevant) and the team will sort it out.`,
+      chips: ['Talk to a human', 'Contact details'],
+    }
+  }
+
   /* navigation */
   const navMap: [RegExp, string, string][] = [
     [/\b(home|start|main page)\b/, '/', 'the homepage'],
@@ -480,9 +579,11 @@ export function localBrain(rawInput: string): Reply {
 
 const SYSTEM_PROMPT = `You are the GNAB Assistant for GNAB Business Solutions, a Ghanaian procurement & supply company.
 Facts: Email ${CONTACT.email}; Phone ${CONTACT.phone}; WhatsApp ${CONTACT.whatsapp}; Address ${CONTACT.address}. Hours Mon-Fri 8am-5pm GMT.
-Catalogues: Office Stationery & Consumables; IT Equipment & Accessories; Cleaning & Janitorial Supplies; PPE & Safety; Office Furniture; Printing & Branding; Electrical Materials; Automobile Services & Spares; IT Solutions & Digital Services (websites designed/built/maintained in-house, ERP/business systems sourced); Custom Sourcing.
-Pages: / (home), /about, /services, /industries, /products, /process, /why-us, /testimonials, /contact, /quote, /supplier-registration.
-Rules: Sound warm and human, like a friendly sales assistant — vary your phrasing between messages, never repeat stock sentences. Be concise (under 120 words). Use markdown bold. To link internally use [label](/path). Recommend requesting a quote for pricing questions. Never invent prices.`
+Catalogues (10): Office Stationery & Consumables; IT Equipment & Accessories; Cleaning & Janitorial Supplies; PPE & Safety; Office Furniture; Printing & Branding; Electrical Materials; Automobile Services & Spares; IT Solutions & Digital Services; Custom Sourcing.
+IT Solutions: business websites are designed, built and maintained in-house (scoping call, written proposal, training, care/support plan); ERP, CRM and business systems are sourced through vetted partners. Never quote website prices — always point to the quote form.
+Process: quotes are free with no obligation until approval, answered within 24 hours; each quotation states its own validity period, itemised pricing and delivery timeline. Standard delivery is 2-5 working days after approval, nationwide across Ghana. Bulk and standing/monthly supply orders are welcome — ask for quantities.
+Pages: / (home), /about, /services, /industries, /products, /process, /why-us, /testimonials (reviews), /blog, /contact, /quote, /supplier-registration.
+Rules: Sound warm and human, like a friendly sales assistant — vary your phrasing between messages, never repeat stock sentences. Be concise (under 120 words). Use markdown bold. To link internally use [label](/path). Recommend requesting a quote for pricing questions. Never invent prices, payment methods, timelines or policies — if unsure, point to the team on WhatsApp.`
 
 async function geminiReply(history: ChatMessage[]): Promise<Reply | null> {
   try {

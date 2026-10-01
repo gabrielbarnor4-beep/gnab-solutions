@@ -3,8 +3,8 @@
 > **One document to rebuild the entire platform without missing a function, feature, or pixel.**
 > Stack: **React 19 + TypeScript 6 + Vite 6 + Tailwind 4 + Supabase (Auth/Postgres/Storage/Edge) + Framer Motion + Leaflet + jsPDF**
 > Repo: `gnab-solutions` — private, `type: module` — `0.0.0`
-> Last verified: **2026-10-01** — `vite build ~3.5s` `2.2M dist` `tsc -b` 0 `oxlint` 0 warnings `vitest` 77/77 — all **35** public/admin routes `200` (13 public + 22 admin incl. `/admin/pages`, `/admin/receipts`, `/admin/pdf-templates`)
-> **Latest:** 10th catalogue **IT Solutions & Digital Services** end-to-end (websites designed/built/maintained in-house + ERP/business systems sourced; static `CATALOGUE` + `PRODUCT_CATEGORIES` + assistant + Home/Services/Supplier/Footer/Admin + migration `034`; slug verified distinct from `it-equipment`). Before that: 9th catalogue **Automobile** (`032`/`033` + slug unification `canonicalCatalogueSlug`/`catalogueTitleForSlug`); **footer per-item toggles** (Quick Links Shown/Hidden + reorder, managed Contact column, shared parsers fixing legacy `string[]` vs object mismatch); **mobile full-screen sheet** with own logo + close bar (glass-trap + sticky-reset proof).
+> Last verified: **2026-10-01** — `vite build ~3.5s` `2.2M dist` `tsc -b` 0 `oxlint` 0 warnings `vitest` 88/88 — all **35** public/admin routes `200` (13 public + 22 admin incl. `/admin/pages`, `/admin/receipts`, `/admin/pdf-templates`)
+> **Latest:** Assistant intelligence pass — IT Solutions intent (websites/ERP/SEO/hosting with scoping→proposal→training path), quote-validity/payment, bulk + standing orders, blog, after-sales, custom-sourcing chip, dismissive guard (no more junk in the unanswered queue), plural + phrase-bonus product search, system prompt with all 10 catalogues + /blog + no-invention rule. Before that: 10th catalogue **IT Solutions & Digital Services** (`034`); 9th catalogue **Automobile** (`032`/`033` + slug unification); **footer per-item toggles**; **mobile full-screen sheet**.
 
 ---
 
@@ -98,7 +98,7 @@ Simplify procurement through reliable sourcing, competitive pricing and timely d
 | **Reliability** | No empty page | Every `fetch*` has fallback `CATALOGUE`/`DEFAULT_TESTIMONIALS` + `FALLBACK_*` |
 | **Accessibility** | WCAG AA | `Field` `htmlFor`/`id` via `cloneElement`, `16px` inputs on mobile, `focus-visible:ring`, `aria-label` on map/dots |
 | **SEO** | All public pages indexable | `setPageMeta` per route (9 pages), `setOrganizationJsonLd` on Home, `sitemap.xml` + `robots.txt` in `public/` |
-| **Maintainability** | `tsc -b` 0, `oxlint` 0 warnings, `vitest` 77/77 | `strict` + `noUncheckedIndexedAccess` on, `supabase gen types` checked in (`src/types/supabase.ts`), `formStr` + `void` hygiene enforced by `no-base-to-string`/`no-floating-promises` |
+| **Maintainability** | `tsc -b` 0, `oxlint` 0 warnings, `vitest` 88/88 | `strict` + `noUncheckedIndexedAccess` on, `supabase gen types` checked in (`src/types/supabase.ts`), `formStr` + `void` hygiene enforced by `no-base-to-string`/`no-floating-promises` |
 
 ---
 
@@ -434,7 +434,7 @@ SUPABASE_URL / SUPABASE_ANON_KEY injected by Supabase Edge automatically
 - [ ] Set edge secrets: `supabase secrets set GEMINI_API_KEY=... ALLOWED_ORIGIN=https://localhost:5173` (then prod domain)
 - [ ] Deploy edge `supabase functions deploy gemini-chat --no-verify-jwt` + `send-email`
 - [ ] `npm run dev` → `http://localhost:5173` (Home hero crossfade, Trust 5, Services incl. Automobile, Industries 8, map OSRM)
-- [ ] `npm run build` → `vite build ~3.5s` + `npm run preview` → `http://localhost:4173`; `npm run lint` → 0 warnings; `npm test` → 77/77
+- [ ] `npm run build` → `vite build ~3.5s` + `npm run preview` → `http://localhost:4173`; `npm run lint` → 0 warnings; `npm test` → 88/88
 - [ ] Create first admin via `/admin/login` sign-up
 - [ ] Verify `/admin/home` 9 tabs edit Hero/Trust/About/Services/Industries/Why/Process/Stats/CTA → Home updates (incl. Hero/CTA heading-design cards → hero/COT restyle, no rebuild)
 - [ ] Verify `/admin/footer` column toggles + per-item Quick Link Shown/Hidden + reorder + Contact items add/toggle/reorder + services `In footer` + column heading text/style → footer updates (gold-bar default, Reviews + Become a Supplier visible)
@@ -453,7 +453,7 @@ SUPABASE_URL / SUPABASE_ANON_KEY injected by Supabase Edge automatically
 
 ## Future Roadmap
 
-Done since v1 (kept for history): 10th catalogue IT Solutions & Digital Services (`034`, build-in-house + source framing); `strict` + `noUncheckedIndexedAccess` on + `supabase gen types` checked in; `vitest` 77 + Playwright honeypot e2e; Supabase `?width=&quality=` transform in `getPublicUrl`; `vite-plugin-pwa` offline (`/`, `/services`, `/products`); PostHog funnel (`quote_requested`, `contact_sent`, `assistant_question`); per-service `footer_label/path` (`027`); self-hosted brand assets (`026`→`028`); heading design system (`029`); 9th catalogue Automobile end-to-end + slug unification (`032`/`033`, `canonicalCatalogueSlug`/`catalogueTitleForSlug`/`SERVICE_CATEGORY_OPTIONS`); footer per-item quick-link toggles + managed contact column with shared parsers (`033`, default 11 links + 3 contact items); mobile full-screen menu sheet with own nav bar (glass-trap + sticky-reset proof).
+Done since v1 (kept for history): assistant intelligence pass (IT Solutions + validity/payment + bulk + blog + after-sales intents, dismissive guard, plural/phrase search, 10-catalogue system prompt); 10th catalogue IT Solutions & Digital Services (`034`, build-in-house + source framing); `strict` + `noUncheckedIndexedAccess` on + `supabase gen types` checked in; `vitest` 88 + Playwright honeypot e2e; Supabase `?width=&quality=` transform in `getPublicUrl`; `vite-plugin-pwa` offline (`/`, `/services`, `/products`); PostHog funnel (`quote_requested`, `contact_sent`, `assistant_question`); per-service `footer_label/path` (`027`); self-hosted brand assets (`026`→`028`); heading design system (`029`); 9th catalogue Automobile end-to-end + slug unification (`032`/`033`, `canonicalCatalogueSlug`/`catalogueTitleForSlug`/`SERVICE_CATEGORY_OPTIONS`); footer per-item quick-link toggles + managed contact column with shared parsers (`033`, default 11 links + 3 contact items); mobile full-screen menu sheet with own nav bar (glass-trap + sticky-reset proof).
 
 Next candidates:
 - **Per-section CTA copy:** inner CTAs currently share global theme/eyebrow/size/align with per-page text — add per-page theme override if needed.
@@ -633,7 +633,7 @@ graph TD
 * **Lint:** `oxlint` type-aware, **0 warnings** — `no-floating-promises`/`no-base-to-string` are `error` (all `void` + `formStr`); intentional React patterns are `off` with justification in `.oxlintrc.json` (`set-state-in-effect` data-fetch, `only-export-components` ui barrels, `exhaustive-deps` reviewed arrays, `purity` false positive on `Math.random` in handlers).
 * **Dark mode:** Not implemented — `index.css` is light only (`bg #fff`, `color #333`).
 * **i18n:** Not implemented — all text hard-coded English.
-* **Tests:** `vitest` 77/77 (env, routing, honeypot/`formStr`, `canSubmit`, `imgSrcSet`, pdf `interpolate` + RFQ/RCPT formats, assistant intents + product search, quote guards, design `slugify`/`splitHighlight`/themes) + Playwright honeypot/header-footer/uploads e2e; CI runs `tsc -b` → `oxlint` → `vitest` → `vite build`.
+* **Tests:** `vitest` 88/88 (env, routing, honeypot/`formStr`, `canSubmit`, `imgSrcSet`, pdf `interpolate` + RFQ/RCPT formats, assistant intents + product search, quote guards, design `slugify`/`splitHighlight`/themes) + Playwright honeypot/header-footer/uploads e2e; CI runs `tsc -b` → `oxlint` → `vitest` → `vite build`.
 
 ---
 
