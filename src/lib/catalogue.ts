@@ -181,6 +181,27 @@ export const CATALOGUE: CatalogueCategory[] = [
     ],
   },
   {
+    slug: 'it-solutions-digital-services',
+    title: 'IT Solutions & Digital Services',
+    shortTitle: 'IT Solutions',
+    intro:
+      'Websites we design, build and maintain in-house — plus ERP and business systems sourced through vetted partners. Scoping call, written proposal, build or rollout, training, then care and support.',
+    products: [
+      { name: 'Business Website Design', desc: 'Modern, mobile-first designs matched to your brand and goals.' },
+      { name: 'Website Development', desc: 'Custom builds — corporate sites, portals and e-commerce stores.' },
+      { name: 'Website Maintenance & Care Plans', desc: 'Updates, backups, security monitoring and monthly retainers.' },
+      { name: 'E-Commerce Stores', desc: 'Product catalogues with MoMo/card payments and order management.' },
+      { name: 'ERP & Business Systems', desc: 'ERP/CRM selection, setup and rollout for SMEs and institutions.' },
+      { name: 'Custom Web Applications', desc: 'Dashboards, booking systems and internal business tools.' },
+      { name: 'UI/UX Design', desc: 'Wireframes, prototypes and usability reviews before build.' },
+      { name: 'Domain, Hosting & Business Email', desc: 'Registration, hosting setup and Google/Microsoft business email.' },
+      { name: 'Systems Integration', desc: 'Connecting website, payments, inventory and accounting tools.' },
+      { name: 'SEO & Analytics Setup', desc: 'Search visibility, Analytics/Search Console and monthly reports.' },
+      { name: 'Training & Handover', desc: 'Staff training, manuals and full admin handover sessions.' },
+      { name: 'Priority Support Plans', desc: 'SLA-based support for the sites and systems we deliver.' },
+    ],
+  },
+  {
     slug: 'custom-sourcing',
     title: 'Custom Procurement & Sourcing',
     shortTitle: 'Custom Sourcing',

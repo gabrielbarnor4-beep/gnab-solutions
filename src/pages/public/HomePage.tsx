@@ -14,6 +14,7 @@ import {
   Car,
   ClipboardCheck,
   Clock,
+  Code2,
   FileText,
   Globe2,
   GraduationCap,
@@ -77,6 +78,7 @@ const services = [
   { icon: Store, title: 'Office Furniture', slug: 'office-furniture', desc: 'Ergonomic desks, chairs and complete workspace setups.' },
   { icon: ClipboardCheck, title: 'Printing & Branding', slug: 'printing-branding', desc: 'Custom printing and corporate branding that gets you noticed.' },
   { icon: Car, title: 'Automobile Services', slug: 'automobile-services', desc: 'Vehicles, genuine parts, accessories and servicing for fleets and individuals.' },
+  { icon: Code2, title: 'IT Solutions', slug: 'it-solutions-digital-services', desc: 'Websites we design, build and maintain — plus ERP and business systems.' },
   { icon: Handshake, title: 'Custom Procurement', slug: 'custom-sourcing', desc: 'Tailored sourcing for requirements beyond the catalogue.' },
 ]
 
@@ -242,7 +244,7 @@ export default function HomePage() {
     })
     void fetchPublicServices().then((rows) => {
       if (rows.length > 0) {
-        const iconByName: Record<string, typeof FileText> = { 'Office Stationery & Consumables': FileText, 'IT Equipment & Accessories': Layers, 'Cleaning & Janitorial Supplies': Sparkles, 'PPE & Safety': ShieldCheck, 'PPE & Safety Equipment': ShieldCheck, 'Office Furniture': Store, 'Printing & Branding': ClipboardCheck, 'Electrical Materials': Layers, 'Automobile Services & Spares': Car, 'Automobile Services': Car, 'Custom Procurement & Sourcing': Handshake, 'Custom Sourcing': Handshake }
+        const iconByName: Record<string, typeof FileText> = { 'Office Stationery & Consumables': FileText, 'IT Equipment & Accessories': Layers, 'Cleaning & Janitorial Supplies': Sparkles, 'PPE & Safety': ShieldCheck, 'PPE & Safety Equipment': ShieldCheck, 'Office Furniture': Store, 'Printing & Branding': ClipboardCheck, 'Electrical Materials': Layers, 'Automobile Services & Spares': Car, 'Automobile Services': Car, 'IT Solutions & Digital Services': Code2, 'IT Solutions': Code2, 'Custom Procurement & Sourcing': Handshake, 'Custom Sourcing': Handshake }
         // Show every published service (no slice) so Automobile is never cut off;
         // slug via canonical helper so Services highlight + Products filter always match.
         setServicesLive(rows.map((r) => ({ icon: iconByName[r.name] ?? iconByName[r.category ?? ''] ?? FileText, title: r.name, slug: canonicalCatalogueSlug(r.name), desc: r.short_description ?? '' })))

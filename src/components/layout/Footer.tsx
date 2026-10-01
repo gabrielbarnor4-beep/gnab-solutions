@@ -22,6 +22,7 @@ const FALLBACK_SERVICE_LINKS = [
   { name: 'Printing & Branding', slug: 'printing-branding' },
   { name: 'Electrical Materials', slug: 'electrical-materials' },
   { name: 'Automobile Services & Spares', slug: 'automobile-services' },
+  { name: 'IT Solutions & Digital Services', slug: 'it-solutions-digital-services' },
   { name: 'Custom Procurement & Sourcing', slug: 'custom-sourcing' },
 ]
 

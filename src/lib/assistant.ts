@@ -62,14 +62,14 @@ function buildRelevantGeneric(input: string): Reply {
   if (bestService) {
     text += `\n\nThis looks related to **${bestService.title}** — ${bestService.intro}\n\nYou can explore all ${bestService.products.length} items in that catalogue on the [${bestService.title} page](/products?category=${bestService.slug}) or [request a quote](/quote?category=${bestService.slug}) for a 24h price.`
   } else {
-    text += `\n\nWe cover 9 procurement areas: **Office Stationery & Consumables, IT Equipment & Accessories, Cleaning & Janitorial Supplies, PPE & Safety, Office Furniture, Printing & Branding, Electrical Materials, Automobile Services & Spares and Custom Sourcing.** Tell us the spec and we source it — even outside the catalogue.`
+    text += `\n\nWe cover 10 procurement areas: **Office Stationery & Consumables, IT Equipment & Accessories, Cleaning & Janitorial Supplies, PPE & Safety, Office Furniture, Printing & Branding, Electrical Materials, Automobile Services & Spares, IT Solutions & Digital Services and Custom Sourcing.** Tell us the spec and we source it — even outside the catalogue.`
   }
   if (weak.length > 0) {
     text += `\n\nBased on your question, these might be relevant:`
   }
   return {
     text,
-    cards: weak.length > 0 ? weak.map((r) => r.card) : [{ name: 'Browse all services', desc: 'See our 9 procurement catalogues', to: '/services' }],
+    cards: weak.length > 0 ? weak.map((r) => r.card) : [{ name: 'Browse all services', desc: 'See our 10 procurement catalogues', to: '/services' }],
     chips: ['Talk to a human', 'Request a quote'],
   }
 }
@@ -336,10 +336,10 @@ export function localBrain(rawInput: string): Reply {
   if (/\b(service(s)?|what do you (do|offer|supply)|catalogue|categories)\b/.test(q)) {
     return {
       text: pick([
-        `We cover nine procurement catalogues:\n- Office Stationery & Consumables\n- IT Equipment & Accessories\n- Cleaning & Janitorial Supplies\n- PPE & Safety Equipment\n- Office Furniture\n- Printing & Branding\n- Electrical Materials\n- Automobile Services & Spares\n- Custom Sourcing\n\nExplore any of them on the [Services page](/services) or tell me a specific item you need!`,
-        `In short: if your organisation needs it, we source it 📦 From stationery and IT equipment to PPE, furniture, printing, electrical materials and automobile services — plus a custom sourcing service for everything else. Full list on the [Services page](/services).`,
+        `We cover ten procurement catalogues:\n- Office Stationery & Consumables\n- IT Equipment & Accessories\n- Cleaning & Janitorial Supplies\n- PPE & Safety Equipment\n- Office Furniture\n- Printing & Branding\n- Electrical Materials\n- Automobile Services & Spares\n- IT Solutions & Digital Services (websites we build + ERP/business systems we source)\n- Custom Sourcing\n\nExplore any of them on the [Services page](/services) or tell me a specific item you need!`,
+        `In short: if your organisation needs it, we source it 📦 From stationery and IT equipment to PPE, furniture, printing, electrical materials and automobile services — plus websites we design and build in-house and a custom sourcing service for everything else. Full list on the [Services page](/services).`,
       ]),
-      chips: ['Show me automobile services', 'Find office chairs', 'Request a quote'],
+      chips: ['Show me IT solutions', 'Find office chairs', 'Request a quote'],
     }
   }
 
@@ -480,7 +480,7 @@ export function localBrain(rawInput: string): Reply {
 
 const SYSTEM_PROMPT = `You are the GNAB Assistant for GNAB Business Solutions, a Ghanaian procurement & supply company.
 Facts: Email ${CONTACT.email}; Phone ${CONTACT.phone}; WhatsApp ${CONTACT.whatsapp}; Address ${CONTACT.address}. Hours Mon-Fri 8am-5pm GMT.
-Catalogues: Office Stationery & Consumables; IT Equipment & Accessories; Cleaning & Janitorial Supplies; PPE & Safety; Office Furniture; Printing & Branding; Electrical Materials; Automobile Services & Spares; Custom Sourcing.
+Catalogues: Office Stationery & Consumables; IT Equipment & Accessories; Cleaning & Janitorial Supplies; PPE & Safety; Office Furniture; Printing & Branding; Electrical Materials; Automobile Services & Spares; IT Solutions & Digital Services (websites designed/built/maintained in-house, ERP/business systems sourced); Custom Sourcing.
 Pages: / (home), /about, /services, /industries, /products, /process, /why-us, /testimonials, /contact, /quote, /supplier-registration.
 Rules: Sound warm and human, like a friendly sales assistant — vary your phrasing between messages, never repeat stock sentences. Be concise (under 120 words). Use markdown bold. To link internally use [label](/path). Recommend requesting a quote for pricing questions. Never invent prices.`
 

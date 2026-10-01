@@ -6,6 +6,7 @@ import {
   Car,
   Check,
   ClipboardCheck,
+  Code2,
   FileText,
   Handshake,
   Layers,
@@ -38,6 +39,8 @@ const SERVICE_IMAGES: Record<string, string> = {
     'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=1200&auto=format&fit=crop',
   'automobile-services':
     'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1200&auto=format&fit=crop',
+  'it-solutions-digital-services':
+    'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop',
   'custom-sourcing':
     'https://images.unsplash.com/photo-1553413077-190dd305871c?q=80&w=1200&auto=format&fit=crop',
 }
@@ -156,6 +159,20 @@ const serviceMeta: Record<
       'Accessories: trackers, dashcams, racks, detailing',
       'Scheduled servicing and fleet maintenance plans',
       'Registration, insurance and roadworthy support',
+    ],
+  },
+  'it-solutions-digital-services': {
+    icon: Code2,
+    tag: 'Digital',
+    overview:
+      'Your online presence and back-office systems deserve the same single-partner treatment as everything else you procure. We design, build and maintain business websites in-house — and source ERP, CRM and other business systems through vetted specialist partners. Every engagement starts with a scoping call, follows with a written proposal, and ends with training and a care or support plan, all with transparent pricing.',
+    bullets: [
+      'Business websites: design, development, maintenance',
+      'E-commerce stores with MoMo and card payments',
+      'ERP, CRM and business systems sourced and rolled out',
+      'Domain, hosting and business email setup',
+      'SEO, analytics and systems integration',
+      'Training, handover and priority support plans',
     ],
   },
   'custom-sourcing': {

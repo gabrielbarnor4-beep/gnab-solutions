@@ -8,7 +8,7 @@ import { Button, Field, PageHero, Reveal, inputClass } from '@/components/ui'
 
 const CATEGORIES = [
   'Stationery', 'IT Equipment', 'Cleaning Supplies', 'PPE & Safety',
-  'Furniture', 'Electrical', 'Automobile', 'Printing & Branding', 'General Supplies', 'Other',
+  'Furniture', 'Electrical', 'Automobile', 'IT Solutions', 'Printing & Branding', 'General Supplies', 'Other',
 ]
 
 export default function SupplierRegistrationPage() {
