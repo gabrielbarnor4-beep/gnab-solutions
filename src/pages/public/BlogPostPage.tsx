@@ -159,7 +159,7 @@ export default function BlogPostPage() {
                 <motion.div key={r.id} variants={{ hidden: { opacity: 0, y: 24 }, show: { opacity: 1, y: 0 } }}>
                   <Link to={`/blog/${r.slug}`} className="card-hover group flex h-full flex-col overflow-hidden rounded-[24px] border border-gray-100 bg-white shadow-soft">
                     <div className="relative h-40 overflow-hidden">
-                      <img src={r.featured_image_url ?? IMAGES.about} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                      <img src={r.featured_image_url ?? IMAGES.about} alt={r.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                     </div>
                     <div className="flex flex-1 flex-col p-5">
                       <span className="text-[10px] font-extrabold uppercase tracking-wide text-gold-600">{r.category}</span>

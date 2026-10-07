@@ -174,7 +174,7 @@ export default function AssistantWidget() {
             {/* Header */}
             <div className="relative flex items-center gap-3 bg-gradient-to-r from-navy to-navy-500 px-5 py-4 text-white">
               <span className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25">
-                <img src={CONTACT.logo} alt="" className="h-6 w-auto" />
+                <img src={CONTACT.logo} alt="" aria-hidden="true" className="h-6 w-auto" />
               </span>
               <div className="relative min-w-0 flex-1">
                 <p className="font-display text-[15px] font-bold">GNAB Assistant</p>

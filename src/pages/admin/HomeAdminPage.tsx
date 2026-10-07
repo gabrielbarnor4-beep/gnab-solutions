@@ -41,6 +41,12 @@ const FALLBACK_HERO = {
   primary_link: '/quote',
   secondary_label: 'Explore Our Services',
   secondary_link: '/services',
+  ministat1_value: '100+',
+  ministat1_label: 'Suppliers',
+  ministat2_value: '500+',
+  ministat2_label: 'Products',
+  ministat3_value: '24h',
+  ministat3_label: 'Response',
 }
 const FALLBACK_TRUST = [
   { icon: 'ShieldCheck', label: 'Reliable Procurement' },
@@ -110,7 +116,7 @@ function HeroTab() {
   useEffect(() => { void load() }, [load])
   const save = async () => {
     setSaving(true); setErr(''); setOk(false)
-    const payload = { badge: row.badge, title_prefix: row.title_prefix, title_highlight: row.title_highlight, title_suffix: row.title_suffix, subtitle: row.subtitle, primary_label: row.primary_label, primary_link: row.primary_link, secondary_label: row.secondary_label, secondary_link: row.secondary_link, published: true }
+    const payload = { badge: row.badge, title_prefix: row.title_prefix, title_highlight: row.title_highlight, title_suffix: row.title_suffix, subtitle: row.subtitle, primary_label: row.primary_label, primary_link: row.primary_link, secondary_label: row.secondary_label, secondary_link: row.secondary_link, ministat1_value: row.ministat1_value || '100+', ministat1_label: row.ministat1_label || 'Suppliers', ministat2_value: row.ministat2_value || '500+', ministat2_label: row.ministat2_label || 'Products', ministat3_value: row.ministat3_value || '24h', ministat3_label: row.ministat3_label || 'Response', published: true }
     const { error, data } = row.id ? await supabase.from('home_hero').update(payload).eq('id', row.id).select().maybeSingle() : await supabase.from('home_hero').insert(payload).select().maybeSingle()
     setSaving(false)
     if (error) setErr(error.message); else { setOk(true); if (data) setRow(data); setIsFallback(false); setTimeout(() => setOk(false), 2500) }
@@ -130,13 +136,19 @@ function HeroTab() {
         ['Primary button link', 'primary_link'],
         ['Secondary button label', 'secondary_label'],
         ['Secondary button link', 'secondary_link'],
+        ['Mini-stat 1 value', 'ministat1_value'],
+        ['Mini-stat 1 label', 'ministat1_label'],
+        ['Mini-stat 2 value', 'ministat2_value'],
+        ['Mini-stat 2 label', 'ministat2_label'],
+        ['Mini-stat 3 value', 'ministat3_value'],
+        ['Mini-stat 3 label', 'ministat3_label'],
       ].map(([label, key, isArea]) => (
         <label key={String(key)} className="block">
           <span className="mb-1.5 block text-[13px] font-semibold uppercase tracking-wide text-ink-light">{label}</span>
           {isArea ? <textarea rows={3} value={row[String(key)] ?? ''} onChange={(e) => setRow({ ...row, [String(key)]: e.target.value })} className={`${inputClass} resize-none`} /> : <input value={row[String(key)] ?? ''} onChange={(e) => setRow({ ...row, [String(key)]: e.target.value })} className={inputClass} />}
         </label>
       ))}
-      <p className="text-xs text-ink-light">Mini-stats under hero are auto-derived from Stats tab. Hero images are managed in <span className="font-semibold">Admin → Media → home_hero</span>.</p>
+      <p className="text-xs text-ink-light">Mini-stats under the hero are edited here (values + labels). Hero images are managed in <span className="font-semibold">Admin → Media → home_hero</span>.</p>
       <HomeHeroDesignCard />
       <button onClick={() => void save()} disabled={saving} className="rounded-xl bg-brand-green-500 px-6 py-3 font-semibold text-white hover:bg-brand-green-600 disabled:opacity-60">{saving ? 'Saving…' : ok ? 'Saved — Home updated!' : 'Save Hero'}</button>
     </div>

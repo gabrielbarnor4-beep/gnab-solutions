@@ -81,7 +81,7 @@ export default function BlogListPage() {
                     <div className="relative min-h-[280px] overflow-hidden">
                       <img
                         src={featured.featured_image_url ?? IMAGES.hero1}
-                        alt=""
+                        alt={featured.title}
                         className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                       />
                     </div>
@@ -121,7 +121,7 @@ export default function BlogListPage() {
                   >
                     <Link to={`/blog/${post.slug}`} className="card-hover group flex h-full flex-col overflow-hidden rounded-[28px] border border-gray-100 bg-white shadow-soft">
                       <div className="relative h-44 overflow-hidden">
-                        <img src={post.featured_image_url ?? IMAGES.about} alt="" loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                        <img src={post.featured_image_url ?? IMAGES.about} alt={post.title} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                         <span className="absolute left-4 top-4 rounded-full bg-white/95 px-3 py-1 text-[10px] font-extrabold uppercase tracking-wide text-navy shadow">
                           {post.category}
                         </span>

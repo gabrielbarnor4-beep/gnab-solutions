@@ -198,7 +198,7 @@ export default function HomePage() {
   const [aboutImg, setAboutImg] = useState<string | null>(null)
   const [aboutOverlay, setAboutOverlay] = useState<string | null>(null)
   const [ctaBg, setCtaBg] = useState<string | null>(null)
-  const [heroData, setHeroData] = useState<null | { badge: string; title_prefix: string; title_highlight: string; title_suffix: string; subtitle: string; primary_label: string; primary_link: string; secondary_label: string; secondary_link: string }>(null)
+  const [heroData, setHeroData] = useState<null | { badge: string; title_prefix: string; title_highlight: string; title_suffix: string; subtitle: string; primary_label: string; primary_link: string; secondary_label: string; secondary_link: string; ministat1_value?: string | null; ministat1_label?: string | null; ministat2_value?: string | null; ministat2_label?: string | null; ministat3_value?: string | null; ministat3_label?: string | null }>(null)
   const [trustLive, setTrustLive] = useState<{ icon: typeof HERO_ICON_FALLBACK; label: string }[] | null>(null)
   const [aboutData, setAboutData] = useState<null | { eyebrow: string; title_prefix: string; title_highlight: string; paragraph1: string; paragraph2: string; badge_value: string; badge_label: string; phone: string; phone_label: string; primary_label: string; primary_link: string; image_url: string | null; overlay_url: string | null }>(null)
   const [statsLive, setStatsLive] = useState<{ value: number; suffix: string; label: string }[] | null>(null)
@@ -298,6 +298,7 @@ export default function HomePage() {
                 srcSet={imgSrcSet(displayHero[heroIndex % displayHero.length]!)}
                 sizes="100vw"
                 alt=""
+                aria-hidden="true"
                 className="h-full w-full object-cover"
                 loading={heroIndex === 0 ? 'eager' : 'lazy'}
                 {...(heroIndex === 0 ? { fetchPriority: 'high' as const } : {})}
@@ -351,12 +352,12 @@ export default function HomePage() {
               </ButtonLink>
             </div>
 
-            {/* mini stats */}
+            {/* mini stats — Admin → Home → Hero, hardcoded fallback */}
             <div className="mt-14 grid max-w-lg grid-cols-3 divide-x divide-white/10 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-md">
               {[
-                ['100+', 'Suppliers'],
-                ['500+', 'Products'],
-                ['24h', 'Response'],
+                [heroData?.ministat1_value || '100+', heroData?.ministat1_label || 'Suppliers'],
+                [heroData?.ministat2_value || '500+', heroData?.ministat2_label || 'Products'],
+                [heroData?.ministat3_value || '24h', heroData?.ministat3_label || 'Response'],
               ].map(([v, l]) => (
                 <div key={l} className="px-4 py-4 text-center">
                   <p className="font-display text-xl font-bold text-white md:text-2xl">{v}</p>

@@ -785,6 +785,7 @@ export async function fetchPostBySlug(slug: string): Promise<BlogPost | null> {
 export interface HomeHero {
   id: string; badge: string; title_prefix: string; title_highlight: string; title_suffix: string
   subtitle: string; primary_label: string; primary_link: string; secondary_label: string; secondary_link: string
+  ministat1_value: string; ministat1_label: string; ministat2_value: string; ministat2_label: string; ministat3_value: string; ministat3_label: string
 }
 export async function fetchHomeHero(): Promise<HomeHero | null> {
   try {

@@ -278,7 +278,7 @@ export default function ServicesPage() {
                       {sItem.image_url ? (
                         <img src={sItem.image_url} alt={sItem.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.06]" />
                       ) : (
-                        <img src={SERVICE_IMAGES[canonSlug] ?? SERVICE_IMAGES['custom-sourcing']} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-60" />
+                        <img src={SERVICE_IMAGES[canonSlug] ?? SERVICE_IMAGES['custom-sourcing']} alt={sItem.name} loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-60" />
                       )}
                       <div className="absolute inset-0 bg-gradient-to-t from-navy/85 via-navy/25 to-transparent" aria-hidden />
                       {sItem.category && (

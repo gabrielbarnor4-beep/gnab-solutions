@@ -200,7 +200,7 @@ scripts/serve_spa.py     # SimpleHTTP SPA fallback
 
 ## Database Schema & Migrations
 
-**Run in order `001`→`038` in Supabase Dashboard → SQL Editor.** Seed inserts are idempotent (`on conflict do nothing` / `where not exists`).
+**Run in order `001`→`039` in Supabase Dashboard → SQL Editor.** Seed inserts are idempotent (`on conflict do nothing` / `where not exists`).
 
 | Migration | Tables / Buckets | Notable Policies / Triggers |
 |---|---|---|
@@ -242,6 +242,7 @@ scripts/serve_spa.py     # SimpleHTTP SPA fallback
 | `036_quote_package_templates` | widens `pdf_templates.type` check (+`website_package`, `erp_discovery`), adds `default_items jsonb` column, seeds both package templates (standard line items, tailored terms/body) | Standard website package + fixed-fee ERP discovery as editable quote templates; builder loads items in one click |
 | `037_payment_options_and_package_reseeds` | `pdf_templates.payment_options_template` + `account_details_template` (How-to-Pay section), `receipts.payment_reference`, accepted-modes seeds, website/ERP reseeds with real GHS (care as 12× monthly retainer; ERP one fee + out-of-scope implementation, untouched seeds only) | Quotations/packages show editable modes + accounts; receipts show paid-via mode + cheque/MoMo/bank reference |
 | `038_agro_foodstuffs` | `product_categories` Agro (display_order 10; General → 11, Custom → 12) + `services` Agro row (published, display_order 10, `show_in_footer=true`, intermediary + Ghana/worldwide copy) + 12 agro `products` (display_order 121–132) | 11th catalogue end-to-end (code updated alongside: static `CATALOGUE` + `PRODUCT_CATEGORIES` + assistant intent + Home/Services/Supplier/Footer + fallback links); insert-missing-only, safe re-run |
+| `039_hero_ministats` | `home_hero.ministat{1,2,3}_{value,label}` (text, defaults `100+/Suppliers`, `500+/Products`, `24h/Response`) + backfill | Hero mini-stats editable in Admin → Home → Hero (was hardcoded `100+/500+/24h` in `HomePage`); public reads `heroData.ministat*` with same hardcoded fallback |
 
 **Purge cron final:** `purge_soft_deleted_30d` `03:22` daily deletes 14 tables where `deleted_at <30d` + `assistant_questions` rejected.
 
