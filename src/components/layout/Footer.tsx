@@ -23,6 +23,7 @@ const FALLBACK_SERVICE_LINKS = [
   { name: 'Electrical Materials', slug: 'electrical-materials' },
   { name: 'Automobile Services & Spares', slug: 'automobile-services' },
   { name: 'IT Solutions & Digital Services', slug: 'it-solutions-digital-services' },
+  { name: 'Agro & Foodstuffs', slug: 'agro-foodstuffs' },
   { name: 'Custom Procurement & Sourcing', slug: 'custom-sourcing' },
 ]
 
