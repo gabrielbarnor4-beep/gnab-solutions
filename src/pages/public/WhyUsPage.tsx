@@ -111,11 +111,11 @@ export default function WhyUsPage() {
   const [live, setLive] = useState<Reason[] | null>(null)
   const heroImg = useSiteImage('why_hero', IMAGES.hero1)
   useEffect(() => {
-    setPageMeta('Why Choose Us | GNAB Business Solutions', 'Organisations across Ghana choose GNAB because we treat procurement as a partnership, not a transaction.')
+    setPageMeta('Why Choose Us | GNAB Business Solutions', 'Organisations across Ghana choose GNAB because we treat procurement as a partnership, not a transaction.', heroImg)
     void fetchPublicWhy().then((rows) => {
       if (rows.length > 0) setLive(rows.map((r, i) => ({ icon: ICON_MAP[r.icon ?? ''] ?? Handshake, title: r.title, desc: r.description ?? '', points: FALLBACK_REASONS[i]?.points ?? [], image: r.image_url ?? FALLBACK_REASONS[i]?.image ?? IMAGES.about, alt: r.title })))
     })
-  }, [])
+  }, [heroImg])
   const display = live ?? FALLBACK_REASONS
   const typicalBullets: string[] = (() => {
     try {

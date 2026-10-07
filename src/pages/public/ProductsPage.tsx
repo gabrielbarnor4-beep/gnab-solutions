@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, PackageSearch, Search, X } from 'lucide-react'
 import { CATALOGUE, canonicalCatalogueSlug } from '@/lib/catalogue'
+import { openAssistant } from '@/lib/assistant'
 import { fetchPublicProducts, setPageMeta, type PublicProduct, useSiteSettings } from '@/lib/siteData'
 import { IMAGES, cn } from '@/lib/utils'
 import { matchSlug } from '@/lib/design'
@@ -29,7 +30,7 @@ export default function ProductsPage() {
   const [dbProducts, setDbProducts] = useState<PublicProduct[] | null>(null)
 
   useEffect(() => {
-    setPageMeta('Products | GNAB Business Solutions', 'Browse our curated product catalogue — request a quote on any item and receive pricing within 24 hours.')
+    setPageMeta('Products | GNAB Business Solutions', 'Browse our curated product catalogue — request a quote on any item and receive pricing within 24 hours.', IMAGES.warehouse)
     void fetchPublicProducts().then(({ products, fromDb }) => setDbProducts(fromDb ? products : []))
   }, [])
 
@@ -184,9 +185,17 @@ export default function ProductsPage() {
               <p className="mt-3 max-w-md text-ink-light">
                 {s.products_empty_desc || 'Try a different keyword — or ask us directly. If it exists, we can source it.'}
               </p>
-              <Link to="/quote" className="mt-7 inline-flex items-center gap-2 rounded-full bg-brand-green-500 px-7 py-3 font-semibold text-white hover:bg-brand-green-600">
-                Request Custom Sourcing <ArrowRight size={15} />
-              </Link>
+              <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+                <Link to="/quote" className="inline-flex items-center gap-2 rounded-full bg-brand-green-500 px-7 py-3 font-semibold text-white hover:bg-brand-green-600">
+                  Request Custom Sourcing <ArrowRight size={15} />
+                </Link>
+                <button
+                  onClick={() => openAssistant(query ? `Do you supply ${query}?` : 'What do you supply?')}
+                  className="inline-flex items-center gap-2 rounded-full border border-navy-200 px-7 py-3 font-semibold text-navy transition-all hover:border-navy hover:bg-navy hover:text-white"
+                >
+                  Ask the Assistant
+                </button>
+              </div>
             </div>
           ) : (
             <div className="space-y-16">

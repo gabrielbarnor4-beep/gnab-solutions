@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
 import { formStr, isHoneypotFilled, isAllowedAttachment, canSubmit, recordSubmit, PRODUCT_CATEGORIES } from '@/lib/utils'
-import { canonicalCatalogueSlug, catalogueTitleForSlug, formatITProjectDetails, isITSolutionsCategory } from '@/lib/catalogue'
+import { canonicalCatalogueSlug, catalogueTitleForSlug, formatITProjectDetails, isAgroCategory, isITSolutionsCategory } from '@/lib/catalogue'
 
 describe('formStr safe getter', () => {
   it('returns string values', () => {
@@ -101,5 +101,13 @@ describe('Agro & Foodstuffs quote category', () => {
     expect(canonicalCatalogueSlug('agro-foodstuffs')).toBe('agro-foodstuffs')
     expect(canonicalCatalogueSlug('Agro & Foodstuffs')).toBe('agro-foodstuffs')
     expect(catalogueTitleForSlug('agro-foodstuffs', PRODUCT_CATEGORIES)).toBe('Agro & Foodstuffs')
+  })
+  it('detects the agro category for the quote side-panel proof', () => {
+    expect(isAgroCategory('Agro & Foodstuffs')).toBe(true)
+    expect(isAgroCategory('agro-foodstuffs')).toBe(true)
+    expect(isAgroCategory('Agro')).toBe(true)
+    expect(isAgroCategory('IT Solutions & Digital Services')).toBe(false)
+    expect(isAgroCategory('')).toBe(false)
+    expect(isAgroCategory(null)).toBe(false)
   })
 })

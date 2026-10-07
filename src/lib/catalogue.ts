@@ -342,6 +342,13 @@ export function formatITProjectDetails(d: ITProjectDetails): string {
   ].join('\n')
 }
 
+/** True when the selected quote/product category is Agro & Foodstuffs
+ *  (accepts any slug/title variant via the canonical resolver). */
+export function isAgroCategory(titleOrSlug: string | null | undefined): boolean {
+  if (!titleOrSlug) return false
+  return canonicalCatalogueSlug(titleOrSlug) === 'agro-foodstuffs'
+}
+
 /** Single source of truth for service/product category dropdowns (keeps Admin in sync). */
 export const SERVICE_CATEGORY_OPTIONS: string[] = [
   ...CATALOGUE.filter((c) => c.slug !== 'custom-sourcing').map((c) => c.title),

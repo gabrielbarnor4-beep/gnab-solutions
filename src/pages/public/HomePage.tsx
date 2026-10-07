@@ -252,7 +252,7 @@ export default function HomePage() {
         setServicesLive(rows.map((r) => ({ icon: iconByName[r.name] ?? iconByName[r.category ?? ''] ?? FileText, title: r.name, slug: canonicalCatalogueSlug(r.name), desc: r.short_description ?? '' })))
       }
     })
-    setPageMeta('GNAB Business Solutions | One Partner. Endless Solutions.', 'Ghana\'s trusted partner for corporate procurement, sourcing and supply — reliable sourcing, competitive pricing, timely delivery.')
+    setPageMeta('GNAB Business Solutions | One Partner. Endless Solutions.', 'Ghana\'s trusted partner for corporate procurement, sourcing and supply — reliable sourcing, competitive pricing, timely delivery.', IMAGES.hero1)
     setOrganizationJsonLd()
     void fetchHomeHero().then((h) => { if (h) setHeroData(h) })
     void fetchHomeTrust().then((rows) => { if (rows.length > 0) setTrustLive(rows.map((r) => ({ icon: (ICON_MAP[r.icon] ?? ShieldCheck), label: r.label }))) })

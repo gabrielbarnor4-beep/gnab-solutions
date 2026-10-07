@@ -659,3 +659,8 @@ export const makeUserMessage = (text: string): ChatMessage => ({
   text,
   time: Date.now(),
 })
+
+/** Opens the assistant chat from anywhere, optionally prefilling a question. No-op on admin routes (widget hidden). */
+export function openAssistant(message?: string) {
+  window.dispatchEvent(new CustomEvent('gnab:open-assistant', { detail: message }))
+}

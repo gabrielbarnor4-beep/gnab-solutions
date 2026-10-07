@@ -101,6 +101,17 @@ export default function AssistantWidget() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' })
   }, [messages, typing, open])
 
+  /* Allow any page (e.g. Products empty-state) to open the chat with an optional prefilled question. */
+  useEffect(() => {
+    const opener = (e: Event) => {
+      setOpen(true)
+      const msg = (e as CustomEvent<string | undefined>).detail
+      if (typeof msg === 'string' && msg.trim()) setInput(msg)
+    }
+    window.addEventListener('gnab:open-assistant', opener as EventListener)
+    return () => window.removeEventListener('gnab:open-assistant', opener as EventListener)
+  }, [])
+
   if (pathname.startsWith('/admin')) return null
 
   const send = async (raw?: string) => {

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { CheckCircle2, Send, ShieldCheck, Timer, Wallet } from 'lucide-react'
 import { ALLOWED_ATTACHMENT_EXTS, canSubmit, CONTACT, FORMSPREE_ENDPOINT, IMAGES, INDUSTRIES_LIST, isAllowedAttachment, isHoneypotFilled, PRODUCT_CATEGORIES, recordSubmit, formStr} from '@/lib/utils'
-import { catalogueTitleForSlug, formatITProjectDetails, isITSolutionsCategory } from '@/lib/catalogue'
+import { catalogueTitleForSlug, formatITProjectDetails, isAgroCategory, isITSolutionsCategory } from '@/lib/catalogue'
 import { setPageMeta, useSiteSettings } from '@/lib/siteData'
 import { supabase } from '@/lib/supabase'
 
@@ -12,7 +12,7 @@ import { Button, Field, PageHero, Reveal, inputClass } from '@/components/ui'
 export default function QuotePage() {
   const s = useSiteSettings()
   useEffect(() => {
-    setPageMeta('Request a Quote | GNAB Business Solutions', 'Tell us what you need — receive a competitive, transparent quotation within 24 hours.')
+    setPageMeta('Request a Quote | GNAB Business Solutions', 'Tell us what you need — receive a competitive, transparent quotation within 24 hours.', IMAGES.hero2)
   }, [])
   const [params] = useSearchParams()
   const catParam = params.get('category') ?? ''
@@ -26,6 +26,8 @@ export default function QuotePage() {
   useEffect(() => { if (prefillCategory) setSelectedCategory(prefillCategory) }, [prefillCategory])
   // IT Solutions quotes carry project scope instead of looking like goods orders.
   const isITService = isITSolutionsCategory(selectedCategory)
+  // Agro quotes get an intermediary reassurance so farm-produce buyers trust a non-farm seller.
+  const isAgro = isAgroCategory(selectedCategory)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -158,6 +160,15 @@ export default function QuotePage() {
                   </div>
                 ))}
               </div>
+
+              {isAgro && (
+                <div className="mt-4 rounded-2xl border border-brand-green-200 bg-brand-green-50 px-5 py-4">
+                  <p className="text-[15px] font-semibold text-navy">Buying farm produce through GNAB</p>
+                  <p className="mt-1 text-sm leading-relaxed text-ink-light">
+                    Farm-gate sourcing · quality-checked before dispatch · export-packed with documentation — delivered anywhere in Ghana or worldwide.
+                  </p>
+                </div>
+              )}
 
               <p className="mt-10 text-[15px] leading-relaxed text-ink-light">
                 Prefer to talk? Call us at{' '}

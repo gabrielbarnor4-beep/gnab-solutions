@@ -43,11 +43,11 @@ export default function IndustriesPage() {
   const highlight = searchParams.get('highlight') ?? searchParams.get('industry') ?? ''
   const slugify = (v: string) => v.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
   useEffect(() => {
-    setPageMeta('Industries | GNAB Business Solutions', 'From government ministries to growing startups — we understand the unique procurement needs of each industry.')
+    setPageMeta('Industries | GNAB Business Solutions', 'From government ministries to growing startups — we understand the unique procurement needs of each industry.', heroImg)
     void fetchPublicIndustries().then((rows) => {
       if (rows.length > 0) setLive(rows.map((r) => ({ icon: (ICON_MAP[r.icon ?? ''] ?? Building2) as typeof Building2, name: r.name, desc: r.description ?? '', image_url: r.image_url ?? null })))
     })
-  }, [])
+  }, [heroImg])
   const highlightSlug = highlight ? slugify(highlight) : ''
   const display = useMemo(() => {
     const base = live ?? FALLBACK

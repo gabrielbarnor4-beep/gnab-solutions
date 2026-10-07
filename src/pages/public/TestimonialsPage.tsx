@@ -33,7 +33,7 @@ export default function TestimonialsPage() {
   const [rating, setRating] = useState(5)
 
   useEffect(() => {
-    setPageMeta('Testimonials | GNAB Business Solutions', 'Real feedback from the businesses and institutions we serve across Ghana.')
+    setPageMeta('Testimonials | GNAB Business Solutions', 'Real feedback from the businesses and institutions we serve across Ghana.', IMAGES.hero3)
     void fetchApprovedTestimonials().then(setItems)
   }, [])
 

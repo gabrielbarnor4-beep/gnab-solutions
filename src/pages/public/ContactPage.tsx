@@ -184,7 +184,7 @@ function ContactMap({
 export default function ContactPage() {
   const s = useSiteSettings()
   useEffect(() => {
-    setPageMeta('Contact Us | GNAB Business Solutions', 'Questions, requests or partnerships — our team responds within hours, not days.')
+    setPageMeta('Contact Us | GNAB Business Solutions', 'Questions, requests or partnerships — our team responds within hours, not days.', IMAGES.about2)
   }, [])
   const [locations, setLocations] = useState<Loc[]>([])
   const [locLoading, setLocLoading] = useState(true)

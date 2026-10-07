@@ -217,9 +217,9 @@ export default function ServicesPage() {
   const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
   useEffect(() => {
-    setPageMeta('Services | GNAB Business Solutions', 'From everyday office essentials to fully custom sourcing — one partner, endless solutions.')
+    setPageMeta('Services | GNAB Business Solutions', 'From everyday office essentials to fully custom sourcing — one partner, endless solutions.', heroImg)
     void fetchPublicServices().then(setDbServices)
-  }, [])
+  }, [heroImg])
 
   const highlightSlug = highlight ? slugify(highlight) : ''
   const orderedDbServices = useMemo(() => {

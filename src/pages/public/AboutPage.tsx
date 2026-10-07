@@ -37,7 +37,7 @@ export default function AboutPage() {
   const s = useSiteSettings()
   const heroImg = useSiteImage('about_hero', IMAGES.about2)
   const warehouseImg = useSiteImage('about_warehouse', IMAGES.warehouse)
-  useEffect(() => { setPageMeta('About Us | GNAB Business Solutions', COMPANY.description) }, [])
+  useEffect(() => { setPageMeta('About Us | GNAB Business Solutions', COMPANY.description, heroImg) }, [heroImg])
 
   const pillars: { value: string; label: string }[] = (() => {
     try {

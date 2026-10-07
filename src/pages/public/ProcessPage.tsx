@@ -85,11 +85,11 @@ export default function ProcessPage() {
   const heroImg = useSiteImage('process_hero', IMAGES.warehouse)
   const [live, setLive] = useState<(typeof FALLBACK_STEPS[number] & { image: string })[] | null>(null)
   useEffect(() => {
-    setPageMeta('Our Process | GNAB Business Solutions', 'Six transparent steps from your first request to lasting after-sales support.')
+    setPageMeta('Our Process | GNAB Business Solutions', 'Six transparent steps from your first request to lasting after-sales support.', heroImg)
     void fetchPublicProcessSteps().then((rows) => {
       if (rows.length > 0) setLive(rows.map((r) => ({ num: r.step_number, title: r.title, desc: r.description ?? '', points: r.points ?? [], image: r.image_url ?? IMAGES.signing })))
     })
-  }, [])
+  }, [heroImg])
   const display = live ?? FALLBACK_STEPS
   const guarantee: [string, string][] = (() => {
     try {
