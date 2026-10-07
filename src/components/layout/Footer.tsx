@@ -169,7 +169,7 @@ export default function Footer() {
           {showServices && (
             <div>
               <FooterHeading title={s.footer_services_title || 'Services'} style={s.footer_heading_style || 'gold-bar'} />
-              <ul className="grid grid-cols-2 gap-x-6 gap-y-3">
+              <ul className="space-y-3">
                 {serviceLinks.map((sv) => (
                   <li key={sv.slug}>
                     <Link to={(sv as unknown as { path?: string }).path || `/services?highlight=${sv.slug}`} className="text-[15px] text-navy-100/70 transition-colors hover:text-gold-400">
