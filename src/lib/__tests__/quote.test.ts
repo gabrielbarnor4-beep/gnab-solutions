@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest'
-import { formStr, isHoneypotFilled, isAllowedAttachment, canSubmit, recordSubmit } from '@/lib/utils'
-import { formatITProjectDetails, isITSolutionsCategory } from '@/lib/catalogue'
+import { formStr, isHoneypotFilled, isAllowedAttachment, canSubmit, recordSubmit, PRODUCT_CATEGORIES } from '@/lib/utils'
+import { canonicalCatalogueSlug, catalogueTitleForSlug, formatITProjectDetails, isITSolutionsCategory } from '@/lib/catalogue'
 
 describe('formStr safe getter', () => {
   it('returns string values', () => {
@@ -90,5 +90,16 @@ describe('IT Solutions quote fields', () => {
     const block = formatITProjectDetails({ scope: 'New site', current: '', users: '', timeline: '' })
     expect(block).toContain('Current website/system: —')
     expect(formatITProjectDetails({ scope: '   ', current: '', users: '', timeline: '' })).toBe('')
+  })
+})
+
+describe('Agro & Foodstuffs quote category', () => {
+  it('appears in the Quote form dropdown options', () => {
+    expect((PRODUCT_CATEGORIES as readonly string[])).toContain('Agro & Foodstuffs')
+  })
+  it('resolves every agro slug/title variant to the canonical slug and dropdown title', () => {
+    expect(canonicalCatalogueSlug('agro-foodstuffs')).toBe('agro-foodstuffs')
+    expect(canonicalCatalogueSlug('Agro & Foodstuffs')).toBe('agro-foodstuffs')
+    expect(catalogueTitleForSlug('agro-foodstuffs', PRODUCT_CATEGORIES)).toBe('Agro & Foodstuffs')
   })
 })
