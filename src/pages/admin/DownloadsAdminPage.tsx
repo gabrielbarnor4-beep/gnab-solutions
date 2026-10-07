@@ -62,14 +62,19 @@ export default function DownloadsAdminPage() {
       upsert: false,
     })
     if (!upErr) {
+      // Auto-activate when nothing is currently active (first upload ever,
+      // or re-upload after the active doc was deleted) — otherwise visitors
+      // keep seeing the "being updated" notice on the public footer.
+      const hasActive = docs.some((d) => d.is_active)
+      const makeActive = docs.length === 0 || !hasActive
       const { error: dbErr } = await supabase.from('company_documents').insert({
         file_name: file.name,
         file_path: path,
         file_size: file.size,
-        is_active: docs.length === 0,
+        is_active: makeActive,
       })
       if (dbErr) setError(`Uploaded but could not register the document: ${dbErr.message}`)
-      else setNotice(`"${file.name}" uploaded${docs.length === 0 ? ' and set as the active Company Profile' : ''}.`)
+      else setNotice(`"${file.name}" uploaded${makeActive ? ' and set as the active Company Profile' : '. Click “Set Active” to publish it to the public footer'}.`)
     } else {
       setError(
         upErr.message.includes('row-level security') || upErr.message.includes('Unauthorized')
@@ -95,9 +100,24 @@ export default function DownloadsAdminPage() {
   const remove = async (doc: Doc) => {
     if (!window.confirm(`Delete "${doc.file_name}" permanently?`)) return
     setError('')
+    setNotice('')
     await supabase.storage.from('documents').remove([doc.file_path])
     const { error: err } = await supabase.from('company_documents').delete().eq('id', doc.id)
     if (err) setError(`Could not delete: ${err.message}`)
+    else if (doc.is_active) {
+      // Deleting the active profile must not leave visitors with the
+      // "being updated" notice — promote the newest remaining version.
+      const { data: remaining } = await supabase
+        .from('company_documents')
+        .select('id')
+        .order('created_at', { ascending: false })
+        .limit(1)
+      const next = (remaining as { id: string }[] | null)?.[0]
+      if (next) {
+        await supabase.from('company_documents').update({ is_active: true }).eq('id', next.id)
+        setNotice('Active profile deleted — the newest remaining version is now active.')
+      }
+    }
     void load()
   }
 
