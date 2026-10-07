@@ -202,6 +202,27 @@ export const CATALOGUE: CatalogueCategory[] = [
     ],
   },
   {
+    slug: 'agro-foodstuffs',
+    title: 'Agro & Foodstuffs',
+    shortTitle: 'Agro & Food',
+    intro:
+      'Farm-fresh foodstuffs, fruits and vegetables sourced from vetted farmers and aggregators — quality-checked, bulk or export-packed, and delivered anywhere in Ghana or worldwide. As your intermediary, we handle sourcing, negotiation, quality control and delivery.',
+    products: [
+      { name: 'Yam (Pona & Varieties)', desc: 'Pona, water yam and white yam in bulk bags, export-grade selection.' },
+      { name: 'Maize & Corn', desc: 'White and yellow maize, dried and bagged by the maxi-bag or tonne.' },
+      { name: 'Cocoa Beans', desc: 'Fermented, dried and graded cocoa beans for local and export buyers.' },
+      { name: 'Rice (Local & Imported)', desc: 'Perfumed and non-perfumed rice, bagged 5kg–50kg.' },
+      { name: 'Cassava, Gari & Flours', desc: 'Fresh cassava, kokonte, gari, cassava dough and banku mix.' },
+      { name: 'Plantain & Cocoyam', desc: 'Fresh bunches and sacks, farm-gate sourced and sorted.' },
+      { name: 'Fresh Vegetables', desc: 'Tomatoes, onions, peppers, okra, garden eggs and leafy greens.' },
+      { name: 'Fresh Fruits', desc: 'Mango, pineapple, banana, orange, avocado, coconut and more in season.' },
+      { name: 'Beans, Grains & Nuts', desc: 'Soya beans, cowpea (black-eyed peas), groundnuts and millet.' },
+      { name: 'Palm Oil & Cooking Oils', desc: 'Pure palm oil, coconut oil and vegetable oils in bulk drums.' },
+      { name: 'Spices & Seasonings', desc: 'Ginger, turmeric, dawadawa, prekese, grains of selim and blends.' },
+      { name: 'Export Packing & Cold-Chain Delivery', desc: 'Grading, packing, documentation and delivery in Ghana or abroad.' },
+    ],
+  },
+  {
     slug: 'custom-sourcing',
     title: 'Custom Procurement & Sourcing',
     shortTitle: 'Custom Sourcing',

@@ -41,9 +41,9 @@ See `.env.example` for full template.
 
 ## Database — Run in order
 
-In Supabase Dashboard → SQL Editor, run `supabase/migrations/001_*.sql` → `037_*.sql` (or `supabase db push` locally). Seeds are idempotent.
+In Supabase Dashboard → SQL Editor, run `supabase/migrations/001_*.sql` → `038_*.sql` (or `supabase db push` locally). Seeds are idempotent.
 
-Key migrations: `001_testimonials` → `022_receipts_and_pdf_templates` → `023_other_pages_contents` → `024_cot_per_page` (per-page CTA copy — filename keeps the `cot` typo on disk) → `025_favicon_og` → `026_selfhost_brand_assets` → `027_footer_custom_links` (adds `services.footer_label/footer_path`) → `028_restore_real_logo` (real Supabase-hosted logo default) → `029_design_options` (20-key heading design system) → `030_cta_features` (per-page CTA strips, like Home) → `031_anon_is_admin_grant` (lets anon evaluate `is_admin()` so logged-out reads work) → `032_automobile_services` + `033_footer_toggles_and_automobile_backfill` (9th catalogue + footer contact items) → `034_it_solutions_digital_services` + `035_it_solutions_copy_split` (10th catalogue + copy split) → `036_quote_package_templates` (`website_package`/`erp_discovery` types + `default_items`) → `037_payment_options_and_package_reseeds` (How-to-Pay section + receipt reference + GHS reseeds), `021_storage_size_guard` (5MB trigger + `rate_limits`).
+Key migrations: `001_testimonials` → `022_receipts_and_pdf_templates` → `023_other_pages_contents` → `024_cot_per_page` (per-page CTA copy — filename keeps the `cot` typo on disk) → `025_favicon_og` → `026_selfhost_brand_assets` → `027_footer_custom_links` (adds `services.footer_label/footer_path`) → `028_restore_real_logo` (real Supabase-hosted logo default) → `029_design_options` (20-key heading design system) → `030_cta_features` (per-page CTA strips, like Home) → `031_anon_is_admin_grant` (lets anon evaluate `is_admin()` so logged-out reads work) → `032_automobile_services` + `033_footer_toggles_and_automobile_backfill` (9th catalogue + footer contact items) → `034_it_solutions_digital_services` + `035_it_solutions_copy_split` (10th catalogue + copy split) → `036_quote_package_templates` (`website_package`/`erp_discovery` types + `default_items`) → `037_payment_options_and_package_reseeds` (How-to-Pay section + receipt reference + GHS reseeds) → `038_agro_foodstuffs` (11th catalogue: farm produce as intermediary, Ghana + worldwide delivery), `021_storage_size_guard` (5MB trigger + `rate_limits`).
 
 After migrations:
 1. Storage → `attachments` → Edit → set **5 MB max, `image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt` only** — enforces server-side even if client bypassed (`021` trigger is defense-in-depth).
@@ -78,7 +78,7 @@ src/
   components/chat      # AssistantWidget
   pages/public         # Home (9 sections) + 12 others (incl. Blog list + /blog/:slug)
   pages/admin          # 22 admin pages incl. Site Pages, Uploads/Receipts/PDF Templates
-supabase/migrations    # 001→037 (+ 036 website/ERP quote templates, 037 payments + reseeds)
+supabase/migrations    # 001→038 (+ 036 website/ERP quote templates, 037 payments + reseeds, 038 agro & foodstuffs)
 supabase/functions     # gemini-chat, send-email (Brevo→Resend, CORS + auth + 5MB pdf guard)
 public/                # favicon.svg, og-image.svg, sitemap.xml, robots.txt
 ```
@@ -143,7 +143,7 @@ Netlify alternative: same envs → `https://gnab-solutions.netlify.app`.
 
 ## Operational Runbook
 
-* **First run:** migrations 001→037 → dashboard 5MB → `/admin/login` claim → verify `Admin → Settings` toggles, `Admin → PDF Templates` 5 active (`quotation`/`website_package`/`erp_discovery`/`message_reply`/`receipt`), `Admin → Services` footer custom label/path, `Admin → Site Pages` 11 tabs, `Admin → Footer` per-item quick-link/contact toggles.
+* **First run:** migrations 001→038 → dashboard 5MB → `/admin/login` claim → verify `Admin → Settings` toggles, `Admin → PDF Templates` 5 active (`quotation`/`website_package`/`erp_discovery`/`message_reply`/`receipt`), `Admin → Services` footer custom label/path, `Admin → Site Pages` 11 tabs, `Admin → Footer` per-item quick-link/contact toggles.
 * **Daily:** `/admin/dashboard` counts + `/admin/quotes` pipeline + `/admin/uploads` bar.
 * **Weekly:** empty Trash (auto 30d). Archive `contact_messages`/`quote_requests` >6 months if needed.
 * **On “5000”/“attachments” DB error:** user hit 5000 char or 5-file cap — shown, no data loss.
@@ -152,7 +152,7 @@ Netlify alternative: same envs → `https://gnab-solutions.netlify.app`.
 
 - [ ] `npm ci` (Node 22+)
 - [ ] `cp .env.example .env` fill 3 `VITE_*`
-- [ ] Run `001`→`037` in SQL Editor
+- [ ] Run `001`→`038` in SQL Editor
 - [ ] Storage → `attachments` Edit → 5MB
 - [ ] `supabase secrets set GEMINI_API_KEY=...`
 - [ ] `supabase functions deploy gemini-chat --no-verify-jwt && supabase functions deploy send-email`

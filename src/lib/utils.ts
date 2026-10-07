@@ -100,6 +100,7 @@ export const PRODUCT_CATEGORIES = [
   'Electrical Materials',
   'Automobile Services & Spares',
   'IT Solutions & Digital Services',
+  'Agro & Foodstuffs',
   'Printing & Branding',
   'General Office Consumables',
   'Custom Sourcing',

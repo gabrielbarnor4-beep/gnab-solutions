@@ -14,6 +14,7 @@ import {
   ShieldCheck,
   Sparkles,
   Store,
+  Tractor,
   Zap,
 } from 'lucide-react'
 import { IMAGES } from '@/lib/utils'
@@ -41,6 +42,8 @@ const SERVICE_IMAGES: Record<string, string> = {
     'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?q=80&w=1200&auto=format&fit=crop',
   'it-solutions-digital-services':
     'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?q=80&w=1200&auto=format&fit=crop',
+  'agro-foodstuffs':
+    'https://images.unsplash.com/photo-1500937386664-56d1dfef3854?q=80&w=1200&auto=format&fit=crop',
   'custom-sourcing':
     'https://images.unsplash.com/photo-1553413077-190dd305871c?q=80&w=1200&auto=format&fit=crop',
 }
@@ -173,6 +176,20 @@ const serviceMeta: Record<
       'Domain, hosting and business email setup',
       'SEO, analytics and systems integration',
       'Training, handover and priority support plans',
+    ],
+  },
+  'agro-foodstuffs': {
+    icon: Tractor,
+    tag: 'Farm to Door',
+    overview:
+      'Whether you are stocking a kitchen, a school, a hotel or an export container — we act as your intermediary between vetted farmers and your table. We source yam, maize, cocoa, rice, cassava, plantain, fresh vegetables, fruits, beans, oils and spices, verify quality at the farm gate and deliver anywhere in Ghana or worldwide with proper packing and documentation.',
+    bullets: [
+      'Staples: yam, maize, rice, cassava, gari and plantain',
+      'Fresh vegetables and seasonal fruits, sorted and graded',
+      'Cocoa, beans, grains, groundnuts and bulk oils',
+      'Spices and seasonings: ginger, turmeric, dawadawa, prekese',
+      'Bulk, institutional and export quantities',
+      'Quality checks, packing and delivery in Ghana or abroad',
     ],
   },
   'custom-sourcing': {

@@ -83,6 +83,16 @@ describe('assistant localBrain intents', () => {
     const r = localBrain('Custom sourcing')
     expect(r.text).toContain('/quote?category=custom-sourcing')
   })
+  it('answers agro questions with intermediary + worldwide delivery path', () => {
+    const r = localBrain('Do you supply yam and maize? I need cocoa and fruits')
+    expect(r.text).toContain('/quote?category=agro-foodstuffs')
+    expect(r.text).toMatch(/intermediary|worldwide|Ghana/i)
+  })
+  it('finds agro products by word score', () => {
+    const res = findProducts('cocoa beans')
+    expect(res.length).toBeGreaterThan(0)
+    expect(res[0]!.card.to).toContain('agro-foodstuffs')
+  })
 })
 
 describe('assistant product search', () => {

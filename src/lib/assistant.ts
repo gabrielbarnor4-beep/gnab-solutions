@@ -62,14 +62,14 @@ function buildRelevantGeneric(input: string): Reply {
   if (bestService) {
     text += `\n\nThis looks related to **${bestService.title}** — ${bestService.intro}\n\nYou can explore all ${bestService.products.length} items in that catalogue on the [${bestService.title} page](/products?category=${bestService.slug}) or [request a quote](/quote?category=${bestService.slug}) for a 24h price.`
   } else {
-    text += `\n\nWe cover 10 procurement areas: **Office Stationery & Consumables, IT Equipment & Accessories, Cleaning & Janitorial Supplies, PPE & Safety, Office Furniture, Printing & Branding, Electrical Materials, Automobile Services & Spares, IT Solutions & Digital Services and Custom Sourcing.** Tell us the spec and we source it — even outside the catalogue.`
+    text += `\n\nWe cover 11 procurement areas: **Office Stationery & Consumables, IT Equipment & Accessories, Cleaning & Janitorial Supplies, PPE & Safety, Office Furniture, Printing & Branding, Electrical Materials, Automobile Services & Spares, IT Solutions & Digital Services, Agro & Foodstuffs and Custom Sourcing.** Tell us the spec and we source it — even outside the catalogue.`
   }
   if (weak.length > 0) {
     text += `\n\nBased on your question, these might be relevant:`
   }
   return {
     text,
-    cards: weak.length > 0 ? weak.map((r) => r.card) : [{ name: 'Browse all services', desc: 'See our 10 procurement catalogues', to: '/services' }],
+    cards: weak.length > 0 ? weak.map((r) => r.card) : [{ name: 'Browse all services', desc: 'See our 11 procurement catalogues', to: '/services' }],
     chips: ['Talk to a human', 'Request a quote'],
   }
 }
@@ -343,6 +343,19 @@ export function localBrain(rawInput: string): Reply {
     }
   }
 
+  /* Agro & Foodstuffs — farm produce sourced as intermediary, delivered Ghana + worldwide.
+     Placed before contact/product matching so "yam", "maize", "cocoa" etc.
+     don't fall through to generic product search. */
+  if (/\b(agro|agric|foodstuffs?|food ?stuff|yam|maize|corn|cocoa|cassava|gari|plantain|cocoyam|tomato(es)?|onions?|peppers?|okra|garden eggs|vegetables?|veggies?|fruits?|mango(es)?|pineapples?|bananas?|oranges?|avocados?|coconuts?|palm ?oil|groundnuts?|soya|beans?|grains?|spices?|ginger|turmeric|farm produce|bulk food|export food)\b/.test(q)) {
+    return {
+      text: pick([
+        `Yes — that's our **Agro & Foodstuffs** catalogue! 🌾 We act as your intermediary: sourcing yam, maize, cocoa, rice, vegetables, fruits and more from vetted farmers and suppliers, quality-checking everything, then delivering to you anywhere in Ghana or worldwide.\n\nShare quantities and your delivery location on the [quote form](/quote?category=agro-foodstuffs) and we'll respond within 24 hours — or browse all 12 items in the [Agro catalogue](/products?category=agro-foodstuffs).`,
+        `Great news — we do exactly that! 🍠🥭 From staples like yam, maize, cocoa, cassava and rice to fresh vegetables, fruits, oils and spices — we source it, verify quality, negotiate pricing and deliver it to your doorstep in Ghana or abroad.\n\nKick it off on the [quote form](/quote?category=agro-foodstuffs), or explore the [full catalogue](/products?category=agro-foodstuffs) first.`,
+      ]),
+      chips: ['Request a quote', 'What do you supply?', 'Talk to a human'],
+    }
+  }
+
   /* contact info */
   if (/\b(contact|email|phone|number|whatsapp|reach|location|address|where.*(located|based)|office)\b/.test(q)) {
     return {
@@ -389,7 +402,7 @@ export function localBrain(rawInput: string): Reply {
   if (/\b(service(s)?|what do you (do|offer|supply)|catalogue|categories)\b/.test(q)) {
     return {
       text: pick([
-        `We cover ten procurement catalogues:\n- Office Stationery & Consumables\n- IT Equipment & Accessories\n- Cleaning & Janitorial Supplies\n- PPE & Safety Equipment\n- Office Furniture\n- Printing & Branding\n- Electrical Materials\n- Automobile Services & Spares\n- IT Solutions & Digital Services (websites we build + ERP/business systems we source)\n- Custom Sourcing\n\nExplore any of them on the [Services page](/services) or tell me a specific item you need!`,
+        `We cover eleven procurement catalogues:\n- Office Stationery & Consumables\n- IT Equipment & Accessories\n- Cleaning & Janitorial Supplies\n- PPE & Safety Equipment\n- Office Furniture\n- Printing & Branding\n- Electrical Materials\n- Automobile Services & Spares\n- IT Solutions & Digital Services (websites we build + ERP/business systems we source)\n- Agro & Foodstuffs (farm produce sourced as your intermediary, delivered Ghana + worldwide)\n- Custom Sourcing\n\nExplore any of them on the [Services page](/services) or tell me a specific item you need!`,
         `In short: if your organisation needs it, we source it 📦 From stationery and IT equipment to PPE, furniture, printing, electrical materials and automobile services — plus websites we design and build in-house and a custom sourcing service for everything else. Full list on the [Services page](/services).`,
       ]),
       chips: ['Show me IT solutions', 'Find office chairs', 'Request a quote'],
@@ -579,8 +592,9 @@ export function localBrain(rawInput: string): Reply {
 
 const SYSTEM_PROMPT = `You are the GNAB Assistant for GNAB Business Solutions, a Ghanaian procurement & supply company.
 Facts: Email ${CONTACT.email}; Phone ${CONTACT.phone}; WhatsApp ${CONTACT.whatsapp}; Address ${CONTACT.address}. Hours Mon-Fri 8am-5pm GMT.
-Catalogues (10): Office Stationery & Consumables; IT Equipment & Accessories; Cleaning & Janitorial Supplies; PPE & Safety; Office Furniture; Printing & Branding; Electrical Materials; Automobile Services & Spares; IT Solutions & Digital Services; Custom Sourcing.
+Catalogues (11): Office Stationery & Consumables; IT Equipment & Accessories; Cleaning & Janitorial Supplies; PPE & Safety; Office Furniture; Printing & Branding; Electrical Materials; Automobile Services & Spares; IT Solutions & Digital Services; Agro & Foodstuffs; Custom Sourcing.
 IT Solutions: corporate websites are designed, built and maintained in-house (scoping call, written proposal, training, care/support plan); ERP and business systems are specified and sourced with specialist partners; computer hardware stays under IT Equipment. Never quote website prices — always point to the quote form.
+Agro & Foodstuffs: GNAB acts as intermediary between vetted farmers/suppliers and the customer — sourcing yam, maize, cocoa, rice, cassava, plantain, vegetables, fruits, beans, oils and spices, quality-checking and delivering anywhere in Ghana or worldwide. Always point agro requests to the quote form.
 Process: quotes are free with no obligation until approval, answered within 24 hours; each quotation states its own validity period, itemised pricing and delivery timeline. Standard delivery is 2-5 working days after approval, nationwide across Ghana. Bulk and standing/monthly supply orders are welcome — ask for quantities.
 Pages: / (home), /about, /services, /industries, /products, /process, /why-us, /testimonials (reviews), /blog, /contact, /quote, /supplier-registration.
 Rules: Sound warm and human, like a friendly sales assistant — vary your phrasing between messages, never repeat stock sentences. Be concise (under 120 words). Use markdown bold. To link internally use [label](/path). Recommend requesting a quote for pricing questions. Never invent prices, payment methods, timelines or policies — if unsure, point to the team on WhatsApp.`
