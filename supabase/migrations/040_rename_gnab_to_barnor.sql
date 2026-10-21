@@ -78,25 +78,18 @@ WHERE subtitle = 'Let GNAB handle your sourcing, pricing and delivery — one pa
 -- 6. site_images — alt text for accessibility/SEO
 -- ------------------------------------------------------------
 UPDATE public.site_images SET
-  alt_text = REPLACE(alt_text, 'GNAB team', 'Barnor team'),
-  alt_text = REPLACE(alt_text, 'GNAB logistics', 'Barnor logistics'),
-  alt_text = REPLACE(alt_text, 'GNAB ', 'Barnor ')
+  alt_text = REPLACE(REPLACE(REPLACE(alt_text, 'GNAB team', 'Barnor team'), 'GNAB logistics', 'Barnor logistics'), 'GNAB ', 'Barnor ')
 WHERE alt_text ILIKE '%GNAB%';
 
 -- ------------------------------------------------------------
 -- 7. blog_posts — any existing posts with GNAB in title/content
 -- ------------------------------------------------------------
 UPDATE public.blog_posts SET
-  title = REPLACE(title, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  title = REPLACE(title, 'GNAB ', 'Barnor '),
-  content = REPLACE(content, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  content = REPLACE(content, 'GNAB ', 'Barnor '),
-  excerpt = REPLACE(excerpt, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  excerpt = REPLACE(excerpt, 'GNAB ', 'Barnor '),
-  meta_title = REPLACE(meta_title, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  meta_title = REPLACE(meta_title, '| GNAB', '| Barnor'),
-  meta_description = REPLACE(meta_description, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  meta_description = REPLACE(meta_description, 'GNAB ', 'Barnor ')
+  title = REPLACE(REPLACE(title, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor '),
+  content = REPLACE(REPLACE(content, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor '),
+  excerpt = REPLACE(REPLACE(excerpt, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor '),
+  meta_title = REPLACE(REPLACE(meta_title, 'GNAB Business Solutions', 'Barnor Business Solutions'), '| GNAB', '| Barnor'),
+  meta_description = REPLACE(REPLACE(meta_description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
 WHERE 
   title ILIKE '%GNAB%' OR
   content ILIKE '%GNAB%' OR
@@ -108,8 +101,7 @@ WHERE
 -- 8. testimonials — sample/default content
 -- ------------------------------------------------------------
 UPDATE public.testimonials SET
-  quote = REPLACE(quote, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  quote = REPLACE(quote, 'GNAB ', 'Barnor ')
+  quote = REPLACE(REPLACE(quote, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
 WHERE quote ILIKE '%GNAB%';
 
 -- ------------------------------------------------------------
@@ -129,18 +121,15 @@ WHERE quote ILIKE '%GNAB%';
 -- 12. assistant_questions — admin Q&A content
 -- ------------------------------------------------------------
 UPDATE public.assistant_questions SET
-  question = REPLACE(question, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  question = REPLACE(question, 'GNAB ', 'Barnor '),
-  answer = REPLACE(answer, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  answer = REPLACE(answer, 'GNAB ', 'Barnor ')
+  question = REPLACE(REPLACE(question, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor '),
+  answer = REPLACE(REPLACE(answer, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
 WHERE question ILIKE '%GNAB%' OR answer ILIKE '%GNAB%';
 
 -- ------------------------------------------------------------
 -- 13. contact_messages — admin replies
 -- ------------------------------------------------------------
 UPDATE public.contact_messages SET
-  admin_reply = REPLACE(admin_reply, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  admin_reply = REPLACE(admin_reply, 'GNAB ', 'Barnor ')
+  admin_reply = REPLACE(REPLACE(admin_reply, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
 WHERE admin_reply ILIKE '%GNAB%';
 
 -- ------------------------------------------------------------
@@ -156,8 +145,7 @@ WHERE footer_label ILIKE '%GNAB%' OR name ILIKE '%GNAB%';
 -- ------------------------------------------------------------
 UPDATE public.industries SET
   name = REPLACE(name, 'GNAB', 'Barnor'),
-  description = REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  description = REPLACE(description, 'GNAB ', 'Barnor ')
+  description = REPLACE(REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
 WHERE name ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
 
 -- ------------------------------------------------------------
@@ -165,8 +153,7 @@ WHERE name ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
 -- ------------------------------------------------------------
 UPDATE public.why_choose_us SET
   title = REPLACE(title, 'GNAB', 'Barnor'),
-  description = REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  description = REPLACE(description, 'GNAB ', 'Barnor ')
+  description = REPLACE(REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
 WHERE title ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
 
 -- ------------------------------------------------------------
@@ -174,8 +161,7 @@ WHERE title ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
 -- ------------------------------------------------------------
 UPDATE public.process_steps SET
   title = REPLACE(title, 'GNAB', 'Barnor'),
-  description = REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  description = REPLACE(description, 'GNAB ', 'Barnor ')
+  description = REPLACE(REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
 WHERE title ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
 
 -- ------------------------------------------------------------
@@ -183,10 +169,8 @@ WHERE title ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
 -- ------------------------------------------------------------
 UPDATE public.products SET
   name = REPLACE(name, 'GNAB', 'Barnor'),
-  short_description = REPLACE(short_description, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  short_description = REPLACE(short_description, 'GNAB ', 'Barnor '),
-  description = REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  description = REPLACE(description, 'GNAB ', 'Barnor ')
+  short_description = REPLACE(REPLACE(short_description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor '),
+  description = REPLACE(REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
 WHERE name ILIKE '%GNAB%' OR short_description ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
 
 -- ------------------------------------------------------------
@@ -201,15 +185,13 @@ WHERE file_name ILIKE '%GNAB%';
 -- ------------------------------------------------------------
 UPDATE public.supplier_registrations SET
   company_name = REPLACE(company_name, 'GNAB', 'Barnor'),
-  company_description = REPLACE(company_description, 'GNAB Business Solutions', 'Barnor Business Solutions'),
-  company_description = REPLACE(company_description, 'GNAB ', 'Barnor ')
+  company_description = REPLACE(REPLACE(company_description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
 WHERE company_name ILIKE '%GNAB%' OR company_description ILIKE '%GNAB%';
 
 -- ------------------------------------------------------------
 -- 21. quotes — quotation items descriptions
 -- ------------------------------------------------------------
 UPDATE public.quotes SET
-  -- items are JSONB, need special handling
   items = (
     SELECT jsonb_agg(
       CASE 
