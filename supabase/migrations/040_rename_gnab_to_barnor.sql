@@ -110,12 +110,36 @@ WHERE quote ILIKE '%GNAB%';
 -- We keep them as-is for audit trail, but new ones use BARN- prefix via code
 
 -- ------------------------------------------------------------
--- 10. quotations — quotation numbers (same as above, keep historical)
+-- 10. quotations — quotation items descriptions
 -- ------------------------------------------------------------
+UPDATE public.quotations SET
+  items = (
+    SELECT jsonb_agg(
+      CASE 
+        WHEN (elem->>'description') ILIKE '%GNAB%' THEN
+          jsonb_set(elem, '{description}', to_jsonb(REPLACE(elem->>'description', 'GNAB Business Solutions', 'Barnor Business Solutions')))
+        ELSE elem
+      END
+    )
+    FROM jsonb_array_elements(items) AS elem
+  )
+WHERE items @> '[{"description": "GNAB"}]';
 
 -- ------------------------------------------------------------
--- 11. receipts — receipt numbers (keep historical)
+-- 11. receipts — receipt items descriptions
 -- ------------------------------------------------------------
+UPDATE public.receipts SET
+  items = (
+    SELECT jsonb_agg(
+      CASE 
+        WHEN (elem->>'description') ILIKE '%GNAB%' THEN
+          jsonb_set(elem, '{description}', to_jsonb(REPLACE(elem->>'description', 'GNAB Business Solutions', 'Barnor Business Solutions')))
+        ELSE elem
+      END
+    )
+    FROM jsonb_array_elements(items) AS elem
+  )
+WHERE items @> '[{"description": "GNAB"}]';
 
 -- ------------------------------------------------------------
 -- 12. assistant_questions — admin Q&A content
@@ -181,47 +205,15 @@ UPDATE public.company_documents SET
 WHERE file_name ILIKE '%GNAB%';
 
 -- ------------------------------------------------------------
--- 20. supplier_registrations — company names if they reference GNAB
+-- 20. suppliers (supplier registrations) — company names if they reference GNAB
 -- ------------------------------------------------------------
-UPDATE public.supplier_registrations SET
+UPDATE public.suppliers SET
   company_name = REPLACE(company_name, 'GNAB', 'Barnor'),
-  company_description = REPLACE(REPLACE(company_description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
-WHERE company_name ILIKE '%GNAB%' OR company_description ILIKE '%GNAB%';
+  description = REPLACE(REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
+WHERE company_name ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
 
 -- ------------------------------------------------------------
--- 21. quotes — quotation items descriptions
--- ------------------------------------------------------------
-UPDATE public.quotes SET
-  items = (
-    SELECT jsonb_agg(
-      CASE 
-        WHEN (elem->>'description') ILIKE '%GNAB%' THEN
-          jsonb_set(elem, '{description}', to_jsonb(REPLACE(elem->>'description', 'GNAB Business Solutions', 'Barnor Business Solutions')))
-        ELSE elem
-      END
-    )
-    FROM jsonb_array_elements(items) AS elem
-  )
-WHERE items @> '[{"description": "GNAB"}]';
-
--- ------------------------------------------------------------
--- 22. receipts — receipt items descriptions
--- ------------------------------------------------------------
-UPDATE public.receipts SET
-  items = (
-    SELECT jsonb_agg(
-      CASE 
-        WHEN (elem->>'description') ILIKE '%GNAB%' THEN
-          jsonb_set(elem, '{description}', to_jsonb(REPLACE(elem->>'description', 'GNAB Business Solutions', 'Barnor Business Solutions')))
-        ELSE elem
-      END
-    )
-    FROM jsonb_array_elements(items) AS elem
-  )
-WHERE items @> '[{"description": "GNAB"}]';
-
--- ------------------------------------------------------------
--- 23. Verification queries — run these to confirm
+-- 21. Verification queries — run these to confirm
 -- ------------------------------------------------------------
 -- SELECT key, value FROM public.site_settings WHERE value ILIKE '%GNAB%';
 -- SELECT id, header_company_name, header_contact, footer_text, subject_template FROM public.pdf_templates WHERE header_company_name ILIKE '%GNAB%' OR header_contact ILIKE '%GNAB%' OR footer_text ILIKE '%GNAB%' OR subject_template ILIKE '%GNAB%';
