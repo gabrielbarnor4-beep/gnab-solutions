@@ -141,7 +141,7 @@ export default function AssistantWidget() {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.9, type: 'spring', stiffness: 260, damping: 18 }}
         onClick={() => setOpen(!open)}
-        aria-label={open ? 'Close GNAB Assistant' : 'Open GNAB Assistant chat'}
+        aria-label={open ? 'Close Barnor Assistant' : 'Open Barnor Assistant chat'}
         style={{ bottom: 'calc(24px + env(safe-area-inset-bottom, 0px))' }}
         className="fixed right-6 z-[60] group"
       >
@@ -169,7 +169,7 @@ export default function AssistantWidget() {
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             className="fixed bottom-[92px] right-4 z-[60] flex h-[min(600px,calc(100dvh-120px))] w-[calc(100vw-32px)] max-w-[390px] flex-col overflow-hidden rounded-[26px] border border-gray-100 bg-white shadow-[0_24px_80px_rgba(11,46,89,0.25)] sm:right-6"
             role="dialog"
-            aria-label="GNAB Assistant chat"
+            aria-label="Barnor Assistant chat"
           >
             {/* Header */}
             <div className="relative flex items-center gap-3 bg-gradient-to-r from-navy to-navy-500 px-5 py-4 text-white">
@@ -177,7 +177,7 @@ export default function AssistantWidget() {
                 <img src={CONTACT.logo} alt="" aria-hidden="true" className="h-6 w-auto" />
               </span>
               <div className="relative min-w-0 flex-1">
-                <p className="font-display text-[15px] font-bold">GNAB Assistant</p>
+                <p className="font-display text-[15px] font-bold">Barnor Assistant</p>
                 <p className="flex items-center gap-1.5 text-[11px] text-navy-100/85">
                   <span className="h-1.5 w-1.5 rounded-full bg-green-400" /> Online • replies instantly
                 </p>
@@ -292,7 +292,7 @@ export default function AssistantWidget() {
                 </button>
               </div>
               <p className="mt-2 text-center text-[10px] text-gray-400">
-                Powered by GNAB Assistant · For urgent matters <a href={CONTACT.whatsappLink} target="_blank" rel="noopener noreferrer" className="underline hover:text-navy"><MessageCircle size={9} className="inline" /> WhatsApp us</a>
+                Powered by Barnor Assistant · For urgent matters <a href={CONTACT.whatsappLink} target="_blank" rel="noopener noreferrer" className="underline hover:text-navy"><MessageCircle size={9} className="inline" /> WhatsApp us</a>
               </p>
             </form>
           </motion.div>

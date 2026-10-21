@@ -1,4 +1,4 @@
-# GNAB Solutions — Complete Build Roadmap
+# Barnor Solutions — Complete Build Roadmap
 
 > **One document to rebuild the entire platform without missing a function, feature, or pixel.**
 > Stack: **React 19 + TypeScript 6 + Vite 6 + Tailwind 4 + Supabase (Auth/Postgres/Storage/Edge) + Framer Motion + Leaflet + jsPDF**
@@ -32,7 +32,7 @@
 
 ## Executive Summary
 
-**GNAB Business Solutions** — *"One Partner. Endless Solutions."* — is a corporate procurement platform for Ghana and West Africa. One call to GNAB replaces 100+ suppliers.
+**Barnor Business Solutions** — *"One Partner. Endless Solutions."* — is a corporate procurement platform for Ghana and West Africa. One call to Barnor replaces 100+ suppliers.
 
 **Public promise:** *Simplify procurement through reliable sourcing, competitive pricing and timely delivery — across Ghana and beyond.* One quote, one delivery, one after-sales owner.
 
@@ -66,12 +66,12 @@ Simplify procurement through reliable sourcing, competitive pricing and timely d
 **Public — Must have:**
 - As a visitor, I can request a quote `(/quote?category=&product=)` with files and get a 24h reply promise — so I don’t chase.
 - As a visitor, I can browse `Services` (11 cats) → `Products` (132 items) with search chips and request quote per item — picking an agro product filters the agro catalogue (never stationery) and pre-selects `Agro & Foodstuffs` in the quote form.
-- As a buyer anywhere in the world, I can request bulk yam, maize, cocoa, fruits or vegetables via `/quote?category=agro-foodstuffs` — GNAB sources from vetted farmers, quality-checks, and delivers to Ghana or abroad as my intermediary.
+- As a buyer anywhere in the world, I can request bulk yam, maize, cocoa, fruits or vegetables via `/quote?category=agro-foodstuffs` — Barnor sources from vetted farmers, quality-checks, and delivers to Ghana or abroad as my intermediary.
 - As a visitor on `/contact`, I see all company locations on one Leaflet map and get a free OSRM driving route from my location to any pin.
 - As a visitor, I can leave a `Review` (20–2000 chars, 1–5 stars) — it appears after admin approval.
 - As a visitor on a phone browser, I can open the nav menu from anywhere (even the footer) and always see the logo bar + close option — the menu is a full-screen sheet with its own top bar.
 - As a visitor, I see footer Quick Links (incl. Reviews and Become a Supplier) and Contact lines exactly as the admin toggled/ordered them.
-- As a visitor, I can ask the floating `GNAB Assistant` about products, pricing, delivery — it answers from FAQ → Gemini → local brain, and logs unanswered questions. It knows all 10 catalogues incl. Automobile + IT Solutions.
+- As a visitor, I can ask the floating `Barnor Assistant` about products, pricing, delivery — it answers from FAQ → Gemini → local brain, and logs unanswered questions. It knows all 10 catalogues incl. Automobile + IT Solutions.
 
 **Admin — Must have:**
 - As an admin, I can toggle each footer Quick Link Shown/Hidden (incl. Reviews, Become a Supplier), reorder them, and manage unlimited Contact items (email/phone/WhatsApp/address/hours/link/text) each with its own toggle and order — the public footer mirrors all of it.
@@ -231,7 +231,7 @@ scripts/serve_spa.py     # SimpleHTTP SPA fallback
 | `025_favicon_og` | `site_settings` `favicon_url`, `og_image_url` (imgur defaults at the time) | Admin-decidable tab icon + social image via Settings → Branding |
 | `026_selfhost_brand_assets` | rewrites `logo_url/favicon_url/og_image_url` + `pdf_templates.header_logo_url` from imgur to `/favicon.svg` + `/og-image.svg` | Kills imgur dependency — defaults ship with `dist` (`public/`) |
 | `027_footer_custom_links` | `services.footer_label`, `services.footer_path` (nullable; null = auto name → slug) | Per-service footer label/destination override without renaming the service |
-| `028_restore_real_logo` | sets `logo_url/favicon_url/og_image_url` (+ pdf logos) to the real Supabase-hosted brand logo `media/branding/1788397307996-wb35sl.jpg` (insert if missing) | Real GNAB logo everywhere by default, still fully replaceable via Settings → Branding |
+| `028_restore_real_logo` | sets `logo_url/favicon_url/og_image_url` (+ pdf logos) to the real Supabase-hosted brand logo `media/branding/1788397307996-wb35sl.jpg` (insert if missing) | Real Barnor logo everywhere by default, still fully replaceable via Settings → Branding |
 | `029_design_options` | `site_settings` 20 keys: `home_hero_eyebrow_style/title_size/align`, `page_hero_eyebrow_style/align/title_size`, `cta_eyebrow_style/align/title_size/theme`, `about/services/industries/products/process/whyus_cta_title_highlight`, `footer_quick_links_title/services_title/contact_title/heading_style` | Heading design system — one admin choice styles Home hero, all inner heroes, all 7 CTA cards and footer headings; public reads via `useSiteSettings()` with fallbacks (`lib/design.ts` `splitHighlight/slugify/titleSizeClass/ctaThemeClass`) |
 | `030_cta_features` | `site_settings` 18 keys: `about/services/industries/products/process/whyus_cta_feature1/2/3` (defaults `24h response / 100% commitment / No obligation until you approve`) | Per-page CTA feature strips — like Home `home_cta.feature1-3`; edited in Admin → Site Pages (same tab as CTA copy), rendered by shared `PremiumCTA features=` prop with hardcoded fallback |
 | `031_anon_is_admin_grant` | `grant execute on function public.is_admin() to anon` | Fixes "permission denied for function is_admin" for logged-out visitors: anon could not evaluate admin-branch RLS policies, so public reads (locations map, catalogue content) failed for visitors while working for logged-in admins — looked like a browser difference, was a login-state difference. Safe: `is_admin()` is `SECURITY DEFINER` returning false for anon, grants no access, only lets `public_*` policies evaluate |
@@ -273,7 +273,7 @@ scripts/serve_spa.py     # SimpleHTTP SPA fallback
 - `/process` vertical gold rail timeline + `PremiumCTA`
 - `/why-us` alternating rows 6 + comparison strip
 - `/contact` channels `useSiteSettings` + Business Hours card + form (`website_hp` honeypot, `canSubmit 5/min`, `message<=5000`, `files<=5`, `isAllowedAttachment`, 5MB, upload `attachments/contact/` → `contact_messages` → Formspree) + **Leaflet map** lazy `import('leaflet')` (was 150k eager), pins gold/navy, user geolocation, OSRM `router.project-osrm.org` driving route `geojson`, toolbar `Use my location/Route`
-- `/quote` prefill `?category=&product=` via `catalogueTitleForSlug` (any slug/title variant → exact `PRODUCT_CATEGORIES` title incl. Automobile + IT Solutions + Agro & Foodstuffs, synced on navigate), 2-col form, same guards `canSubmit 5/min`, `files<=5`, `rfq_number GNAB-YYYY-xxxxxx` retry 3, `attachments/quotes/` → `quote_requests` → Formspree
+- `/quote` prefill `?category=&product=` via `catalogueTitleForSlug` (any slug/title variant → exact `PRODUCT_CATEGORIES` title incl. Automobile + IT Solutions + Agro & Foodstuffs, synced on navigate), 2-col form, same guards `canSubmit 5/min`, `files<=5`, `rfq_number BARN-YYYY-xxxxxx` retry 3, `attachments/quotes/` → `quote_requests` → Formspree
 - `/supplier-registration` pills 11 categories incl. Automobile + IT Solutions + Agro & Foodstuffs, `canSubmit 3/min`, `attachments/suppliers/` → `suppliers` → Formspree
 - `/testimonials` grid approved + form `canSubmit 3/min` `quote 20–2000` → `submitTestimonial` pending + Formspree
 - `/blog` filter All+5 cats, featured 2-col, grid 3-col
@@ -382,7 +382,7 @@ GEMINI_API_KEY=...
 # via supabase secrets set — at least one for email
 BREVO_API_KEY=...   # preferred, sender verify, 300/day free, port 443
 RESEND_API_KEY=...
-FROM_EMAIL=GNAB Business Solutions <gnabsolutions@gmail.com>
+FROM_EMAIL=Barnor Business Solutions <barnorsolutions@gmail.com>
 ALLOWED_ORIGIN=https://gnab-solutions.vercel.app  # optional CORS lockdown, defaults safe localhost
 SUPABASE_URL / SUPABASE_ANON_KEY injected by Supabase Edge automatically
 ```
@@ -607,7 +607,7 @@ sequenceDiagram
     V->>F: Fill + 0-5 files (<5MB, allowlist) + Submit
     F->>F: compress? no, check 5000 chars, isHoneypot, canSubmit
     F->>S: storage.from attachments upload quotes/xxx
-    F->>S: insert quote_requests (rfq_number GNAB-YYYY-xxxx, status new, enforced by 015 trigger)
+    F->>S: insert quote_requests (rfq_number BARN-YYYY-xxxx, status new, enforced by 015 trigger)
     F->>FS: POST FormData + attachment_urls
     A->>S: select where status=new
     A->>PDF: generateGnabPdf(title, customer, table, totals) -- lazy import jspdf
@@ -683,4 +683,4 @@ graph TD
 
 ---
 
-* *Generated for replication — no step skipped. Apply migrations `001→038`, set 3 `VITE_*` + edge secrets (`GEMINI/BREVO/RESEND/ALLOWED_ORIGIN`), `npm ci && npm run lint && npm test && npm run build`, choose Vercel subdomain, and you have the exact GNAB Solutions — public (13 routes, 11 catalogues with slug-unified routing, industry + service pre-filter, unified COT + footer headings + per-page feature strips, design system, per-item footer toggles, full-screen mobile sheet) and admin (22 pages, ⌘K search with `?q=` deep-links, Site Pages ✨ Design + highlights + strips, footer quick-link/contact toggles, receipts + PDF templates incl. website-package/ERP-discovery quote templates, never-stuck Downloads) pixel- and behavior-identical.*
+* *Generated for replication — no step skipped. Apply migrations `001→038`, set 3 `VITE_*` + edge secrets (`GEMINI/BREVO/RESEND/ALLOWED_ORIGIN`), `npm ci && npm run lint && npm test && npm run build`, choose Vercel subdomain, and you have the exact Barnor Solutions — public (13 routes, 11 catalogues with slug-unified routing, industry + service pre-filter, unified COT + footer headings + per-page feature strips, design system, per-item footer toggles, full-screen mobile sheet) and admin (22 pages, ⌘K search with `?q=` deep-links, Site Pages ✨ Design + highlights + strips, footer quick-link/contact toggles, receipts + PDF templates incl. website-package/ERP-discovery quote templates, never-stuck Downloads) pixel- and behavior-identical.*

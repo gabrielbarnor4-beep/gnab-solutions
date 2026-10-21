@@ -54,7 +54,7 @@ export default function SuppliersAdminPage() {
   const [page, setPage] = useState(1)
 
   useEffect(() => {
-    document.title = 'Supplier Registrations | GNAB Admin'
+    document.title = 'Supplier Registrations | Barnor Admin'
   }, [])
 
   const load = useCallback(async () => {
@@ -123,7 +123,7 @@ export default function SuppliersAdminPage() {
     <div>
       <PageIntro
         title="Supplier Registrations"
-        description="Review applications from businesses wanting to join the GNAB supplier network."
+        description="Review applications from businesses wanting to join the Barnor supplier network."
       />
 
       <ErrorBanner message={error} onDismiss={() => setError('')} />

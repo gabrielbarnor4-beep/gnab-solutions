@@ -16,7 +16,7 @@ function requireEnv(name: string): string {
 export const FORMSPREE_ENDPOINT = requireEnv('VITE_FORMSPREE_ENDPOINT')
 
 export const CONTACT = {
-  email: 'gnabsolutions@gmail.com',
+  email: 'barnorsolutions@gmail.com',
   phone: '+233 55 427 3445',
   phoneRaw: '+233554273445',
   whatsapp: '+233 27 547 3098',
@@ -26,8 +26,8 @@ export const CONTACT = {
 } as const
 
 export const COMPANY = {
-  name: 'GNAB Business Solutions',
-  shortName: 'GNAB',
+  name: 'Barnor Business Solutions',
+  shortName: 'Barnor',
   tagline: 'One Partner. Endless Solutions.',
   mission:
     'To simplify procurement through reliable sourcing, competitive pricing and timely delivery.',

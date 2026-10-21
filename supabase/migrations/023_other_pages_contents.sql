@@ -11,7 +11,7 @@ insert into public.site_settings (key, value) values
   ('about_hero_subtitle', 'Ghana''s trusted partner for corporate procurement, sourcing and supply — delivering measurable value to businesses, government, NGOs and institutions.'),
   ('about_story_eyebrow', 'Our Story'),
   ('about_story_title', 'Built on Trust, Driven by Results'),
-  ('about_story_p1', 'GNAB Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.'),
+  ('about_story_p1', 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.'),
   ('about_story_p2', 'We serve businesses, government institutions, NGOs, schools, hospitals, hotels and SMEs across Ghana with reliable, efficient and cost-effective procurement solutions.'),
   ('about_pillars', '[{"value":"100+","label":"Trusted Suppliers"},{"value":"500+","label":"Products Sourced"},{"value":"24h","label":"Quote Turnaround"},{"value":"100%","label":"Commitment"}]'),
   ('about_mission_title', 'Our Mission'),
@@ -67,7 +67,7 @@ insert into public.site_settings (key, value) values
   ('contact_form_title', 'Send Us a Message'),
   ('contact_form_subtitle', 'We typically reply within a few hours.'),
   ('contact_form_success_title', 'Message Sent Successfully'),
-  ('contact_form_success_desc', 'Thank you for contacting GNAB Business Solutions. We will respond as soon as possible.'),
+  ('contact_form_success_desc', 'Thank you for contacting Barnor Business Solutions. We will respond as soon as possible.'),
 
   -- Quote
   ('quote_hero_title', 'Get Your Free Quotation'),
@@ -76,12 +76,12 @@ insert into public.site_settings (key, value) values
   ('quote_form_title', 'Your Request Details'),
 
   -- Supplier
-  ('supplier_hero_title', 'Become a GNAB Supplier'),
+  ('supplier_hero_title', 'Become a Barnor Supplier'),
   ('supplier_hero_subtitle', 'Join our trusted network of suppliers and gain access to procurement opportunities across Ghana.'),
   ('supplier_intro_desc', 'Tell us about your business and the products or services you supply. Applications are reviewed within five working days.'),
 
   -- Testimonials/Blog
-  ('testimonials_hero_title', 'What Organisations Say About GNAB'),
+  ('testimonials_hero_title', 'What Organisations Say About Barnor'),
   ('testimonials_hero_subtitle', 'Real feedback from the businesses and institutions we serve across Ghana.'),
   ('testimonials_share_title', 'Share Your Experience'),
   ('blog_hero_title', 'Insights That Move Procurement Forward'),

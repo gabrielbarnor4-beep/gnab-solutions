@@ -53,7 +53,7 @@ export default function ProductsAdminPage() {
   const [showTrash, setShowTrash] = useState(false)
 
   useEffect(() => {
-    document.title = 'Products | GNAB Admin'
+    document.title = 'Products | Barnor Admin'
   }, [])
 
   const load = useCallback(async () => {

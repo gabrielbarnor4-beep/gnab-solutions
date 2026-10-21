@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
-    document.title = 'Set New Password | GNAB Admin'
+    document.title = 'Set New Password | Barnor Admin'
     void supabase.auth.getSession().then(({ data }) => {
       setSession(data.session)
       setChecking(false)

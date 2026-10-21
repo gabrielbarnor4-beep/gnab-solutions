@@ -111,7 +111,7 @@ const FIELDS: Record<Exclude<Tab, 'design'>, { key: string; label: string; type?
     { key: 'whyus_hero_title', label: 'Hero Title' },
     { key: 'whyus_hero_subtitle', label: 'Hero Subtitle', type: 'textarea' },
     { key: 'whyus_comparison_typical_title', label: 'Comparison — Typical Title' },
-    { key: 'whyus_comparison_gnab_title', label: 'Comparison — GNAB Title' },
+    { key: 'whyus_comparison_barnor_title', label: 'Comparison — Barnor Title' },
     { key: 'whyus_cta_eyebrow', label: 'CTA Eyebrow' },
     { key: 'whyus_cta_title', label: 'CTA Title' },
     { key: 'whyus_cta_title_highlight', label: 'CTA Title Highlight (gold)' },
@@ -184,7 +184,7 @@ export default function PagesAdminPage() {
     setLoading(false)
   }, [settings])
 
-  useEffect(() => { document.title = 'Site Pages | GNAB Admin'; void load() }, [load])
+  useEffect(() => { document.title = 'Site Pages | Barnor Admin'; void load() }, [load])
 
   const save = async () => {
     setSaving(true); setErr(''); setSaved(false)

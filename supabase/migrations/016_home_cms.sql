@@ -11,7 +11,7 @@
 -- ------------------------------------------------------------
 create table if not exists public.home_hero (
   id uuid primary key default gen_random_uuid(),
-  badge text not null default 'Welcome to GNAB Business Solutions',
+  badge text not null default 'Welcome to Barnor Business Solutions',
   title_prefix text not null default 'Your Trusted',
   title_highlight text not null default 'Procurement & Supply',
   title_suffix text not null default 'Partner',
@@ -32,7 +32,7 @@ create policy "public_read_home_hero" on public.home_hero for select using (publ
 drop policy if exists "admin_all_home_hero" on public.home_hero;
 create policy "admin_all_home_hero" on public.home_hero for all using (public.is_admin()) with check (public.is_admin());
 insert into public.home_hero (badge, title_prefix, title_highlight, title_suffix, subtitle) values
-('Welcome to GNAB Business Solutions','Your Trusted','Procurement & Supply','Partner','We simplify procurement through reliable sourcing, competitive pricing and timely delivery — across Ghana and beyond.')
+('Welcome to Barnor Business Solutions','Your Trusted','Procurement & Supply','Partner','We simplify procurement through reliable sourcing, competitive pricing and timely delivery — across Ghana and beyond.')
 on conflict do nothing;
 
 -- ------------------------------------------------------------

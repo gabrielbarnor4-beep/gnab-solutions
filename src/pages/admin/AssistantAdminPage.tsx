@@ -50,7 +50,7 @@ export default function AssistantAdminPage() {
     setRows((data as Row[]) ?? []); setLoading(false)
   }, [])
 
-  useEffect(() => { document.title = 'Assistant Q&A | GNAB Admin'; void load() }, [load])
+  useEffect(() => { document.title = 'Assistant Q&A | Barnor Admin'; void load() }, [load])
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim()

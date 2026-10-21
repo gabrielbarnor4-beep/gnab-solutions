@@ -43,7 +43,7 @@ export default function ServicesAdminPage() {
   const [showTrash, setShowTrash] = useState(false)
 
   useEffect(() => {
-    document.title = 'Services | GNAB Admin'
+    document.title = 'Services | Barnor Admin'
   }, [])
 
   const load = useCallback(async () => {

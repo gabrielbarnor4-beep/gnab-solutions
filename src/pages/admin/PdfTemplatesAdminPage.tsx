@@ -104,7 +104,7 @@ function TemplateForm({ tpl, onSaved }: { tpl: PdfTemplate; onSaved: () => void 
 
         <div className="rounded-2xl border border-navy-100 bg-navy-50 p-4">
           <p className="text-sm font-bold text-navy">Email subject — decides email subject line</p>
-          <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Subject template *</span><input value={draft.subject_template} onChange={(e) => set('subject_template', e.target.value)} className={inputClass} placeholder="Your GNAB {{type}} {{number}} — {{rfq_number}}" /></label>
+          <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Subject template *</span><input value={draft.subject_template} onChange={(e) => set('subject_template', e.target.value)} className={inputClass} placeholder="Your Barnor {{type}} {{number}} — {{rfq_number}}" /></label>
           <p className="mt-1 text-xs text-ink-light">Used as default subject when admin does not type a custom subject. Supports variables above.</p>
         </div>
 
@@ -155,7 +155,7 @@ function TemplateForm({ tpl, onSaved }: { tpl: PdfTemplate; onSaved: () => void 
             <p className="text-sm font-bold text-navy">Payment — modes + account details (shows as “How to Pay” in the PDF)</p>
             <p className="mt-1 text-xs text-ink-light">Leave either blank to hide it. Account details are the real destination the customer pays to — fill them once here and every PDF carries them.</p>
             <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Accepted modes *</span><input value={draft.payment_options_template ?? ''} onChange={(e) => set('payment_options_template', e.target.value)} className={inputClass} placeholder="Cash • Cheque • Mobile Money • Bank Transfer" /></label>
-            <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Account details (bank / MoMo)</span><textarea rows={3} value={draft.account_details_template ?? ''} onChange={(e) => set('account_details_template', e.target.value)} className={`${inputClass} resize-none`} placeholder={'Bank: GCB Bank • Account: 1234567890 • Name: GNAB Business Solutions\nMoMo: 055 427 3445 (GNAB Business Solutions)'} /></label>
+            <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Account details (bank / MoMo)</span><textarea rows={3} value={draft.account_details_template ?? ''} onChange={(e) => set('account_details_template', e.target.value)} className={`${inputClass} resize-none`} placeholder={'Bank: GCB Bank • Account: 1234567890 • Name: Barnor Business Solutions\nMoMo: 055 427 3445 (Barnor Business Solutions)'} /></label>
           </div>
         )}
         <label className="block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-ink-light">Terms template</span><textarea rows={3} value={draft.terms_template ?? ''} onChange={(e) => set('terms_template', e.target.value)} className={`${inputClass} resize-none`} placeholder="Prices valid for 14 days..." /></label>
@@ -183,7 +183,7 @@ export default function PdfTemplatesAdminPage() {
     setLoading(false)
   }, [])
 
-  useEffect(() => { document.title = 'PDF Templates | GNAB Admin'; void load() }, [load])
+  useEffect(() => { document.title = 'PDF Templates | Barnor Admin'; void load() }, [load])
 
   const tpl = rows.find((r) => r.type === active) ?? null
 

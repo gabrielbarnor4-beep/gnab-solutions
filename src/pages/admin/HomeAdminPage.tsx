@@ -32,7 +32,7 @@ function IconSelect({ value, onChange }: { value: string; onChange: (v: string) 
 
 // Fallbacks mirror exactly what HomePage shows when DB is empty
 const FALLBACK_HERO = {
-  badge: 'Welcome to GNAB Business Solutions',
+  badge: 'Welcome to Barnor Business Solutions',
   title_prefix: 'Your Trusted',
   title_highlight: 'Procurement & Supply',
   title_suffix: 'Partner',
@@ -59,7 +59,7 @@ const FALLBACK_ABOUT = {
   eyebrow: 'About Us',
   title_prefix: 'Who We',
   title_highlight: 'Are',
-  paragraph1: 'GNAB Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.',
+  paragraph1: 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.',
   paragraph2: 'From office stationery to industrial equipment, we handle it all with professionalism and efficiency — so your business never stops running.',
   badge_value: '10+',
   badge_label: 'Years of Excellence',
@@ -80,7 +80,7 @@ const FALLBACK_CTA = {
   eyebrow: "Let's talk",
   title_prefix: 'Ready to Simplify',
   title_highlight: 'Your Procurement?',
-  subtitle: 'Let GNAB handle your sourcing, pricing and delivery — one partner, endless solutions. Your free quotation lands within 24 hours.',
+  subtitle: 'Let Barnor handle your sourcing, pricing and delivery — one partner, endless solutions. Your free quotation lands within 24 hours.',
   primary_label: 'Request a Quote',
   primary_link: '/quote',
   secondary_label: 'Contact Our Team',
@@ -592,7 +592,7 @@ function WhyHomeTab() {
   return (
     <div>
       <ErrorBanner message={err} onDismiss={() => setErr('')} />
-      <p className="mb-3 text-xs text-ink-light">Home → Why Choose GNAB feature cards (dark section). {visible.length} cards.</p>
+      <p className="mb-3 text-xs text-ink-light">Home → Why Choose Barnor feature cards (dark section). {visible.length} cards.</p>
       <div className="mb-4 flex justify-end"><button onClick={() => setEditing({ title: '', description: '', icon: 'Handshake', display_order: visible.length + 1, published: true })} className="inline-flex items-center gap-2 rounded-xl bg-brand-green-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-green-600"><Plus size={14} /> Add Card</button></div>
       <ul className="space-y-2">
         {visible.map((r, i) => (
@@ -686,7 +686,7 @@ function ProcessHomeTab() {
 export default function HomeAdminPage() {
   const [tab, setTab] = useState<Tab>('hero')
 
-  useEffect(() => { document.title = 'Home Page | GNAB Admin' }, [])
+  useEffect(() => { document.title = 'Home Page | Barnor Admin' }, [])
 
   return (
     <div>

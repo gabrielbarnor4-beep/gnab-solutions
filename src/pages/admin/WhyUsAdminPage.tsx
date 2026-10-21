@@ -37,7 +37,7 @@ export default function WhyUsAdminPage() {
     if (err) setError(err.code === '42P01' ? 'Run 007_full_cms_and_retention.sql first.' : `Failed to load: ${err.message}`)
     setRows((data as Row[]) ?? []); setLoading(false)
   }, [])
-  useEffect(() => { document.title = 'Why Us | GNAB Admin'; void load() }, [load])
+  useEffect(() => { document.title = 'Why Us | Barnor Admin'; void load() }, [load])
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim()

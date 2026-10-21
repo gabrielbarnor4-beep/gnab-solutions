@@ -84,8 +84,8 @@ export interface SiteSettings {
   whyus_hero_subtitle: string
   whyus_comparison_typical_title: string
   whyus_comparison_typical_bullets: string
-  whyus_comparison_gnab_title: string
-  whyus_comparison_gnab_bullets: string
+  whyus_comparison_barnor_title: string
+  whyus_comparison_barnor_bullets: string
   contact_hero_title: string
   contact_hero_subtitle: string
   contact_get_in_touch_title: string
@@ -196,12 +196,12 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   phone: CONTACT.phone,
   whatsapp: CONTACT.whatsapp,
   address: CONTACT.address,
-  logo_url: CONTACT.logo, // your real GNAB logo — admin can replace via Settings → Branding → Company Logo (media/branding), mirrored live everywhere
+  logo_url: CONTACT.logo, // your real Barnor logo — admin can replace via Settings → Branding → Company Logo (media/branding), mirrored live everywhere
   social_linkedin: '',
   social_facebook: '',
   social_twitter: '',
   social_instagram: '',
-  seo_title: 'GNAB Business Solutions | One Partner. Endless Solutions.',
+  seo_title: 'Barnor Business Solutions | One Partner. Endless Solutions.',
   seo_description: COMPANY.description,
   footer_text: 'Simplifying procurement for organisations across Ghana and Beyond.',
   favicon_url: CONTACT.logo, // same real logo by default — admin can set a distinct square favicon via Settings → Branding → Favicon
@@ -227,7 +227,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   about_hero_subtitle: COMPANY.description,
   about_story_eyebrow: 'Our Story',
   about_story_title: 'Built on Trust, Driven by Results',
-  about_story_p1: 'GNAB Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.',
+  about_story_p1: 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.',
   about_story_p2: 'We serve businesses, government institutions, NGOs, schools, hospitals, hotels and SMEs across Ghana with reliable, efficient and cost-effective procurement solutions.',
   about_pillars: JSON.stringify([{value: "100+", label: "Trusted Suppliers"}, {value: "500+", label: "Products Sourced"}, {value: "24h", label: "Quote Turnaround"}, {value: "100%", label: "Commitment"}]),
   about_mission_title: 'Our Mission',
@@ -240,7 +240,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   about_values_cards: JSON.stringify([{title:"Integrity",desc:"We conduct business with uncompromising ethical standards."},{title:"Customer Focus",desc:"Your success drives every decision we make."},{title:"Excellence",desc:"We pursue excellence in every detail of every order."},{title:"Innovation",desc:"We embrace smarter ways to simplify procurement."}]),
   about_cta_eyebrow: 'Partner with us',
   about_cta_title: 'Partner With Us Today',
-  about_cta_subtitle: 'Experience the GNAB difference in procurement and supply solutions.',
+  about_cta_subtitle: 'Experience the Barnor difference in procurement and supply solutions.',
   about_cta_primary_label: 'Get Started',
   about_cta_secondary_label: 'Become a Supplier',
   services_hero_title: 'Procurement Solutions for Every Need',
@@ -259,11 +259,11 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   process_hero_subtitle: 'Six transparent steps from your first request to lasting after-sales support.',
   process_guarantee: JSON.stringify([{value:"24 Hours",label:"Quotation turnaround"},{value:"100%",label:"Order accuracy commitment"},{value:"Dedicated",label:"Account manager support"}]),
   whyus_hero_title: 'More Than a Supplier — A Strategic Partner',
-  whyus_hero_subtitle: 'Organisations across Ghana choose GNAB because we treat procurement as a partnership, not a transaction.',
+  whyus_hero_subtitle: 'Organisations across Ghana choose Barnor because we treat procurement as a partnership, not a transaction.',
   whyus_comparison_typical_title: 'Typical Procurement',
   whyus_comparison_typical_bullets: JSON.stringify(["Multiple vendors to chase","Inconsistent pricing","Slow, unclear quotations","No accountability after delivery"]),
-  whyus_comparison_gnab_title: 'The GNAB Way',
-  whyus_comparison_gnab_bullets: JSON.stringify(["One partner for everything","Transparent, competitive pricing","Quotation within 24 hours","After-sales support that stays"]),
+  whyus_comparison_barnor_title: 'The Barnor Way',
+  whyus_comparison_barnor_bullets: JSON.stringify(["One partner for everything","Transparent, competitive pricing","Quotation within 24 hours","After-sales support that stays"]),
   contact_hero_title: "Let's Start a Conversation",
   contact_hero_subtitle: 'Questions, requests or partnerships — our team responds within hours, not days.',
   contact_get_in_touch_title: 'Get in Touch',
@@ -271,15 +271,15 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   contact_form_title: 'Send Us a Message',
   contact_form_subtitle: 'We typically reply within a few hours.',
   contact_form_success_title: 'Message Sent Successfully',
-  contact_form_success_desc: 'Thank you for contacting GNAB Business Solutions. We will respond as soon as possible.',
+  contact_form_success_desc: 'Thank you for contacting Barnor Business Solutions. We will respond as soon as possible.',
   quote_hero_title: 'Get Your Free Quotation',
   quote_hero_subtitle: 'Tell us what you need — receive a competitive, transparent quotation within 24 hours.',
   quote_how_it_works_title: 'How It Works',
   quote_form_title: 'Your Request Details',
-  supplier_hero_title: 'Become a GNAB Supplier',
+  supplier_hero_title: 'Become a Barnor Supplier',
   supplier_hero_subtitle: 'Join our trusted network of suppliers and gain access to procurement opportunities across Ghana.',
   supplier_intro_desc: 'Tell us about your business and the products or services you supply. Applications are reviewed within five working days.',
-  testimonials_hero_title: 'What Organisations Say About GNAB',
+  testimonials_hero_title: 'What Organisations Say About Barnor',
   testimonials_hero_subtitle: 'Real feedback from the businesses and institutions we serve across Ghana.',
   testimonials_share_title: 'Share Your Experience',
   blog_hero_title: 'Insights That Move Procurement Forward',
@@ -293,8 +293,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   whyus_hero_title_highlight: 'Strategic Partner',
   contact_hero_title_highlight: 'Conversation',
   quote_hero_title_highlight: 'Free Quotation',
-  supplier_hero_title_highlight: 'GNAB Supplier',
-  testimonials_hero_title_highlight: 'GNAB',
+  supplier_hero_title_highlight: 'Barnor Supplier',
+  testimonials_hero_title_highlight: 'Barnor',
   blog_hero_title_highlight: 'Procurement Forward',
   // COT per other pages — same premium design as Home COT (gold p-[1.5px] navy)
   services_cta_eyebrow: 'Custom sourcing',
@@ -317,8 +317,8 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   process_cta_subtitle: 'Tell us what you need — get a transparent quotation within 24 hours.',
   process_cta_primary_label: 'Request a Quote',
   process_cta_secondary_label: 'Talk to Our Team',
-  whyus_cta_eyebrow: 'Why GNAB',
-  whyus_cta_title: 'Experience the GNAB Difference',
+  whyus_cta_eyebrow: 'Why Barnor',
+  whyus_cta_title: 'Experience the Barnor Difference',
   whyus_cta_subtitle: 'Join the organisations across Ghana already procuring smarter.',
   whyus_cta_primary_label: 'Request a Quote Today',
   whyus_cta_secondary_label: 'Talk to Our Team',
@@ -328,7 +328,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   industries_cta_title_highlight: 'Your Sector?',
   products_cta_title_highlight: 'What You Need?',
   process_cta_title_highlight: 'Step One?',
-  whyus_cta_title_highlight: 'GNAB Difference',
+  whyus_cta_title_highlight: 'Barnor Difference',
   // CTA feature strips (030) — same defaults as the previously hardcoded strip
   about_cta_feature1: '24h response',
   about_cta_feature2: '100% commitment',

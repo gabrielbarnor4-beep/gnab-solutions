@@ -63,7 +63,7 @@ describe('imgSrcSet', () => {
 
 describe('pdf interpolate', () => {
   it('replaces {{vars}}', () => {
-    expect(interpolate('Hello {{name}} — {{rfq_number}}', { name: 'Ama', rfq_number: 'GNAB-001' })).toBe('Hello Ama — GNAB-001')
+    expect(interpolate('Hello {{name}} — {{rfq_number}}', { name: 'Ama', rfq_number: 'BARN-001' })).toBe('Hello Ama — BARN-001')
   })
   it('keeps unknown placeholder', () => {
     expect(interpolate('{{unknown}}', {})).toBe('{{unknown}}')

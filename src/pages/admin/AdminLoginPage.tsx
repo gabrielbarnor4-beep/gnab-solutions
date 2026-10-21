@@ -106,7 +106,7 @@ export default function AdminLoginPage() {
                 autoComplete="username"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@gnabsolutions.com"
+                placeholder="admin@barnorsolutions.com"
                 className={cn(inputClass, 'pl-11')}
               />
             </div>

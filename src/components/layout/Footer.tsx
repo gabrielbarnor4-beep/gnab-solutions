@@ -94,7 +94,7 @@ export default function Footer() {
     const doc = await fetchActiveCompanyProfile()
     if (!doc) {
       setProfileMsg(
-        'Company Profile is currently being updated. Please check back shortly or contact GNAB Business Solutions for more information.'
+        'Company Profile is currently being updated. Please check back shortly or contact Barnor Business Solutions for more information.'
       )
       setTimeout(() => setProfileMsg(''), 8000)
       return

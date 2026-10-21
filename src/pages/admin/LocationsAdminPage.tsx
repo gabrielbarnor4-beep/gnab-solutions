@@ -72,7 +72,7 @@ export default function LocationsAdminPage() {
     setRows((data as Row[]) ?? []); setLoading(false)
   }, [])
 
-  useEffect(() => { document.title = 'Locations | GNAB Admin'; void load() }, [load])
+  useEffect(() => { document.title = 'Locations | Barnor Admin'; void load() }, [load])
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim()

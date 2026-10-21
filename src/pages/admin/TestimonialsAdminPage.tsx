@@ -53,7 +53,7 @@ export default function TestimonialsAdminPage() {
   }, [])
 
   useEffect(() => {
-    document.title = 'Testimonial Moderation | GNAB Admin'
+    document.title = 'Testimonial Moderation | Barnor Admin'
     void load()
   }, [load])
 

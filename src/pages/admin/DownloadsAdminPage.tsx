@@ -26,7 +26,7 @@ export default function DownloadsAdminPage() {
   const [uploading, setUploading] = useState(false)
 
   useEffect(() => {
-    document.title = 'Downloads | GNAB Admin'
+    document.title = 'Downloads | Barnor Admin'
   }, [])
 
   const load = useCallback(async () => {

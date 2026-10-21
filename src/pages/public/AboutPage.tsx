@@ -37,7 +37,7 @@ export default function AboutPage() {
   const s = useSiteSettings()
   const heroImg = useSiteImage('about_hero', IMAGES.about2)
   const warehouseImg = useSiteImage('about_warehouse', IMAGES.warehouse)
-  useEffect(() => { setPageMeta('About Us | GNAB Business Solutions', COMPANY.description, heroImg) }, [heroImg])
+  useEffect(() => { setPageMeta('About Us | Barnor Business Solutions', COMPANY.description, heroImg) }, [heroImg])
 
   const pillars: { value: string; label: string }[] = (() => {
     try {
@@ -82,7 +82,7 @@ export default function AboutPage() {
               />
               <Reveal delay={0.1}>
                 <p className="-mt-4 text-[17px] leading-relaxed text-ink-light">
-                  {s.about_story_p1 || 'GNAB Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.'}
+                  {s.about_story_p1 || 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.'}
                 </p>
                 <p className="mt-5 text-[17px] leading-relaxed text-ink-light">
                   {s.about_story_p2 || 'We serve businesses, government institutions, NGOs, schools, hospitals, hotels and SMEs across Ghana with reliable, efficient and cost-effective procurement solutions.'}
@@ -145,7 +145,7 @@ export default function AboutPage() {
                 transition={{ duration: 0.7, delay: 0.24, ease: [0.22, 1, 0.36, 1] }}
                 className="overflow-hidden rounded-[28px] shadow-lift"
               >
-                <img src={warehouseImg} alt="GNAB logistics operations" className="h-56 w-full object-cover" />
+                <img src={warehouseImg} alt="Barnor logistics operations" className="h-56 w-full object-cover" />
               </motion.div>
             </div>
           </div>
@@ -190,7 +190,7 @@ export default function AboutPage() {
         title={s.about_cta_title || "Partner With Us Today"}
             titleHighlight={s.about_cta_title_highlight}
             features={[s.about_cta_feature1, s.about_cta_feature2, s.about_cta_feature3]}
-        subtitle={s.about_cta_subtitle || "Experience the GNAB difference in procurement and supply solutions."}
+        subtitle={s.about_cta_subtitle || "Experience the Barnor difference in procurement and supply solutions."}
         primary={{ label: s.about_cta_primary_label || 'Get Started', to: '/quote' }}
         secondary={{ label: s.about_cta_secondary_label || 'Become a Supplier', to: '/supplier-registration' }}
       />

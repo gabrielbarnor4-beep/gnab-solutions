@@ -80,7 +80,7 @@ export default function QuotesAdminPage() {
   const [pkgLoading, setPkgLoading] = useState(false)
 
   useEffect(() => {
-    document.title = 'Quote Requests | GNAB Admin'
+    document.title = 'Quote Requests | Barnor Admin'
   }, [])
 
   const load = useCallback(async () => {
@@ -229,12 +229,12 @@ export default function QuotesAdminPage() {
     if (send) {
       // Update RFQ status and send email — use custom subject/body if provided
       await supabase.from('quote_requests').update({ status: 'quotation_sent' }).eq('id', selected.id)
-      const subject = quoteEmailSubject.trim() || interpolate(tpl?.subject_template || 'Your GNAB Quotation {{quotation_number}} — {{rfq_number}}', vars)
+      const subject = quoteEmailSubject.trim() || interpolate(tpl?.subject_template || 'Your Barnor Quotation {{quotation_number}} — {{rfq_number}}', vars)
       const customBody = quoteEmailBody.trim()
       const bodyHtml = customBody
         ? `<div style="white-space:pre-wrap">${customBody.replace(/\n/g, '<br>')}</div>`
         : tpl?.body_template ? `<div style="white-space:pre-wrap">${interpolate(tpl.body_template, vars).replace(/\n/g, '<br>')}</div>` : `<p>Thank you for your enquiry <strong>${selected.rfq_number}</strong>. Please find your quotation <strong>${qNumber}</strong> attached as a premium PDF and linked below.</p>`
-      const emailHtml = `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:${tpl?.primary_color || '#0B2E59'};color:white;padding:24px;border-radius:16px 16px 0 0"><h2 style="margin:0;color:white">${tpl?.header_company_name || 'GNAB Business Solutions'}</h2><p style="margin:4px 0 0;color:${tpl?.accent_color || '#D4AF37'};font-size:12px;letter-spacing:1px">${tpl?.header_tagline || 'One Partner. Endless Solutions.'}</p></div><div style="padding:24px;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 16px 16px"><p>Dear ${selected.full_name},</p>${bodyHtml}${pdfUrl ? `<p style="margin-top:16px"><a href="${pdfUrl}" style="display:inline-block;background:${tpl?.primary_color || '#0B2E59'};color:white;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:600">Download Quotation PDF</a></p>` : ''}<p style="color:#64748B;font-size:12px;margin-top:24px">Valid until ${quoteMeta.valid_until || '14 days'} • Questions? Reply to this email or call +233 55 427 3445</p></div></div>`
+      const emailHtml = `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:${tpl?.primary_color || '#0B2E59'};color:white;padding:24px;border-radius:16px 16px 0 0"><h2 style="margin:0;color:white">${tpl?.header_company_name || 'Barnor Business Solutions'}</h2><p style="margin:4px 0 0;color:${tpl?.accent_color || '#D4AF37'};font-size:12px;letter-spacing:1px">${tpl?.header_tagline || 'One Partner. Endless Solutions.'}</p></div><div style="padding:24px;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 16px 16px"><p>Dear ${selected.full_name},</p>${bodyHtml}${pdfUrl ? `<p style="margin-top:16px"><a href="${pdfUrl}" style="display:inline-block;background:${tpl?.primary_color || '#0B2E59'};color:white;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:600">Download Quotation PDF</a></p>` : ''}<p style="color:#64748B;font-size:12px;margin-top:24px">Valid until ${quoteMeta.valid_until || '14 days'} • Questions? Reply to this email or call +233 55 427 3445</p></div></div>`
       try {
         const { data, error: fnErr } = await supabase.functions.invoke('send-email', { body: { to: selected.email, subject, html: emailHtml, pdfUrl } })
         if (fnErr) throw new Error((fnErr as Error).message || JSON.stringify(fnErr))
@@ -469,7 +469,7 @@ export default function QuotesAdminPage() {
                 <button onClick={() => {
                   const willOpen = !showQuoteBuilder
                   if (willOpen && selected) {
-                    setQuoteEmailSubject(`Your GNAB Quotation — ${selected.rfq_number}`)
+                    setQuoteEmailSubject(`Your Barnor Quotation — ${selected.rfq_number}`)
                     setQuoteEmailBody('')
                     // Pre-select the matching package template for IT RFQs
                     setPkgType(suggestQuotePackage(selected.product_category, selected.products_or_services))
@@ -493,7 +493,7 @@ export default function QuotesAdminPage() {
                   ))}
                 </ul>
               ) : (
-                <p className="mt-3 text-sm text-ink-light">No quotations yet. Use the builder below to prepare one — it will be sent as a premium GNAB PDF (editable in PDF Templates).</p>
+                <p className="mt-3 text-sm text-ink-light">No quotations yet. Use the builder below to prepare one — it will be sent as a premium Barnor PDF (editable in PDF Templates).</p>
               )}
               {(selected.status === 'won' || selected.status === 'quotation_sent') && (
                 <div className="mt-4 rounded-2xl border border-brand-green-200 bg-brand-green-50 p-4">
@@ -554,7 +554,7 @@ export default function QuotesAdminPage() {
                   <div className="rounded-2xl border border-gold-200 bg-gold-50 p-4">
                     <p className="text-xs font-bold uppercase tracking-wide text-navy">Email that will be sent with the PDF</p>
                     <p className="mt-1 text-xs text-ink-light">Customize the subject and the email body. The PDF will be attached/linked automatically.</p>
-                    <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Email Subject *</span><input value={quoteEmailSubject} onChange={(e)=>setQuoteEmailSubject(e.target.value)} placeholder="Your GNAB Quotation — RFQ-..." className={inputClass} /></label>
+                    <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Email Subject *</span><input value={quoteEmailSubject} onChange={(e)=>setQuoteEmailSubject(e.target.value)} placeholder="Your Barnor Quotation — RFQ-..." className={inputClass} /></label>
                     <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Email Body (optional — leave blank to use default)</span><textarea rows={3} value={quoteEmailBody} onChange={(e)=>setQuoteEmailBody(e.target.value)} placeholder="Dear {{name}}, Thank you for your enquiry..." className={`${inputClass} resize-none`} /></label>
                   </div>
                   <div className="flex gap-2">

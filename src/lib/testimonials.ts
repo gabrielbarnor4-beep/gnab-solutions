@@ -35,7 +35,7 @@ export const DEFAULT_TESTIMONIALS: PublicTestimonial[] = [
     company: 'Leading Financial Institution, Accra',
     rating: 5,
     quote:
-      'GNAB transformed how we handle procurement. One call, one quote, everything delivered ahead of schedule. They are an extension of our team.',
+      'Barnor transformed how we handle procurement. One call, one quote, everything delivered ahead of schedule. They are an extension of our team.',
   },
   {
     id: 'default-2',
@@ -57,7 +57,7 @@ export const DEFAULT_TESTIMONIALS: PublicTestimonial[] = [
     company: 'International NGO, Ghana',
     rating: 5,
     quote:
-      'From stationery to full IT setups, GNAB handles it all with professionalism. Their pricing saved us over 20% last year.',
+      'From stationery to full IT setups, Barnor handles it all with professionalism. Their pricing saved us over 20% last year.',
   },
 ]
 
@@ -103,13 +103,13 @@ export async function submitTestimonial(sub: TestimonialSubmission): Promise<voi
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({
-        _subject: 'New Testimonial Awaiting Approval - GNAB Website',
+        _subject: 'New Testimonial Awaiting Approval - Barnor Website',
         name: sub.client_name,
         role_company: [sub.client_role, sub.company].filter(Boolean).join(', ') || '-',
         rating: `${sub.rating} / 5`,
         testimonial: sub.quote,
         approval_note: stored
-          ? `Saved as PENDING. Approve or reject at the GNAB admin portal (/admin/testimonials).`
+          ? `Saved as PENDING. Approve or reject at the Barnor admin portal (/admin/testimonials).`
           : `WARNING: could not save to database. Approve manually by adding this testimonial.`,
       }),
     })

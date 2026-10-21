@@ -38,7 +38,7 @@ export default function MediaAdminPage() {
     setRows((data as Row[]) ?? []); setLoading(false)
   }, [])
 
-  useEffect(() => { document.title = 'Media Library | GNAB Admin'; void load() }, [load])
+  useEffect(() => { document.title = 'Media Library | Barnor Admin'; void load() }, [load])
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim()

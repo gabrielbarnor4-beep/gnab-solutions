@@ -57,7 +57,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    document.title = 'Dashboard | GNAB Admin'
+    document.title = 'Dashboard | Barnor Admin'
 
     const load = async () => {
       const next = [...stats]
@@ -139,7 +139,7 @@ export default function DashboardPage() {
     <div>
       <PageIntro
         title="Welcome back 👋"
-        description="Here is what is happening across GNAB Business Solutions today — including new Home, Footer, Receipts and Uploads."
+        description="Here is what is happening across Barnor Business Solutions today — including new Home, Footer, Receipts and Uploads."
       />
 
       <ErrorBanner message={error} onDismiss={() => setError('')} />

@@ -14,7 +14,7 @@ const CATEGORIES = [
 export default function SupplierRegistrationPage() {
   const s = useSiteSettings()
   useEffect(() => {
-    setPageMeta('Supplier Registration | GNAB Business Solutions', 'Join our trusted network of suppliers and gain access to procurement opportunities across Ghana.')
+    setPageMeta('Supplier Registration | Barnor Business Solutions', 'Join our trusted network of suppliers and gain access to procurement opportunities across Ghana.')
   }, [])
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
@@ -106,7 +106,7 @@ export default function SupplierRegistrationPage() {
     <div>
       <PageHero
         eyebrow="Partner With Us"
-        title={<>{(s.supplier_hero_title || 'Become a GNAB Supplier').replace(s.supplier_hero_title_highlight || 'GNAB Supplier', '').trim()} <span className="text-gradient-gold">{s.supplier_hero_title_highlight || 'GNAB Supplier'}</span></>}
+        title={<>{(s.supplier_hero_title || 'Become a Barnor Supplier').replace(s.supplier_hero_title_highlight || 'Barnor Supplier', '').trim()} <span className="text-gradient-gold">{s.supplier_hero_title_highlight || 'Barnor Supplier'}</span></>}
         subtitle={s.supplier_hero_subtitle || 'Join our trusted network of suppliers and gain access to procurement opportunities across Ghana.'}
       />
 
@@ -121,7 +121,7 @@ export default function SupplierRegistrationPage() {
               <CheckCircle2 size={64} strokeWidth={1.4} className="text-brand-green-500" />
               <h3 className="mt-7 font-display text-2xl font-bold text-navy">Application Received</h3>
               <p className="mt-4 max-w-md leading-relaxed text-ink-light">
-                Thank you for your interest in partnering with GNAB Business Solutions.
+                Thank you for your interest in partnering with Barnor Business Solutions.
                 Our supplier relations team will review your application and contact you shortly.
               </p>
               <button onClick={() => setSubmitted(false)} className="mt-8 text-sm font-semibold text-brand-green-600 hover:underline">

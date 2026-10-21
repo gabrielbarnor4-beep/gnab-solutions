@@ -40,7 +40,7 @@ export default function IndustriesAdminPage() {
     setLoading(false)
   }, [])
 
-  useEffect(() => { document.title = 'Industries | GNAB Admin'; void load() }, [load])
+  useEffect(() => { document.title = 'Industries | Barnor Admin'; void load() }, [load])
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim()

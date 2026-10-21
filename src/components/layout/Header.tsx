@@ -153,7 +153,7 @@ export default function Header() {
               </span>
               <span className="flex min-w-0 flex-col leading-[0.95] sm:leading-tight">
                 <span className="truncate font-display text-[14px] font-bold tracking-tight text-navy sm:text-[15px] xl:text-[16px]">
-                  GNAB <span className="font-semibold text-brand-green-500">Business Solutions</span>
+                  Barnor <span className="font-semibold text-brand-green-500">Business Solutions</span>
                 </span>
                 <span className="flex w-full justify-between text-[7px] font-medium uppercase tracking-[0.14em] text-gold-600 sm:text-[7.5px] xl:text-[8px] leading-none" aria-hidden>
                   <span>One</span><span>Partner.</span><span>Endless</span><span>Solutions.</span>
@@ -313,7 +313,7 @@ export default function Header() {
                 />
                 <span className="flex min-w-0 flex-col leading-[0.95]">
                   <span className="truncate font-display text-[14px] font-bold tracking-tight text-navy sm:text-[15px]">
-                    GNAB <span className="font-semibold text-brand-green-500">Business Solutions</span>
+                    Barnor <span className="font-semibold text-brand-green-500">Business Solutions</span>
                   </span>
                   <span className="flex w-full justify-between text-[7px] font-medium uppercase tracking-[0.14em] text-gold-600 sm:text-[7.5px]" aria-hidden>
                     <span>One</span><span>Partner.</span><span>Endless</span><span>Solutions.</span>

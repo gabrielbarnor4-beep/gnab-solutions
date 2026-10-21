@@ -12,8 +12,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'og-image.svg', 'icons.svg', 'robots.txt'],
       manifest: {
-        name: 'GNAB Business Solutions',
-        short_name: 'GNAB',
+        name: 'Barnor Business Solutions',
+        short_name: 'Barnor',
         description: "Ghana's trusted procurement and supply partner — One Partner. Endless Solutions.",
         theme_color: '#0B2E59',
         background_color: '#ffffff',

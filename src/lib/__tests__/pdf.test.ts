@@ -13,10 +13,10 @@ describe('pdf interpolate edge cases', () => {
       interpolate(tpl, {
         quotation_number: 'QT-2026-ABC12',
         customer_name: 'Ama Mensah',
-        rfq_number: 'GNAB-2026-XYZ123',
+        rfq_number: 'BARN-2026-XYZ123',
         date: '03/09/2026',
       }),
-    ).toBe('Quotation QT-2026-ABC12 for Ama Mensah — RFQ GNAB-2026-XYZ123 dated 03/09/2026')
+    ).toBe('Quotation QT-2026-ABC12 for Ama Mensah — RFQ BARN-2026-XYZ123 dated 03/09/2026')
   })
   it('replaces receipt vars and keeps unknown placeholders', () => {
     expect(interpolate('Receipt {{receipt_number}} — paid {{amount_paid}} of {{total}} {{unknown}}', {
@@ -26,7 +26,7 @@ describe('pdf interpolate edge cases', () => {
     })).toBe('Receipt RCPT-2026-0001 — paid GHS 500.00 of GHS 1200.00 {{unknown}}')
   })
   it('handles repeated placeholders', () => {
-    expect(interpolate('{{name}} / {{name}}', { name: 'GNAB' })).toBe('GNAB / GNAB')
+    expect(interpolate('{{name}} / {{name}}', { name: 'Barnor' })).toBe('Barnor / Barnor')
   })
   it('ignores non-word placeholders (dashes/spaces kept)', () => {
     expect(interpolate('{{customer-name}} {{a b}}', { 'customer-name': 'x' })).toBe('{{customer-name}} {{a b}}')
@@ -34,10 +34,10 @@ describe('pdf interpolate edge cases', () => {
 })
 
 describe('pdf number formats', () => {
-  it('RFQ numbers match GNAB-YYYY-XXXXXX', () => {
-    const makeRfq = () => `GNAB-${new Date().getFullYear()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`
+  it('RFQ numbers match BARN-YYYY-XXXXXX', () => {
+    const makeRfq = () => `BARN-${new Date().getFullYear()}-${Math.random().toString(36).slice(2, 8).toUpperCase()}`
     for (let i = 0; i < 20; i++) {
-      expect(makeRfq()).toMatch(/^GNAB-\d{4}-[A-Z0-9]{6}$/)
+      expect(makeRfq()).toMatch(/^BARN-\d{4}-[A-Z0-9]{6}$/)
     }
   })
   it('receipt numbers match RCPT-YYYY-XXXX', () => {

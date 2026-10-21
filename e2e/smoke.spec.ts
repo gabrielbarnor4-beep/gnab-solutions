@@ -37,7 +37,7 @@ test('honeypot website_hp blocks bots', async ({ page }) => {
 test('assistant widget hidden on /admin', async ({ page }) => {
   await page.goto('/admin/login')
   // launcher should not be visible on admin
-  await expect(page.getByLabel(/GNAB Assistant/)).toHaveCount(0)
+  await expect(page.getByLabel(/Barnor Assistant/)).toHaveCount(0)
 })
 
 test('blog and testimonials routes', async ({ page }) => {

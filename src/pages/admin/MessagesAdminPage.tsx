@@ -48,7 +48,7 @@ export default function MessagesAdminPage() {
     setRows((data as Row[]) ?? []); setLoading(false)
   }, [])
 
-  useEffect(() => { document.title = 'Messages | GNAB Admin'; void load() }, [load])
+  useEffect(() => { document.title = 'Messages | Barnor Admin'; void load() }, [load])
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase().trim()
@@ -91,7 +91,7 @@ export default function MessagesAdminPage() {
         customer: { name: selected.full_name, email: selected.email, phone: selected.phone ?? undefined },
         meta: { 'Original Message': selected.message.slice(0, 120) + (selected.message.length > 120 ? '…' : ''), 'Date': vars.date },
         bodyHtml: interpolate(tpl?.body_template || reply, vars),
-        footerNote: tpl?.footer_note || 'This is an official response from GNAB Business Solutions.',
+        footerNote: tpl?.footer_note || 'This is an official response from Barnor Business Solutions.',
         template: tpl,
       logoUrl: settings.logo_url || undefined,
       })
@@ -109,23 +109,23 @@ export default function MessagesAdminPage() {
 
       // Send email via edge function — uses editable Message Reply template (well mirrored)
       const subjectVars = { subject: selected.subject ?? '', admin_reply: reply, customer_name: selected.full_name, email: selected.email, date: new Date().toLocaleDateString('en-GB') }
-      const emailSubjectTpl = tpl?.subject_template ? interpolate(tpl.subject_template, subjectVars) : (selected.subject ? `Re: ${selected.subject} — GNAB Business Solutions` : 'Response from GNAB Business Solutions')
+      const emailSubjectTpl = tpl?.subject_template ? interpolate(tpl.subject_template, subjectVars) : (selected.subject ? `Re: ${selected.subject} — Barnor Business Solutions` : 'Response from Barnor Business Solutions')
       // Use custom subject if admin typed one, else template
       const finalSubject = emailSubject.trim() || emailSubjectTpl
       // Update state if we used template so next save remembers
       if (!emailSubject.trim() && tpl?.subject_template) setEmailSubject(finalSubject)
-      const customBodyHtml = emailBody.trim() ? `<div style="white-space:pre-wrap">${emailBody.replace(/\n/g,'<br>')}</div>` : tpl?.body_template ? `<div style="white-space:pre-wrap">${interpolate(tpl.body_template, subjectVars).replace(/\n/g,'<br>')}</div>` : `<p>Thank you for contacting GNAB Business Solutions. Please find our response below and attached as a premium PDF document.</p><div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;margin:16px 0;white-space:pre-wrap">${reply.replace(/\n/g,'<br>')}</div>`
+      const customBodyHtml = emailBody.trim() ? `<div style="white-space:pre-wrap">${emailBody.replace(/\n/g,'<br>')}</div>` : tpl?.body_template ? `<div style="white-space:pre-wrap">${interpolate(tpl.body_template, subjectVars).replace(/\n/g,'<br>')}</div>` : `<p>Thank you for contacting Barnor Business Solutions. Please find our response below and attached as a premium PDF document.</p><div style="background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;padding:16px;margin:16px 0;white-space:pre-wrap">${reply.replace(/\n/g,'<br>')}</div>`
       const emailHtml = `
         <div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto">
           <div style="background:${tpl?.primary_color || '#0B2E59'};color:white;padding:24px;border-radius:16px 16px 0 0">
-            <h2 style="margin:0;color:white">${tpl?.header_company_name || 'GNAB Business Solutions'}</h2>
+            <h2 style="margin:0;color:white">${tpl?.header_company_name || 'Barnor Business Solutions'}</h2>
             <p style="margin:4px 0 0;color:${tpl?.accent_color || '#D4AF37'};font-size:12px;letter-spacing:1px">${tpl?.header_tagline || 'One Partner. Endless Solutions.'}</p>
           </div>
           <div style="padding:24px;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 16px 16px">
             <p>Dear ${selected.full_name},</p>
             ${customBodyHtml}
             ${pdfUrl ? `<p style="margin-top:16px"><a href="${pdfUrl}" style="display:inline-block;background:${tpl?.primary_color || '#0B2E59'};color:white;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:600">Download PDF Response</a></p>` : ''}
-            <p style="color:#64748B;font-size:12px;margin-top:24px">${tpl?.header_contact || 'GNAB Business Solutions • gnabsolutions@gmail.com • +233 55 427 3445 • Accra, Ghana'}</p>
+            <p style="color:#64748B;font-size:12px;margin-top:24px">${tpl?.header_contact || 'Barnor Business Solutions • barnorsolutions@gmail.com • +233 55 427 3445 • Accra, Ghana'}</p>
           </div>
         </div>
       `
@@ -155,7 +155,7 @@ export default function MessagesAdminPage() {
   useEffect(() => {
     if (selected) {
       setReply(selected.admin_reply ?? '')
-      setEmailSubject(selected.subject ? `Re: ${selected.subject} — GNAB Business Solutions` : 'Response from GNAB Business Solutions')
+      setEmailSubject(selected.subject ? `Re: ${selected.subject} — Barnor Business Solutions` : 'Response from Barnor Business Solutions')
       setEmailBody('')
     }
   }, [selected?.id])
@@ -264,7 +264,7 @@ export default function MessagesAdminPage() {
               <p className="mt-1 text-xs text-ink-light">Customize the subject and the email body. The PDF will be attached/linked automatically.</p>
               <label className="mt-3 block">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-light">Email Subject *</span>
-                <input value={emailSubject} onChange={(e)=>setEmailSubject(e.target.value)} placeholder="e.g., Re: Your enquiry — GNAB Business Solutions" className={inputClass} />
+                <input value={emailSubject} onChange={(e)=>setEmailSubject(e.target.value)} placeholder="e.g., Re: Your enquiry — Barnor Business Solutions" className={inputClass} />
               </label>
               <label className="mt-3 block">
                 <span className="mb-1 block text-xs font-semibold uppercase tracking-wide text-ink-light">Email Body (optional — leave blank to use reply above)</span>

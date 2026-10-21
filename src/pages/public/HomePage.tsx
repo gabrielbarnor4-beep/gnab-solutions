@@ -128,7 +128,7 @@ const FALLBACK_TESTIMONIALS = [
   {
     id: 'fb-1',
     quote:
-      'GNAB transformed how we handle procurement. One call, one quote, everything delivered ahead of schedule. They are an extension of our team.',
+      'Barnor transformed how we handle procurement. One call, one quote, everything delivered ahead of schedule. They are an extension of our team.',
     client_name: 'Procurement Director',
     company: 'Leading Financial Institution, Accra',
     rating: 5,
@@ -144,7 +144,7 @@ const FALLBACK_TESTIMONIALS = [
   {
     id: 'fb-3',
     quote:
-      'From stationery to full IT setups, GNAB handles it all with professionalism. Their pricing saved us over 20% last year.',
+      'From stationery to full IT setups, Barnor handles it all with professionalism. Their pricing saved us over 20% last year.',
     client_name: 'Administrative Lead',
     company: 'International NGO, Ghana',
     rating: 5,
@@ -252,7 +252,7 @@ export default function HomePage() {
         setServicesLive(rows.map((r) => ({ icon: iconByName[r.name] ?? iconByName[r.category ?? ''] ?? FileText, title: r.name, slug: canonicalCatalogueSlug(r.name), desc: r.short_description ?? '' })))
       }
     })
-    setPageMeta('GNAB Business Solutions | One Partner. Endless Solutions.', 'Ghana\'s trusted partner for corporate procurement, sourcing and supply — reliable sourcing, competitive pricing, timely delivery.', IMAGES.hero1)
+    setPageMeta('Barnor Business Solutions | One Partner. Endless Solutions.', 'Ghana\'s trusted partner for corporate procurement, sourcing and supply — reliable sourcing, competitive pricing, timely delivery.', IMAGES.hero1)
     setOrganizationJsonLd()
     void fetchHomeHero().then((h) => { if (h) setHeroData(h) })
     void fetchHomeTrust().then((rows) => { if (rows.length > 0) setTrustLive(rows.map((r) => ({ icon: (ICON_MAP[r.icon] ?? ShieldCheck), label: r.label }))) })
@@ -320,7 +320,7 @@ export default function HomePage() {
             {heroEyebrowStyle === 'minimal' ? (
               <p className={`mb-6 inline-flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-gold-400 ${heroCentered ? 'mx-auto' : ''}`}>
                 <span className="h-px w-8 bg-current opacity-60" aria-hidden />
-                {heroData?.badge ?? 'Welcome to GNAB Business Solutions'}
+                {heroData?.badge ?? 'Welcome to Barnor Business Solutions'}
                 <span className="h-px w-8 bg-current opacity-60" aria-hidden />
               </p>
             ) : heroEyebrowStyle === 'tag' ? (
@@ -328,11 +328,11 @@ export default function HomePage() {
                 <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-gold-400 text-navy" aria-hidden>
                   <Sparkles size={14} />
                 </span>
-                {heroData?.badge ?? 'Welcome to GNAB Business Solutions'}
+                {heroData?.badge ?? 'Welcome to Barnor Business Solutions'}
               </p>
             ) : (
               <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-gold-400 backdrop-blur-sm">
-                <Sparkles size={14} /> {heroData?.badge ?? 'Welcome to GNAB Business Solutions'}
+                <Sparkles size={14} /> {heroData?.badge ?? 'Welcome to Barnor Business Solutions'}
               </p>
             )}
             <h1 className={titleSizeClass(heroTitleSize, 'home-hero')}>
@@ -407,7 +407,7 @@ export default function HomePage() {
             {/* image composition */}
             <Reveal className="relative">
               <div className="relative overflow-hidden rounded-[28px] shadow-lift">
-                <img src={aboutData?.image_url ?? aboutImg ?? IMAGES.about} alt="GNAB team at work" className="aspect-[4/3] w-full object-cover" loading="lazy" decoding="async" srcSet={imgSrcSet(aboutData?.image_url ?? aboutImg ?? IMAGES.about)} sizes="(max-width: 1024px) 100vw, 50vw" />
+                <img src={aboutData?.image_url ?? aboutImg ?? IMAGES.about} alt="Barnor team at work" className="aspect-[4/3] w-full object-cover" loading="lazy" decoding="async" srcSet={imgSrcSet(aboutData?.image_url ?? aboutImg ?? IMAGES.about)} sizes="(max-width: 1024px) 100vw, 50vw" />
                 <div className="absolute inset-0 bg-gradient-to-t from-navy/40 to-transparent" />
               </div>
               <div className="absolute -bottom-8 -right-2 hidden overflow-hidden rounded-3xl border-8 border-white shadow-lift md:block lg:-right-8">
@@ -431,7 +431,7 @@ export default function HomePage() {
               />
               <Reveal delay={0.1}>
                 <p className="-mt-6 text-[17px] leading-relaxed text-ink-light">
-                  {aboutData?.paragraph1 ?? 'GNAB Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.'}
+                  {aboutData?.paragraph1 ?? 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.'}
                 </p>
                 <p className="mt-5 text-[17px] leading-relaxed text-ink-light">
                   {aboutData?.paragraph2 ?? 'From office stationery to industrial equipment, we handle it all with professionalism and efficiency — so your business never stops running.'}
@@ -557,8 +557,8 @@ export default function HomePage() {
         <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeading
             dark
-            eyebrow="Why GNAB"
-            title="Why Choose GNAB"
+            eyebrow="Why Barnor"
+            title="Why Choose Barnor"
             subtitle="We go beyond supply — we become your strategic procurement partner."
           />
           <motion.div
@@ -749,7 +749,7 @@ export default function HomePage() {
                     {ctaData?.title_prefix ?? 'Ready to Simplify'} <span className="text-gradient-gold">{ctaData?.title_highlight ?? 'Your Procurement?'}</span>
                   </h2>
                   <p className={`mt-6 max-w-2xl text-lg leading-relaxed text-navy-100/80 ${ctaCentered ? 'mx-auto' : ''}`}>
-                    {ctaData?.subtitle ?? 'Let GNAB handle your sourcing, pricing and delivery — one partner, endless solutions. Your free quotation lands within 24 hours.'}
+                    {ctaData?.subtitle ?? 'Let Barnor handle your sourcing, pricing and delivery — one partner, endless solutions. Your free quotation lands within 24 hours.'}
                   </p>
                   <div className={`mt-10 flex flex-col gap-4 sm:flex-row ${ctaCentered ? 'items-center justify-center' : 'items-start justify-start'}`}>
                     <ButtonLink to={ctaData?.primary_link ?? '/quote'} variant="gold" size="lg">

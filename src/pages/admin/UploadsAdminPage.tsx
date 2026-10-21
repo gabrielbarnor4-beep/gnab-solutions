@@ -168,7 +168,7 @@ export default function UploadsAdminPage() {
     setTrashLoading(false)
   }, [])
 
-  useEffect(() => { document.title = 'Storage Manager | GNAB Admin'; void load() }, [load])
+  useEffect(() => { document.title = 'Storage Manager | Barnor Admin'; void load() }, [load])
 
   const totalBytes = useMemo(() => files.reduce((s, f) => s + (f.size || 0), 0), [files])
   const filtered = useMemo(() => {

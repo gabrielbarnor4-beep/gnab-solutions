@@ -85,7 +85,7 @@ export default function ReceiptsAdminPage() {
   const [quotations, setQuotations] = useState<Quotation[]>([])
   const [searchParams] = useSearchParams()
 
-  useEffect(() => { document.title = 'Receipts | GNAB Admin' }, [])
+  useEffect(() => { document.title = 'Receipts | Barnor Admin' }, [])
 
   // Auto-open receipt builder when coming from Quotes ?rfq=...
   useEffect(() => {
@@ -289,12 +289,12 @@ export default function ReceiptsAdminPage() {
 
     if (send) {
       setSending(true)
-      const subjectTpl = tpl?.subject_template || 'Your GNAB Receipt {{receipt_number}} — {{rfq_number}}'
+      const subjectTpl = tpl?.subject_template || 'Your Barnor Receipt {{receipt_number}} — {{rfq_number}}'
       const subject = emailSubject.trim() || interpolate(subjectTpl, vars)
       const customBody = emailBody.trim()
       const paidViaLine = paidVia !== '—' ? `<p>Paid via <strong>${paidVia}</strong>.</p>` : ''
       const bodyHtml = customBody ? `<div style="white-space:pre-wrap">${customBody.replace(/\n/g, '<br>')}</div>` : `<p>Dear ${editing.customer_name},</p><p>Thank you for your payment. Please find your receipt <strong>${receiptNumber}</strong> attached as a premium PDF and linked below.</p>${paidViaLine}`
-      const emailHtml = `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:${tpl?.primary_color || '#0B2E59'};color:white;padding:24px;border-radius:16px 16px 0 0"><h2 style="margin:0;color:white">${tpl?.header_company_name || 'GNAB Business Solutions'}</h2><p style="margin:4px 0 0;color:${tpl?.accent_color || '#D4AF37'};font-size:12px;letter-spacing:1px">${tpl?.header_tagline || 'One Partner. Endless Solutions.'}</p></div><div style="padding:24px;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 16px 16px"><p>Dear ${editing.customer_name},</p>${bodyHtml}${pdfUrl ? `<p style="margin-top:16px"><a href="${pdfUrl}" style="display:inline-block;background:${tpl?.primary_color || '#0B2E59'};color:white;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:600">Download Receipt PDF</a></p>` : ''}<p style="color:#64748B;font-size:12px;margin-top:24px">${tpl?.header_contact || 'gnabsolutions@gmail.com • +233 55 427 3445 • Accra, Ghana'}</p></div></div>`
+      const emailHtml = `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:${tpl?.primary_color || '#0B2E59'};color:white;padding:24px;border-radius:16px 16px 0 0"><h2 style="margin:0;color:white">${tpl?.header_company_name || 'Barnor Business Solutions'}</h2><p style="margin:4px 0 0;color:${tpl?.accent_color || '#D4AF37'};font-size:12px;letter-spacing:1px">${tpl?.header_tagline || 'One Partner. Endless Solutions.'}</p></div><div style="padding:24px;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 16px 16px"><p>Dear ${editing.customer_name},</p>${bodyHtml}${pdfUrl ? `<p style="margin-top:16px"><a href="${pdfUrl}" style="display:inline-block;background:${tpl?.primary_color || '#0B2E59'};color:white;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:600">Download Receipt PDF</a></p>` : ''}<p style="color:#64748B;font-size:12px;margin-top:24px">${tpl?.header_contact || 'barnorsolutions@gmail.com • +233 55 427 3445 • Accra, Ghana'}</p></div></div>`
       try {
         const { data, error: fnErr } = await supabase.functions.invoke('send-email', { body: { to: editing.email, subject, html: emailHtml, pdfUrl } })
         if (fnErr) throw new Error((fnErr as Error).message || JSON.stringify(fnErr))
@@ -323,7 +323,7 @@ export default function ReceiptsAdminPage() {
     <div>
       <PageIntro
         title="Receipts"
-        description="Issue a system-generated receipt after a quotation is won — emailed as a premium GNAB PDF just like quotations and message replies. Uses the editable Receipt template."
+        description="Issue a system-generated receipt after a quotation is won — emailed as a premium Barnor PDF just like quotations and message replies. Uses the editable Receipt template."
         action={<button onClick={startNew} className="inline-flex items-center gap-2 rounded-xl bg-brand-green-500 px-4 py-2.5 text-sm font-semibold text-white hover:bg-brand-green-600"><Plus size={14} /> Issue Receipt</button>}
       />
       <ErrorBanner message={error} onDismiss={() => setError('')} />
@@ -463,7 +463,7 @@ export default function ReceiptsAdminPage() {
 
             <div className="rounded-2xl border border-gold-200 bg-gold-50 p-4">
               <p className="text-xs font-bold uppercase tracking-wide text-navy">Email to customer — uses Receipt template subject</p>
-              <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Email Subject *</span><input value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} placeholder="Your GNAB Receipt — RCPT-... (leave blank to use template)" className={inputClass} /></label>
+              <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Email Subject *</span><input value={emailSubject} onChange={(e) => setEmailSubject(e.target.value)} placeholder="Your Barnor Receipt — RCPT-... (leave blank to use template)" className={inputClass} /></label>
               <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Email Body (optional)</span><textarea rows={3} value={emailBody} onChange={(e) => setEmailBody(e.target.value)} placeholder="Dear {{customer_name}}, ..." className={`${inputClass} resize-none`} /></label>
               <p className="mt-2 text-xs text-ink-light">Variables: {'{{receipt_number}}, {{rfq_number}}, {{customer_name}}'} — also available in PDF template.</p>
             </div>

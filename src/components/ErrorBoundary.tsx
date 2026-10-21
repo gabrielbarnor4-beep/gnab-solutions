@@ -29,7 +29,7 @@ export default class ErrorBoundary extends Component<Props, State> {
         <p className="font-display text-5xl font-extrabold text-navy/10">Oops</p>
         <h1 className="-mt-2 font-display text-2xl font-bold text-navy">Something went wrong</h1>
         <p className="mt-3 max-w-md text-sm leading-relaxed text-ink-light">
-          An unexpected error interrupted this page. Try reloading — if it persists, contact GNAB support.
+          An unexpected error interrupted this page. Try reloading — if it persists, contact Barnor support.
         </p>
         {this.state.message && (
           <p className="mt-3 max-w-lg rounded-xl bg-white px-4 py-3 font-mono text-xs text-red-600 ring-1 ring-red-100">

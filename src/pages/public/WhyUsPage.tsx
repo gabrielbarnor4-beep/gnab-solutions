@@ -35,7 +35,7 @@ const FALLBACK_REASONS: Reason[] = [
       'Long-term supplier relationships unlock priority stock allocations during national shortages',
     ],
     image: IMAGES.about,
-    alt: 'GNAB team meeting with supplier partners',
+    alt: 'Barnor team meeting with supplier partners',
   },
   {
     icon: Truck,
@@ -111,7 +111,7 @@ export default function WhyUsPage() {
   const [live, setLive] = useState<Reason[] | null>(null)
   const heroImg = useSiteImage('why_hero', IMAGES.hero1)
   useEffect(() => {
-    setPageMeta('Why Choose Us | GNAB Business Solutions', 'Organisations across Ghana choose GNAB because we treat procurement as a partnership, not a transaction.', heroImg)
+    setPageMeta('Why Choose Us | Barnor Business Solutions', 'Organisations across Ghana choose Barnor because we treat procurement as a partnership, not a transaction.', heroImg)
     void fetchPublicWhy().then((rows) => {
       if (rows.length > 0) setLive(rows.map((r, i) => ({ icon: ICON_MAP[r.icon ?? ''] ?? Handshake, title: r.title, desc: r.description ?? '', points: FALLBACK_REASONS[i]?.points ?? [], image: r.image_url ?? FALLBACK_REASONS[i]?.image ?? IMAGES.about, alt: r.title })))
     })
@@ -124,9 +124,9 @@ export default function WhyUsPage() {
       return ['Multiple vendors to chase', 'Inconsistent pricing', 'Slow, unclear quotations', 'No accountability after delivery']
     } catch { return ['Multiple vendors to chase', 'Inconsistent pricing', 'Slow, unclear quotations', 'No accountability after delivery'] }
   })()
-  const gnabBullets: string[] = (() => {
+  const barnorBullets: string[] = (() => {
     try {
-      const parsed = JSON.parse(s.whyus_comparison_gnab_bullets || '[]')
+      const parsed = JSON.parse(s.whyus_comparison_barnor_bullets || '[]')
       if (Array.isArray(parsed) && parsed.length) return parsed
       return ['One partner for everything', 'Transparent, competitive pricing', 'Quotation within 24 hours', 'After-sales support that stays']
     } catch { return ['One partner for everything', 'Transparent, competitive pricing', 'Quotation within 24 hours', 'After-sales support that stays'] }
@@ -134,9 +134,9 @@ export default function WhyUsPage() {
   return (
     <div>
       <PageHero
-        eyebrow="Why GNAB"
+        eyebrow="Why Barnor"
         title={<>{(s.whyus_hero_title || 'More Than a Supplier — A Strategic Partner').replace(s.whyus_hero_title_highlight || 'Strategic Partner', '').trim()} <span className="text-gradient-gold">{s.whyus_hero_title_highlight || 'Strategic Partner'}</span></>}
-        subtitle={s.whyus_hero_subtitle || 'Organisations across Ghana choose GNAB because we treat procurement as a partnership, not a transaction.'}
+        subtitle={s.whyus_hero_subtitle || 'Organisations across Ghana choose Barnor because we treat procurement as a partnership, not a transaction.'}
         image={heroImg}
       />
 
@@ -210,9 +210,9 @@ export default function WhyUsPage() {
               </ul>
             </div>
             <div className="bg-white p-10 md:p-14">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-green-600">{s.whyus_comparison_gnab_title || 'The GNAB Way'}</p>
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-green-600">{s.whyus_comparison_barnor_title || 'The Barnor Way'}</p>
               <ul className="mt-7 space-y-4 text-ink">
-                {gnabBullets.map((t) => (
+                {barnorBullets.map((t) => (
                   <li key={t} className="flex items-start gap-3 font-medium">
                     <ShieldCheck size={18} className="mt-0.5 flex-shrink-0 text-brand-green-500" />
                     {t}
@@ -225,8 +225,8 @@ export default function WhyUsPage() {
       </section>
 
       <PremiumCTA
-        eyebrow={s.whyus_cta_eyebrow || 'Why GNAB'}
-        title={s.whyus_cta_title || 'Experience the GNAB Difference'}
+        eyebrow={s.whyus_cta_eyebrow || 'Why Barnor'}
+        title={s.whyus_cta_title || 'Experience the Barnor Difference'}
             titleHighlight={s.whyus_cta_title_highlight}
             features={[s.whyus_cta_feature1, s.whyus_cta_feature2, s.whyus_cta_feature3]}
         subtitle={s.whyus_cta_subtitle || 'Join the organisations across Ghana already procuring smarter.'}

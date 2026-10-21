@@ -19,8 +19,8 @@ export const WELCOME_MESSAGE = (): ChatMessage => ({
   id: uid(),
   role: 'bot',
   text: pick([
-    `Hello! 👋 I'm the **GNAB Assistant**.\n\nI can help you:\n- Find products across our catalogue\n- Explain how ordering works\n- Take you anywhere on the site\n\nWhat can I do for you today?`,
-    `Hi there! 😊 Welcome to GNAB.\n\nAsk me about our products, pricing or delivery — or just tell me what you're looking for and I'll point you the right way.`,
+    `Hello! 👋 I'm the **Barnor Assistant**.\n\nI can help you:\n- Find products across our catalogue\n- Explain how ordering works\n- Take you anywhere on the site\n\nWhat can I do for you today?`,
+    `Hi there! 😊 Welcome to Barnor.\n\nAsk me about our products, pricing or delivery — or just tell me what you're looking for and I'll point you the right way.`,
     `Welcome! ✨ I'm here to make sourcing easy.\n\nLooking for something specific? Type it in — or tap one of the options below to explore.`,
   ]),
   chips: ['Browse services', 'Find a product', 'How does quoting work?', 'Talk to a human'],
@@ -227,9 +227,9 @@ async function logUnansweredQuestion(question: string): Promise<void> {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
-          _subject: 'New Assistant Question Awaiting Answer — GNAB',
+          _subject: 'New Assistant Question Awaiting Answer — Barnor',
           question: trimmed,
-          source: 'GNAB Assistant Widget',
+          source: 'Barnor Assistant Widget',
           action_required: 'Answer in Admin → Assistant Q&A to teach the assistant.',
         }),
       })
@@ -273,7 +273,7 @@ export function localBrain(rawInput: string): Reply {
   }
   if (/\b(your name|who are you|what are you|are you (a )?(bot|robot|human|real))\b/.test(q)) {
     return {
-      text: `I'm the **GNAB Assistant** 🤖 — a virtual helper for GNAB Business Solutions.\n\nI can find products, explain how we work and connect you with our human team anytime. What would you like to know?`,
+      text: `I'm the **Barnor Assistant** 🤖 — a virtual helper for Barnor Business Solutions.\n\nI can find products, explain how we work and connect you with our human team anytime. What would you like to know?`,
       chips: ['What do you supply?', 'How does quoting work?', 'Talk to a human'],
     }
   }
@@ -299,7 +299,7 @@ export function localBrain(rawInput: string): Reply {
     const partOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening'
     return {
       text: pick([
-        `Good ${partOfDay}! ☀️ Welcome to **GNAB Business Solutions**. How can I help you today?`,
+        `Good ${partOfDay}! ☀️ Welcome to **Barnor Business Solutions**. How can I help you today?`,
         `Hello and good ${partOfDay}! 😊 What can I do for you?`,
         `Hi! Good ${partOfDay} 🌟 Looking for a product, a quote, or just exploring?`,
       ]),
@@ -424,7 +424,7 @@ export function localBrain(rawInput: string): Reply {
   if (/\b(why (choose|gnab)|benefit|advantage|trust|reliable|guarantee|quality)\b/.test(q)) {
     return {
       text: pick([
-        `Clients choose GNAB because we offer:\n- **100+ vetted suppliers** — one call gets anything sourced\n- **Competitive pricing** through bulk purchasing power\n- **24-hour quotations**, always transparent\n- **Quality assurance** on every single order\n- A dedicated account manager who knows your business\n\nRead more on the [Why Us page](/why-us).`,
+        `Clients choose Barnor because we offer:\n- **100+ vetted suppliers** — one call gets anything sourced\n- **Competitive pricing** through bulk purchasing power\n- **24-hour quotations**, always transparent\n- **Quality assurance** on every single order\n- A dedicated account manager who knows your business\n\nRead more on the [Why Us page](/why-us).`,
         `Fair question! Three big reasons: our **100+ vetted supplier network** means nothing is out of reach, our **24-hour transparent quotations** mean no surprises, and every client gets a **dedicated account manager** who actually knows their business 🤝 More on the [Why Us page](/why-us).`,
       ]),
       chips: ['See client reviews', 'Request a quote'],
@@ -454,11 +454,11 @@ export function localBrain(rawInput: string): Reply {
   }
 
   /* about */
-  if (/\b(about|who (are|is) gnab|company|mission|vision|history)\b/.test(q)) {
+  if (/\b(about|who (are|is) barnor|company|mission|vision|history)\b/.test(q)) {
     return {
       text: pick([
-        `**GNAB Business Solutions** is Ghana's trusted procurement and supply partner — one point of contact for sourcing, purchasing and delivering quality products.\n\n**Mission:** simplify procurement through reliable sourcing, competitive pricing and timely delivery.\n**Vision:** become Ghana's most trusted procurement partner.\n\nLearn more on the [About page](/about).`,
-        `In a nutshell: we make procurement effortless 🇬🇭 One call to GNAB connects you to 100+ vetted suppliers, competitive bulk pricing and doorstep delivery anywhere in Ghana. Our story's on the [About page](/about).`,
+        `**Barnor Business Solutions** is Ghana's trusted procurement and supply partner — one point of contact for sourcing, purchasing and delivering quality products.\n\n**Mission:** simplify procurement through reliable sourcing, competitive pricing and timely delivery.\n**Vision:** become Ghana's most trusted procurement partner.\n\nLearn more on the [About page](/about).`,
+        `In a nutshell: we make procurement effortless 🇬🇭 One call to Barnor connects you to 100+ vetted suppliers, competitive bulk pricing and doorstep delivery anywhere in Ghana. Our story's on the [About page](/about).`,
       ]),
       chips: ['What services do you offer?', 'Talk to a human'],
     }
@@ -590,11 +590,11 @@ export function localBrain(rawInput: string): Reply {
 
 /* ---------------- Optional LLM (Gemini via edge function) enhancement ---------------- */
 
-const SYSTEM_PROMPT = `You are the GNAB Assistant for GNAB Business Solutions, a Ghanaian procurement & supply company.
+const SYSTEM_PROMPT = `You are the Barnor Assistant for Barnor Business Solutions, a Ghanaian procurement & supply company.
 Facts: Email ${CONTACT.email}; Phone ${CONTACT.phone}; WhatsApp ${CONTACT.whatsapp}; Address ${CONTACT.address}. Hours Mon-Fri 8am-5pm GMT.
 Catalogues (11): Office Stationery & Consumables; IT Equipment & Accessories; Cleaning & Janitorial Supplies; PPE & Safety; Office Furniture; Printing & Branding; Electrical Materials; Automobile Services & Spares; IT Solutions & Digital Services; Agro & Foodstuffs; Custom Sourcing.
 IT Solutions: corporate websites are designed, built and maintained in-house (scoping call, written proposal, training, care/support plan); ERP and business systems are specified and sourced with specialist partners; computer hardware stays under IT Equipment. Never quote website prices — always point to the quote form.
-Agro & Foodstuffs: GNAB acts as intermediary between vetted farmers/suppliers and the customer — sourcing yam, maize, cocoa, rice, cassava, plantain, vegetables, fruits, beans, oils and spices, quality-checking and delivering anywhere in Ghana or worldwide. Always point agro requests to the quote form.
+Agro & Foodstuffs: Barnor acts as intermediary between vetted farmers/suppliers and the customer — sourcing yam, maize, cocoa, rice, cassava, plantain, vegetables, fruits, beans, oils and spices, quality-checking and delivering anywhere in Ghana or worldwide. Always point agro requests to the quote form.
 Process: quotes are free with no obligation until approval, answered within 24 hours; each quotation states its own validity period, itemised pricing and delivery timeline. Standard delivery is 2-5 working days after approval, nationwide across Ghana. Bulk and standing/monthly supply orders are welcome — ask for quantities.
 Pages: / (home), /about, /services, /industries, /products, /process, /why-us, /testimonials (reviews), /blog, /contact, /quote, /supplier-registration.
 Rules: Sound warm and human, like a friendly sales assistant — vary your phrasing between messages, never repeat stock sentences. Be concise (under 120 words). Use markdown bold. To link internally use [label](/path). Recommend requesting a quote for pricing questions. Never invent prices, payment methods, timelines or policies — if unsure, point to the team on WhatsApp.`

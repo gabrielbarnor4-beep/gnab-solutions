@@ -156,10 +156,10 @@ create policy "admin_insert_settings" on public.site_settings for insert
   with check (public.is_admin());
 
 insert into public.site_settings (key, value) values
-  ('company_name', 'GNAB Business Solutions'),
+  ('company_name', 'Barnor Business Solutions'),
   ('tagline', 'One Partner. Endless Solutions.'),
   ('company_description', 'Ghana''s trusted partner for corporate procurement, sourcing and supply — delivering measurable value to businesses, government, NGOs and institutions.'),
-  ('email', 'gnabsolutions@gmail.com'),
+  ('email', 'barnorsolutions@gmail.com'),
   ('phone', '+233 55 427 3445'),
   ('whatsapp', '+233 27 547 3098'),
   ('address', 'Accra Business District, Greater Accra, Ghana'),
@@ -168,7 +168,7 @@ insert into public.site_settings (key, value) values
   ('social_facebook', ''),
   ('social_twitter', ''),
   ('social_instagram', ''),
-  ('seo_title', 'GNAB Business Solutions | One Partner. Endless Solutions.'),
+  ('seo_title', 'Barnor Business Solutions | One Partner. Endless Solutions.'),
   ('seo_description', 'Ghana''s trusted partner for corporate procurement, sourcing and supply — reliable sourcing, competitive pricing, timely delivery.'),
   ('footer_text', 'Simplifying procurement for organisations across Ghana and West Africa.')
 on conflict (key) do nothing;

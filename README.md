@@ -1,4 +1,4 @@
-# GNAB Business Solutions — One Partner. Endless Solutions.
+# Barnor Business Solutions — One Partner. Endless Solutions.
 
 Ghana's trusted procurement & supply platform. Public marketing site (13 routes) + full admin CMS (22 pages) + AI assistant + maps + PDF quotations/receipts.
 
@@ -31,7 +31,7 @@ VITE_FORMSPREE_ENDPOINT=https://formspree.io/f/<id>
 GEMINI_API_KEY=<google ai studio>  # via supabase/functions/gemini-chat
 BREVO_API_KEY=<brevo>              # preferred email, 300/day free
 RESEND_API_KEY=<resend>            # fallback
-FROM_EMAIL=GNAB Business Solutions <gnabsolutions@gmail.com>
+FROM_EMAIL=Barnor Business Solutions <barnorsolutions@gmail.com>
 ALLOWED_ORIGIN=https://gnab-solutions.vercel.app  # CORS lockdown, defaults to localhost+supabase origin
 VITE_POSTHOG_KEY=<posthog>         # optional, analytics
 VITE_POSTHOG_HOST=https://us.i.posthog.com
@@ -108,7 +108,7 @@ public/                # favicon.svg, og-image.svg, sitemap.xml, robots.txt
 
 ## PWA & Analytics (Rec 9)
 
-* `vite-plugin-pwa` — offline cache for `/`, `/services`, `/products` (stale-while-revalidate). Manifest: `GNAB Business Solutions`, theme `#0B2E59`, icons from `/favicon.svg`.
+* `vite-plugin-pwa` — offline cache for `/`, `/services`, `/products` (stale-while-revalidate). Manifest: `Barnor Business Solutions`, theme `#0B2E59`, icons from `/favicon.svg`.
 * `posthog-js` — pageview + `quote_requested`, `contact_sent`, `assistant_question` events. Opt-in via `VITE_POSTHOG_KEY`; no key → no tracking, no bundle cost beyond lazy import.
 
 ## Testing & CI (Rec 6)

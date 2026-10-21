@@ -127,7 +127,7 @@ export default function FooterAdminPage() {
     setLoading(false)
   }, [settings.footer_show_brand, settings.footer_show_quick_links, settings.footer_quick_links, settings.footer_show_services, settings.footer_show_contact, settings.footer_quick_links_title, settings.footer_services_title, settings.footer_contact_title, settings.footer_text, settings.company_description, settings.tagline, settings.email, settings.phone, settings.address, settings.social_linkedin, settings.social_facebook, settings.social_twitter, settings.social_instagram])
 
-  useEffect(() => { document.title = 'Footer | GNAB Admin'; void load() }, [load])
+  useEffect(() => { document.title = 'Footer | Barnor Admin'; void load() }, [load])
 
   const quickLinks = parseFooterQuickLinks(draft.footer_quick_links)
   const contactItems = parseFooterContactItems(draft.footer_contact_items)
@@ -432,7 +432,7 @@ export default function FooterAdminPage() {
               </label>
               <label className="block"><span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-ink-light">Label (admin only)</span><input value={contactEdit.label} onChange={(e) => setContactEdit({ ...contactEdit, label: e.target.value })} placeholder="e.g., WhatsApp, Head Office, Mon–Fri" className={inputClass} /></label>
               <label className="block"><span className="mb-1.5 block text-xs font-semibold uppercase tracking-wide text-ink-light">Value * — what shows + opens</span>
-                <input value={contactEdit.value} onChange={(e) => setContactEdit({ ...contactEdit, value: e.target.value })} placeholder={contactEdit.kind === 'email' ? 'gnabsolutions@gmail.com' : contactEdit.kind === 'phone' ? '+233 55 427 3445' : contactEdit.kind === 'link' ? 'https://...' : 'Type the text to show…'} className={inputClass} />
+                <input value={contactEdit.value} onChange={(e) => setContactEdit({ ...contactEdit, value: e.target.value })} placeholder={contactEdit.kind === 'email' ? 'barnorsolutions@gmail.com' : contactEdit.kind === 'phone' ? '+233 55 427 3445' : contactEdit.kind === 'link' ? 'https://...' : 'Type the text to show…'} className={inputClass} />
               </label>
               <label className="flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-gray-100 bg-mist/40 p-4">
                 <span className="text-sm font-medium text-navy">Show in footer (toggle)</span>

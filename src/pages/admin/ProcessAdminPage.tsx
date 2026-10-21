@@ -36,7 +36,7 @@ export default function ProcessAdminPage() {
     if (err) setError(err.code === '42P01' ? 'Run 007_full_cms_and_retention.sql first.' : `Failed to load: ${err.message}`)
     setRows((data as Row[]) ?? []); setLoading(false)
   }, [])
-  useEffect(() => { document.title = 'Process | GNAB Admin'; void load() }, [load])
+  useEffect(() => { document.title = 'Process | Barnor Admin'; void load() }, [load])
 
   useEffect(() => {
     if (editing) setPointsText((editing.points ?? []).join('\n'))

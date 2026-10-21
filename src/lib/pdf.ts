@@ -158,10 +158,10 @@ export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate |
   const primary = tpl?.primary_color || NAVY
   const accent = tpl?.accent_color || GOLD
   const logoUrl = tpl?.header_logo_url || LOGO_URL
-  const headerName = tpl?.header_company_name || 'GNAB Business Solutions'
+  const headerName = tpl?.header_company_name || 'Barnor Business Solutions'
   const headerTagline = tpl?.header_tagline || 'One Partner. Endless Solutions.'
-  const headerContact = tpl?.header_contact || 'gnabsolutions@gmail.com  •  +233 55 427 3445  •  Accra, Ghana'
-  const footerMain = tpl?.footer_text || 'GNAB Business Solutions  •  One Partner. Endless Solutions.  •  Simplifying procurement for organisations across Ghana and Beyond.'
+  const headerContact = tpl?.header_contact || 'barnorsolutions@gmail.com  •  +233 55 427 3445  •  Accra, Ghana'
+  const footerMain = tpl?.footer_text || 'Barnor Business Solutions  •  One Partner. Endless Solutions.  •  Simplifying procurement for organisations across Ghana and Beyond.'
   const footerNoteTpl = tpl?.footer_note || 'This document was generated electronically and is valid without signature.'
   const W = doc.internal.pageSize.getWidth()
   const H = doc.internal.pageSize.getHeight()

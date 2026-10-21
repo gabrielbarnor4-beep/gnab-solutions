@@ -70,9 +70,9 @@ describe('splitHighlight (Home COT gold-tail design)', () => {
   it('splits per-page CTA titles', () => {
     expect(splitHighlight('Need Something Specific?', 'Something Specific?').gold).toBe('Something Specific?')
     expect(splitHighlight("Don't See Your Sector?", 'Your Sector?').gold).toBe('Your Sector?')
-    expect(splitHighlight('Experience the GNAB Difference', 'GNAB Difference')).toEqual({
+    expect(splitHighlight('Experience the Barnor Difference', 'Barnor Difference')).toEqual({
       prefix: 'Experience the',
-      gold: 'GNAB Difference',
+      gold: 'Barnor Difference',
     })
   })
   it('returns plain title when highlight empty or missing', () => {

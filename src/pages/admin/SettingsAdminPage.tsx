@@ -73,7 +73,7 @@ export default function SettingsAdminPage() {
   }
 
   useEffect(() => {
-    document.title = 'Settings | GNAB Admin'
+    document.title = 'Settings | Barnor Admin'
   }, [])
 
   useEffect(() => {
@@ -215,7 +215,7 @@ export default function SettingsAdminPage() {
           </div>
           <div className="rounded-2xl border border-gray-100 bg-white p-4">
             <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-ink-light"><input type="checkbox" checked={(draft.header_show_email ?? 'true') !== 'false'} onChange={(e) => setDraft({ ...draft, header_show_email: e.target.checked ? 'true' : 'false' })} className="h-4 w-4 accent-brand-green-500" /> Show email</label>
-            <input type="email" value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} placeholder="gnabsolutions@gmail.com" className={`${inputClass} mt-3`} />
+            <input type="email" value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} placeholder="barnorsolutions@gmail.com" className={`${inputClass} mt-3`} />
             <p className="mt-1 text-[11px] text-gray-400">Opens <span className="font-mono">mailto:</span> link</p>
           </div>
           <div className="rounded-2xl border border-gray-100 bg-white p-4">

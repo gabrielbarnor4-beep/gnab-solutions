@@ -76,7 +76,7 @@ export default function AdminLayout() {
           <img src={logo_url || 'https://dkbzvndtolkvuuxeaooh.supabase.co/storage/v1/object/public/media/branding/1788397307996-wb35sl.jpg'} alt={COMPANY.name} className="h-full w-auto object-contain" />
         </span>
         <div>
-          <p className="font-display text-sm font-bold text-white">GNAB Admin</p>
+          <p className="font-display text-sm font-bold text-white">Barnor Admin</p>
           <p className="text-[11px] text-navy-100/60">Business Management</p>
         </div>
       </div>
@@ -175,7 +175,7 @@ export default function AdminLayout() {
                 View Site
               </a>
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-navy to-navy-500 font-display text-sm font-bold text-white">
-                G
+                B
               </span>
             </div>
           </div>

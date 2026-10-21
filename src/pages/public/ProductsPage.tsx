@@ -30,7 +30,7 @@ export default function ProductsPage() {
   const [dbProducts, setDbProducts] = useState<PublicProduct[] | null>(null)
 
   useEffect(() => {
-    setPageMeta('Products | GNAB Business Solutions', 'Browse our curated product catalogue — request a quote on any item and receive pricing within 24 hours.', IMAGES.warehouse)
+    setPageMeta('Products | Barnor Business Solutions', 'Browse our curated product catalogue — request a quote on any item and receive pricing within 24 hours.', IMAGES.warehouse)
     void fetchPublicProducts().then(({ products, fromDb }) => setDbProducts(fromDb ? products : []))
   }, [])
 
