@@ -38,8 +38,8 @@ insert into public.site_settings (key, value) values
   ('process_cta_secondary_label', 'Talk to Our Team'),
 
   -- WhyUs COT
-  ('whyus_cta_eyebrow', 'Why GNAB'),
-  ('whyus_cta_title', 'Experience the GNAB Difference'),
+  ('whyus_cta_eyebrow', 'Why Barnor'),
+  ('whyus_cta_title', 'Experience the Barnor Difference'),
   ('whyus_cta_subtitle', 'Join the organisations across Ghana already procuring smarter.'),
   ('whyus_cta_primary_label', 'Request a Quote Today'),
   ('whyus_cta_secondary_label', 'Talk to Our Team'),
@@ -59,9 +59,9 @@ insert into public.site_settings (key, value) values
   -- Quote hero highlight
   ('quote_hero_title_highlight', 'Free Quotation'),
   -- Supplier hero highlight
-  ('supplier_hero_title_highlight', 'GNAB Supplier'),
+  ('supplier_hero_title_highlight', 'Barnor Supplier'),
   -- Testimonials hero highlight
-  ('testimonials_hero_title_highlight', 'GNAB'),
+  ('testimonials_hero_title_highlight', 'Barnor'),
   -- Blog hero highlight
   ('blog_hero_title_highlight', 'Procurement Forward')
 

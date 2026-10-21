@@ -23,7 +23,7 @@ alter table public.pdf_templates
 insert into public.pdf_templates (type, name, subject_template, title_template, subtitle_template, body_template, table_head, totals_template, terms_template, default_items, is_active)
 values
   ('website_package', 'Standard Website Package',
-   'Your GNAB Website Package Quotation {{quotation_number}} — {{rfq_number}}',
+   'Your Barnor Website Package Quotation {{quotation_number}} — {{rfq_number}}',
    'Website Package Quotation {{quotation_number}}',
    'Design, build, CMS, training + care plan — in response to {{rfq_number}}',
    'This package covers a corporate website designed, built and maintained in-house: up to 10 pages, CMS setup, staff training and a 3-month care plan (updates, backups, monitoring). Hardware, if needed, is quoted separately under IT Equipment.',
@@ -33,10 +33,10 @@ values
    '[{"description":"Business website design & build (up to 10 pages)","quantity":1,"unit_price":0},{"description":"CMS setup + training & handover","quantity":1,"unit_price":0},{"description":"Care plan — 3 months (updates, backups, monitoring)","quantity":1,"unit_price":0}]'::jsonb,
    true),
   ('erp_discovery', 'ERP Discovery Fixed Fee',
-   'Your GNAB ERP Discovery Proposal {{quotation_number}} — {{rfq_number}}',
+   'Your Barnor ERP Discovery Proposal {{quotation_number}} — {{rfq_number}}',
    'ERP Discovery Proposal {{quotation_number}}',
    'Discovery, vendor selection + implementation coordination — in response to {{rfq_number}}',
-   'This fixed-fee engagement covers ERP discovery only: stakeholder interviews, requirements documentation, vendor shortlisting and selection support. GNAB does not build custom ERP systems — implementation itself is quoted separately after vendor selection, coordinated with the chosen specialist partner.',
+   'This fixed-fee engagement covers ERP discovery only: stakeholder interviews, requirements documentation, vendor shortlisting and selection support. Barnor does not build custom ERP systems — implementation itself is quoted separately after vendor selection, coordinated with the chosen specialist partner.',
    '["Description","Qty","Unit Price (GHS)","Total (GHS)"]'::jsonb,
    '["Subtotal","Total Amount"]'::jsonb,
    'Fixed-fee discovery engagement. Implementation is quoted separately after vendor selection. Proposal valid for 30 days. Payment terms: 100% advance to start.',

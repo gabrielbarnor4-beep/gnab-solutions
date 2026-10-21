@@ -21,7 +21,7 @@ where not exists (select 1 from public.site_images where section='home_hero' and
 
 -- Home about
 insert into public.site_images (section, url, alt_text, sort_order, is_active)
-select 'home_about', 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1600&auto=format&fit=crop', 'GNAB team at work', 0, true
+select 'home_about', 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?q=80&w=1600&auto=format&fit=crop', 'Barnor team at work', 0, true
 where not exists (select 1 from public.site_images where section='home_about');
 
 insert into public.site_images (section, url, alt_text, sort_order, is_active)
@@ -38,7 +38,7 @@ select 'about_hero', 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b
 where not exists (select 1 from public.site_images where section='about_hero');
 
 insert into public.site_images (section, url, alt_text, sort_order, is_active)
-select 'about_warehouse', 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1600&auto=format&fit=crop', 'GNAB logistics operations', 0, true
+select 'about_warehouse', 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1600&auto=format&fit=crop', 'Barnor logistics operations', 0, true
 where not exists (select 1 from public.site_images where section='about_warehouse');
 
 -- Per-page heroes

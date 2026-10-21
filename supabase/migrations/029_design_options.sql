@@ -26,7 +26,7 @@ insert into public.site_settings (key, value) values
   ('industries_cta_title_highlight', 'Your Sector?'),
   ('products_cta_title_highlight', 'What You Need?'),
   ('process_cta_title_highlight', 'Step One?'),
-  ('whyus_cta_title_highlight', 'GNAB Difference'),
+  ('whyus_cta_title_highlight', 'Barnor Difference'),
   -- Footer column headings (same gold family as COT headings)
   ('footer_quick_links_title', 'Quick Links'),
   ('footer_services_title', 'Services'),

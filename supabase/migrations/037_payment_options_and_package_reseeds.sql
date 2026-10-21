@@ -44,7 +44,7 @@ where type = 'website_package'
 -- 5. ERP discovery reseed — one fee, deliverables, implementation out of scope
 update public.pdf_templates
 set
-  body_template = 'This fixed-fee engagement covers ERP discovery only. Deliverables: as-is process review, documented requirements specification, vendor shortlist with comparison, and a written recommendation. Explicitly out of scope: implementation, licensing and data migration — quoted separately as a second engagement after vendor selection. GNAB does not build custom ERP systems.',
+  body_template = 'This fixed-fee engagement covers ERP discovery only. Deliverables: as-is process review, documented requirements specification, vendor shortlist with comparison, and a written recommendation. Explicitly out of scope: implementation, licensing and data migration — quoted separately as a second engagement after vendor selection. Barnor does not build custom ERP systems.',
   terms_template = 'Fixed-fee discovery engagement as described above. Implementation is out of scope and quoted separately after vendor selection. Proposal valid for 30 days. Payment terms: 100% advance to start.',
   default_items = '[{"description":"ERP discovery engagement — as-is review, requirements, vendor shortlist & recommendation (fixed fee)","quantity":1,"unit_price":15000}]'::jsonb
 where type = 'erp_discovery'
