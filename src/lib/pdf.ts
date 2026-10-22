@@ -249,13 +249,14 @@ export async function generateBarnorPdf(opts: PdfOpts & { template?: PdfTemplate
   // Date + meta
   doc.setFontSize(9)
   doc.setTextColor('#334155')
-  const dateStr = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
+  const suppliedDate = opts.meta?.Date || opts.meta?.date
+  const dateStr = suppliedDate || new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })
   doc.setFont('helvetica', 'normal')
   doc.text(`Date: ${dateStr}`, margin, y)
   y += 12
   if (opts.meta) {
     for (const [k, v] of Object.entries(opts.meta)) {
-      if (!v) continue
+      if (!v || k.toLowerCase() === 'date') continue
       doc.setFont('helvetica', 'bold')
       doc.text(scrubBrandText(`${k}:`), margin, y)
       doc.setFont('helvetica', 'normal')
