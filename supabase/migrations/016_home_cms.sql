@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 016 — Home Page CMS
+-- Barnor 016 — Home Page CMS
 -- Makes every Home section editable: hero, trust bar,
 -- about preview, stats, CTA + feature cards
 -- Services/Industries/Why/Process already have their own
@@ -11,7 +11,7 @@
 -- ------------------------------------------------------------
 create table if not exists public.home_hero (
   id uuid primary key default gen_random_uuid(),
-  badge text not null default 'Welcome to Barnor Business Solutions',
+  badge text not null default 'Welcome to Barnor Business Solution',
   title_prefix text not null default 'Your Trusted',
   title_highlight text not null default 'Procurement & Supply',
   title_suffix text not null default 'Partner',
@@ -32,7 +32,7 @@ create policy "public_read_home_hero" on public.home_hero for select using (publ
 drop policy if exists "admin_all_home_hero" on public.home_hero;
 create policy "admin_all_home_hero" on public.home_hero for all using (public.is_admin()) with check (public.is_admin());
 insert into public.home_hero (badge, title_prefix, title_highlight, title_suffix, subtitle) values
-('Welcome to Barnor Business Solutions','Your Trusted','Procurement & Supply','Partner','We simplify procurement through reliable sourcing, competitive pricing and timely delivery — across Ghana and beyond.')
+('Welcome to Barnor Business Solution','Your Trusted','Procurement & Supply','Partner','We simplify procurement through reliable sourcing, competitive pricing and timely delivery — across Ghana and beyond.')
 on conflict do nothing;
 
 -- ------------------------------------------------------------
@@ -72,7 +72,7 @@ create table if not exists public.home_about (
   eyebrow text not null default 'About Us',
   title_prefix text not null default 'Who We',
   title_highlight text not null default 'Are',
-  paragraph1 text not null default 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.',
+  paragraph1 text not null default 'Barnor Business Solution is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.',
   paragraph2 text not null default 'From office stationery to industrial equipment, we handle it all with professionalism and efficiency — so your business never stops running.',
   badge_value text not null default '10+',
   badge_label text not null default 'Years of Excellence',

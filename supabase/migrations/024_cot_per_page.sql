@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 024 — COT (Call to Action) per other pages + hero highlight
+-- Barnor 024 — COT (Call to Action) per other pages + hero highlight
 -- Makes every other page's COT use same premium design as Home COT
 -- and hero headings share same text design (3xl/5xl extrabold + gold highlight)
 -- All editable via Admin → Site Pages

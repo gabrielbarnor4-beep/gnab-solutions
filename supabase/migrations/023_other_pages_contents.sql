@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 023 — Other Pages CMS (About, Services, Industries,
+-- Barnor 023 — Other Pages CMS (About, Services, Industries,
 -- Products, Process, Why Us, Contact, Quote, Supplier, etc.)
 -- Makes every hard-coded hero/section/card text editable via
 -- site_settings so Admin -> Pages can mirror public site.
@@ -11,7 +11,7 @@ insert into public.site_settings (key, value) values
   ('about_hero_subtitle', 'Ghana''s trusted partner for corporate procurement, sourcing and supply — delivering measurable value to businesses, government, NGOs and institutions.'),
   ('about_story_eyebrow', 'Our Story'),
   ('about_story_title', 'Built on Trust, Driven by Results'),
-  ('about_story_p1', 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.'),
+  ('about_story_p1', 'Barnor Business Solution is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.'),
   ('about_story_p2', 'We serve businesses, government institutions, NGOs, schools, hospitals, hotels and SMEs across Ghana with reliable, efficient and cost-effective procurement solutions.'),
   ('about_pillars', '[{"value":"100+","label":"Trusted Suppliers"},{"value":"500+","label":"Products Sourced"},{"value":"24h","label":"Quote Turnaround"},{"value":"100%","label":"Commitment"}]'),
   ('about_mission_title', 'Our Mission'),
@@ -24,7 +24,7 @@ insert into public.site_settings (key, value) values
   ('about_values_cards', '[{"title":"Integrity","desc":"We conduct business with uncompromising ethical standards."},{"title":"Customer Focus","desc":"Your success drives every decision we make."},{"title":"Excellence","desc":"We pursue excellence in every detail of every order."},{"title":"Innovation","desc":"We embrace smarter ways to simplify procurement."}]'),
   ('about_cta_eyebrow', 'Partner with us'),
   ('about_cta_title', 'Partner With Us Today'),
-  ('about_cta_subtitle', 'Experience the GNAB difference in procurement and supply solutions.'),
+  ('about_cta_subtitle', 'Experience the Barnor difference in procurement and supply solutions.'),
   ('about_cta_primary_label', 'Get Started'),
   ('about_cta_secondary_label', 'Become a Supplier'),
 
@@ -53,11 +53,11 @@ insert into public.site_settings (key, value) values
 
   -- Why Us
   ('whyus_hero_title', 'More Than a Supplier — A Strategic Partner'),
-  ('whyus_hero_subtitle', 'Organisations across Ghana choose GNAB because we treat procurement as a partnership, not a transaction.'),
+  ('whyus_hero_subtitle', 'Organisations across Ghana choose Barnor because we treat procurement as a partnership, not a transaction.'),
   ('whyus_comparison_typical_title', 'Typical Procurement'),
   ('whyus_comparison_typical_bullets', '["Multiple vendors to chase","Inconsistent pricing","Slow, unclear quotations","No accountability after delivery"]'),
-  ('whyus_comparison_gnab_title', 'The GNAB Way'),
-  ('whyus_comparison_gnab_bullets', '["One partner for everything","Transparent, competitive pricing","Quotation within 24 hours","After-sales support that stays"]'),
+  ('whyus_comparison_barnor_title', 'The Barnor Way'),
+  ('whyus_comparison_barnor_bullets', '["One partner for everything","Transparent, competitive pricing","Quotation within 24 hours","After-sales support that stays"]'),
 
   -- Contact
   ('contact_hero_title', 'Let''s Start a Conversation'),
@@ -67,7 +67,7 @@ insert into public.site_settings (key, value) values
   ('contact_form_title', 'Send Us a Message'),
   ('contact_form_subtitle', 'We typically reply within a few hours.'),
   ('contact_form_success_title', 'Message Sent Successfully'),
-  ('contact_form_success_desc', 'Thank you for contacting Barnor Business Solutions. We will respond as soon as possible.'),
+  ('contact_form_success_desc', 'Thank you for contacting Barnor Business Solution. We will respond as soon as possible.'),
 
   -- Quote
   ('quote_hero_title', 'Get Your Free Quotation'),

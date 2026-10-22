@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB Business Solutions — Catalogue, content & settings
+-- Barnor Business Solution — Catalogue, content & settings
 -- products + categories, services, blog_posts, company_documents,
 -- site_settings. Storage buckets: media (images), documents (PDFs).
 -- Public reads published/active rows only; admins manage everything.
@@ -156,19 +156,19 @@ create policy "admin_insert_settings" on public.site_settings for insert
   with check (public.is_admin());
 
 insert into public.site_settings (key, value) values
-  ('company_name', 'Barnor Business Solutions'),
+  ('company_name', 'Barnor Business Solution'),
   ('tagline', 'One Partner. Endless Solutions.'),
   ('company_description', 'Ghana''s trusted partner for corporate procurement, sourcing and supply — delivering measurable value to businesses, government, NGOs and institutions.'),
   ('email', 'barnorsolutions@gmail.com'),
   ('phone', '+233 55 427 3445'),
   ('whatsapp', '+233 27 547 3098'),
   ('address', 'Accra Business District, Greater Accra, Ghana'),
-  ('logo_url', 'https://i.imgur.com/FTPqfBS.png'),
+  ('logo_url', '/brand/barnor-logo.png'),
   ('social_linkedin', ''),
   ('social_facebook', ''),
   ('social_twitter', ''),
   ('social_instagram', ''),
-  ('seo_title', 'Barnor Business Solutions | One Partner. Endless Solutions.'),
+  ('seo_title', 'Barnor Business Solution | One Partner. Endless Solutions.'),
   ('seo_description', 'Ghana''s trusted partner for corporate procurement, sourcing and supply — reliable sourcing, competitive pricing, timely delivery.'),
   ('footer_text', 'Simplifying procurement for organisations across Ghana and West Africa.')
 on conflict (key) do nothing;

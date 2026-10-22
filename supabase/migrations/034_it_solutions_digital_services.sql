@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB — 034 IT Solutions & Digital Services
+-- Barnor — 034 IT Solutions & Digital Services
 -- Adds the 10th service catalogue (websites designed, built and
 -- maintained in-house; ERP/business systems sourced via partners).
 -- Mirrors 032/033 exactly. Idempotent: safe to re-run.

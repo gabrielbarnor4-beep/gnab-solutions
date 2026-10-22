@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB Business Solutions — Admin access control
+-- Barnor Business Solution — Admin access control
 -- Fixes: "admin" policies previously granted EVERY authenticated
 -- Supabase user full moderation rights.
 --

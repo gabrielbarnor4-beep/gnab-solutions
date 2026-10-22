@@ -273,7 +273,7 @@ export function localBrain(rawInput: string): Reply {
   }
   if (/\b(your name|who are you|what are you|are you (a )?(bot|robot|human|real))\b/.test(q)) {
     return {
-      text: `I'm the **Barnor Assistant** 🤖 — a virtual helper for Barnor Business Solutions.\n\nI can find products, explain how we work and connect you with our human team anytime. What would you like to know?`,
+      text: `I'm the **Barnor Assistant** 🤖 — a virtual helper for Barnor Business Solution.\n\nI can find products, explain how we work and connect you with our human team anytime. What would you like to know?`,
       chips: ['What do you supply?', 'How does quoting work?', 'Talk to a human'],
     }
   }
@@ -299,7 +299,7 @@ export function localBrain(rawInput: string): Reply {
     const partOfDay = hour < 12 ? 'morning' : hour < 17 ? 'afternoon' : 'evening'
     return {
       text: pick([
-        `Good ${partOfDay}! ☀️ Welcome to **Barnor Business Solutions**. How can I help you today?`,
+        `Good ${partOfDay}! ☀️ Welcome to **Barnor Business Solution**. How can I help you today?`,
         `Hello and good ${partOfDay}! 😊 What can I do for you?`,
         `Hi! Good ${partOfDay} 🌟 Looking for a product, a quote, or just exploring?`,
       ]),
@@ -421,7 +421,7 @@ export function localBrain(rawInput: string): Reply {
   }
 
   /* why us */
-  if (/\b(why (choose|gnab)|benefit|advantage|trust|reliable|guarantee|quality)\b/.test(q)) {
+  if (/\b(why (choose|barnor)|benefit|advantage|trust|reliable|guarantee|quality)\b/.test(q)) {
     return {
       text: pick([
         `Clients choose Barnor because we offer:\n- **100+ vetted suppliers** — one call gets anything sourced\n- **Competitive pricing** through bulk purchasing power\n- **24-hour quotations**, always transparent\n- **Quality assurance** on every single order\n- A dedicated account manager who knows your business\n\nRead more on the [Why Us page](/why-us).`,
@@ -457,7 +457,7 @@ export function localBrain(rawInput: string): Reply {
   if (/\b(about|who (are|is) barnor|company|mission|vision|history)\b/.test(q)) {
     return {
       text: pick([
-        `**Barnor Business Solutions** is Ghana's trusted procurement and supply partner — one point of contact for sourcing, purchasing and delivering quality products.\n\n**Mission:** simplify procurement through reliable sourcing, competitive pricing and timely delivery.\n**Vision:** become Ghana's most trusted procurement partner.\n\nLearn more on the [About page](/about).`,
+        `**Barnor Business Solution** is Ghana's trusted procurement and supply partner — one point of contact for sourcing, purchasing and delivering quality products.\n\n**Mission:** simplify procurement through reliable sourcing, competitive pricing and timely delivery.\n**Vision:** become Ghana's most trusted procurement partner.\n\nLearn more on the [About page](/about).`,
         `In a nutshell: we make procurement effortless 🇬🇭 One call to Barnor connects you to 100+ vetted suppliers, competitive bulk pricing and doorstep delivery anywhere in Ghana. Our story's on the [About page](/about).`,
       ]),
       chips: ['What services do you offer?', 'Talk to a human'],
@@ -590,7 +590,7 @@ export function localBrain(rawInput: string): Reply {
 
 /* ---------------- Optional LLM (Gemini via edge function) enhancement ---------------- */
 
-const SYSTEM_PROMPT = `You are the Barnor Assistant for Barnor Business Solutions, a Ghanaian procurement & supply company.
+const SYSTEM_PROMPT = `You are the Barnor Assistant for Barnor Business Solution, a Ghanaian procurement & supply company.
 Facts: Email ${CONTACT.email}; Phone ${CONTACT.phone}; WhatsApp ${CONTACT.whatsapp}; Address ${CONTACT.address}. Hours Mon-Fri 8am-5pm GMT.
 Catalogues (11): Office Stationery & Consumables; IT Equipment & Accessories; Cleaning & Janitorial Supplies; PPE & Safety; Office Furniture; Printing & Branding; Electrical Materials; Automobile Services & Spares; IT Solutions & Digital Services; Agro & Foodstuffs; Custom Sourcing.
 IT Solutions: corporate websites are designed, built and maintained in-house (scoping call, written proposal, training, care/support plan); ERP and business systems are specified and sourced with specialist partners; computer hardware stays under IT Equipment. Never quote website prices — always point to the quote form.
@@ -662,5 +662,5 @@ export const makeUserMessage = (text: string): ChatMessage => ({
 
 /** Opens the assistant chat from anywhere, optionally prefilling a question. No-op on admin routes (widget hidden). */
 export function openAssistant(message?: string) {
-  window.dispatchEvent(new CustomEvent('gnab:open-assistant', { detail: message }))
+  window.dispatchEvent(new CustomEvent('barnor:open-assistant', { detail: message }))
 }

@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 010 — Industries card image + Google Maps embed URL
+-- Barnor 010 — Industries card image + Google Maps embed URL
 -- Run in Supabase Dashboard → SQL Editor → Run
 -- ============================================================
 

@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 011 — Business hours editable + Assistant Q&A pipeline
+-- Barnor 011 — Business hours editable + Assistant Q&A pipeline
 -- Run in Supabase Dashboard → SQL Editor → Run
 -- ============================================================
 

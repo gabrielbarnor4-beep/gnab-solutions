@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 017 — Footer visibility toggle
+-- Barnor 017 — Footer visibility toggle
 -- Adds show_in_footer to content that may appear in footer.
 -- Admin controls via checkbox; footer reads only flagged rows.
 -- ============================================================

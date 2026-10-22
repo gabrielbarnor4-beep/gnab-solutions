@@ -1,4 +1,4 @@
-# Barnor Business Solutions — One Partner. Endless Solutions.
+# Barnor Business Solution — One Partner. Endless Solutions.
 
 Ghana's trusted procurement & supply platform. Public marketing site (13 routes) + full admin CMS (22 pages) + AI assistant + maps + PDF quotations/receipts.
 
@@ -31,8 +31,8 @@ VITE_FORMSPREE_ENDPOINT=https://formspree.io/f/<id>
 GEMINI_API_KEY=<google ai studio>  # via supabase/functions/gemini-chat
 BREVO_API_KEY=<brevo>              # preferred email, 300/day free
 RESEND_API_KEY=<resend>            # fallback
-FROM_EMAIL=Barnor Business Solutions <barnorsolutions@gmail.com>
-ALLOWED_ORIGIN=https://gnab-solutions.vercel.app  # CORS lockdown, defaults to localhost+supabase origin
+FROM_EMAIL=Barnor Business Solution <barnorsolutions@gmail.com>
+ALLOWED_ORIGIN=https://barnor-solutions.vercel.app  # CORS lockdown, defaults to localhost+supabase origin
 VITE_POSTHOG_KEY=<posthog>         # optional, analytics
 VITE_POSTHOG_HOST=https://us.i.posthog.com
 ```
@@ -43,7 +43,7 @@ See `.env.example` for full template.
 
 In Supabase Dashboard → SQL Editor, run `supabase/migrations/001_*.sql` → `039_*.sql` (or `supabase db push` locally). Seeds are idempotent.
 
-Key migrations: `001_testimonials` → `022_receipts_and_pdf_templates` → `023_other_pages_contents` → `024_cot_per_page` (per-page CTA copy — filename keeps the `cot` typo on disk) → `025_favicon_og` → `026_selfhost_brand_assets` → `027_footer_custom_links` (adds `services.footer_label/footer_path`) → `028_restore_real_logo` (real Supabase-hosted logo default) → `029_design_options` (20-key heading design system) → `030_cta_features` (per-page CTA strips, like Home) → `031_anon_is_admin_grant` (lets anon evaluate `is_admin()` so logged-out reads work) → `032_automobile_services` + `033_footer_toggles_and_automobile_backfill` (9th catalogue + footer contact items) → `034_it_solutions_digital_services` + `035_it_solutions_copy_split` (10th catalogue + copy split) → `036_quote_package_templates` (`website_package`/`erp_discovery` types + `default_items`) → `037_payment_options_and_package_reseeds` (How-to-Pay section + receipt reference + GHS reseeds) → `038_agro_foodstuffs` (11th catalogue: farm produce as intermediary, Ghana + worldwide delivery) → `039_hero_ministats` (hero mini-stat values + labels editable in Admin → Home → Hero), `021_storage_size_guard` (5MB trigger + `rate_limits`).
+Key migrations: `001_testimonials` → `022_receipts_and_pdf_templates` → `023_other_pages_contents` → `024_cot_per_page` (per-page CTA copy — filename keeps the `cot` typo on disk) → `025_favicon_og` → `026_selfhost_brand_assets` → `027_footer_custom_links` (adds `services.footer_label/footer_path`) → `028_restore_real_logo` (self-hosted Barnor logo default) → `029_design_options` (20-key heading design system) → `030_cta_features` (per-page CTA strips, like Home) → `031_anon_is_admin_grant` (lets anon evaluate `is_admin()` so logged-out reads work) → `032_automobile_services` + `033_footer_toggles_and_automobile_backfill` (9th catalogue + footer contact items) → `034_it_solutions_digital_services` + `035_it_solutions_copy_split` (10th catalogue + copy split) → `036_quote_package_templates` (`website_package`/`erp_discovery` types + `default_items`) → `037_payment_options_and_package_reseeds` (How-to-Pay section + receipt reference + GHS reseeds) → `038_agro_foodstuffs` (11th catalogue: farm produce as intermediary, Ghana + worldwide delivery) → `039_hero_ministats` (hero mini-stat values + labels editable in Admin → Home → Hero), `021_storage_size_guard` (5MB trigger + `rate_limits`).
 
 After migrations:
 1. Storage → `attachments` → Edit → set **5 MB max, `image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt` only** — enforces server-side even if client bypassed (`021` trigger is defense-in-depth).
@@ -58,8 +58,8 @@ All brand assets are **self-hosted** with admin override — no imgur dependency
 * Admin → **Settings** → Branding edits `site_settings.logo_url / favicon_url / og_image_url`. Each is stored in `media` bucket via `ImageUploader` and instantly mirrored site-wide:
   * `src/lib/siteData.tsx:400` rewrites `<link rel="icon">`, `<link rel="apple-touch-icon">`, and `<meta property="og:image">` at runtime with cache-busted `?fav=hash` for Safari.
   * `src/components/layout/Header.tsx` + `Footer.tsx` read `useSiteSettings().logo_url`.
-  * `src/lib/pdf.ts:LOGO_URL` fallback is the Supabase-hosted brand logo (same URL as `CONTACT.logo`); per-template `header_logo_url` overrides it — editable in **Admin → PDF Templates**.
-* `index.html:13` and `src/lib/utils.ts:25` `CONTACT.logo` point to the Supabase-hosted brand logo `media/branding/1788397307996-wb35sl.jpg` (set by `028`), not `https://i.imgur.com/...`.
+  * `src/lib/pdf.ts:LOGO_URL` fallback is the self-hosted `/brand/barnor-logo.png`; per-template `header_logo_url` overrides it — editable in **Admin → PDF Templates**.
+* `index.html` and `src/lib/utils.ts` `CONTACT.logo` point to the self-hosted `/brand/barnor-logo.png`. Legacy brand logo URLs stored in old databases are ignored automatically.
 
 You keep **full control**: change Logo/Favicon/OG in admin anytime, no rebuild, no code edit.
 
@@ -70,7 +70,7 @@ src/
   App.tsx              # BrowserRouter, lazy 13+22 routes, PublicLayout, useAutoHideScrollbar
   lib/supabase.ts      # createClient + getPublicUrl(bucket,path,opts)
   lib/siteData.tsx     # SiteSettings + DEFAULT_SETTINGS + Provider + fetchers + SEO helpers
-  lib/pdf.ts           # generateGnabPdf (jsPDF A4, template-aware, lazy import)
+  lib/pdf.ts           # generateBarnorPdf (jsPDF A4, template-aware, lazy import)
   lib/utils.ts         # cn, CONTACT/COMPANY, NAV_LINKS, canSubmit, isHoneypot, formStr, isAllowedAttachment
   lib/assistant.ts     # FAQ→Gemini→localBrain, getAssistantReply
   components/layout    # Header (glass, per-item top-bar toggles) + Footer (4-col)
@@ -108,7 +108,7 @@ public/                # favicon.svg, og-image.svg, sitemap.xml, robots.txt
 
 ## PWA & Analytics (Rec 9)
 
-* `vite-plugin-pwa` — offline cache for `/`, `/services`, `/products` (stale-while-revalidate). Manifest: `Barnor Business Solutions`, theme `#0B2E59`, icons from `/favicon.svg`.
+* `vite-plugin-pwa` — offline cache for `/`, `/services`, `/products` (stale-while-revalidate). Manifest: `Barnor Business Solution`, theme `#0B2E59`, icons from `/favicon.svg`.
 * `posthog-js` — pageview + `quote_requested`, `contact_sent`, `assistant_question` events. Opt-in via `VITE_POSTHOG_KEY`; no key → no tracking, no bundle cost beyond lazy import.
 
 ## Testing & CI (Rec 6)
@@ -129,11 +129,11 @@ GitHub Actions `.github/workflows/ci.yml`: `tsc -b` → `oxlint` → `vitest` �
 ## Deployment
 
 **Vercel (free):**
-1. Push to GitHub `gnab-solutions` → Vercel → Import → set 3 `VITE_*` envs → pick subdomain `gnab-solutions.vercel.app` → Deploy 2 min.
-2. `supabase secrets set GEMINI_API_KEY=... ALLOWED_ORIGIN=https://gnab-solutions.vercel.app` → `supabase functions deploy gemini-chat --no-verify-jwt && supabase functions deploy send-email`.
-3. Optional: `is-a.dev` → `gnab.is-a.dev` → Vercel → Domains → Add.
+1. Push to GitHub `barnor-solutions` → Vercel → Import → set 3 `VITE_*` envs → pick subdomain `barnor-solutions.vercel.app` → Deploy 2 min.
+2. `supabase secrets set GEMINI_API_KEY=... ALLOWED_ORIGIN=https://barnor-solutions.vercel.app` → `supabase functions deploy gemini-chat --no-verify-jwt && supabase functions deploy send-email`.
+3. Optional: `is-a.dev` → `barnor.is-a.dev` → Vercel → Domains → Add.
 
-Netlify alternative: same envs → `https://gnab-solutions.netlify.app`.
+Netlify alternative: same envs → `https://barnor-solutions.netlify.app`.
 
 ## Storage & Anti-Flood
 

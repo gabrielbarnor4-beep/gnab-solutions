@@ -1,232 +1,622 @@
 -- ============================================================
--- 040 — Rename GNAB to Barnor Business Solutions (comprehensive)
--- Run AFTER migrations 001-039 to correct all seeded/existing data
+-- 040 — Brand cleanup: GNAB → Barnor Business Solution
+-- ============================================================
+-- Safe to run on production after migrations 001–039.
+-- Safe to re-run. It inspects the live schema and skips anything
+-- that does not exist, so it cannot fail with "relation does not
+-- exist" or "column does not exist".
+--
+-- What it does:
+--   1. Replaces GNAB / Gnab / gnab with Barnor / Barnor / barnor
+--      in every public content table and text/JSON/array column.
+--   2. Normalises "Barnor Business Solutions" → "Barnor Business Solution".
+--   3. Renames legacy whyus_comparison_gnab_* settings keys.
+--   4. Repoints logo / favicon / OG / PDF-template logos at the new
+--      self-hosted brand assets.
+--   5. Renames historical GNAB-… RFQ/quotation/receipt numbers to BARN-…
+--      (conflict-safe, so unique constraints can never abort the run).
+--   6. Normalises exact legacy self-brand aliases such as "GNAB IT"
+--      and the old brand email inside historical test messages.
+--   7. Prints a verification report at the end.
+--
+-- Third-party customer data (arbitrary names, emails, phone numbers,
+-- messages, attachment URLs) is intentionally preserved. The only
+-- exceptions are exact legacy self-brand aliases from the previous
+-- trading name (for example "GNAB IT") and the old brand email address
+-- in historical test messages.
 -- ============================================================
 
 -- ------------------------------------------------------------
--- 1. site_settings — core branding & copy
+-- 1. Verification report table (session-local)
 -- ------------------------------------------------------------
-UPDATE public.site_settings SET value = 'Barnor Business Solutions' WHERE key = 'company_name';
-UPDATE public.site_settings SET value = 'barnorsolutions@gmail.com' WHERE key = 'email';
-UPDATE public.site_settings SET value = 'Barnor Business Solutions | One Partner. Endless Solutions.' WHERE key = 'seo_title';
-UPDATE public.site_settings SET value = 'Barnor Business Solutions  •  One Partner. Endless Solutions.  •  Simplifying procurement for organisations across Ghana and Beyond.' WHERE key = 'footer_text';
-
--- About page
-UPDATE public.site_settings SET value = 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.' WHERE key = 'about_story_p1';
-UPDATE public.site_settings SET value = 'Experience the Barnor difference in procurement and supply solutions.' WHERE key = 'about_cta_subtitle';
-
--- Why Us page
-UPDATE public.site_settings SET value = 'Organisations across Ghana choose Barnor because we treat procurement as a partnership, not a transaction.' WHERE key = 'whyus_hero_subtitle';
-UPDATE public.site_settings SET value = 'The Barnor Way' WHERE key = 'whyus_comparison_barnor_title';
-UPDATE public.site_settings SET value = 'Why Barnor' WHERE key = 'whyus_cta_eyebrow';
-UPDATE public.site_settings SET value = 'Experience the Barnor Difference' WHERE key = 'whyus_cta_title';
-UPDATE public.site_settings SET value = 'Barnor Difference' WHERE key = 'whyus_cta_title_highlight';
-
--- Supplier page
-UPDATE public.site_settings SET value = 'Barnor Supplier' WHERE key = 'supplier_hero_title_highlight';
-
--- Testimonials page
-UPDATE public.site_settings SET value = 'Barnor' WHERE key = 'testimonials_hero_title_highlight';
-
--- Home CTA
-UPDATE public.site_settings SET value = 'Let Barnor handle your sourcing, pricing and delivery — one partner, endless solutions. Your free quotation lands within 24 hours.' WHERE key = 'home_cta.subtitle' OR key = 'home_cta_subtitle';
+drop table if exists pg_temp._brand_cleanup_report;
+create temp table _brand_cleanup_report (
+  table_name text not null,
+  column_name text not null,
+  remaining bigint not null
+);
 
 -- ------------------------------------------------------------
--- 2. pdf_templates — all active templates
+-- 2. Generic content cleanup
 -- ------------------------------------------------------------
-UPDATE public.pdf_templates SET
-  header_company_name = 'Barnor Business Solutions',
-  header_contact = 'barnorsolutions@gmail.com  •  +233 55 427 3445  •  Accra, Ghana',
-  footer_text = 'Barnor Business Solutions  •  One Partner. Endless Solutions.  •  Simplifying procurement for organisations across Ghana and Beyond.',
-  subject_template = REPLACE(subject_template, 'GNAB', 'Barnor'),
-  body_template = REPLACE(body_template, 'GNAB', 'Barnor'),
-  terms_template = REPLACE(terms_template, 'GNAB', 'Barnor')
-WHERE is_active = true;
+do $brand$
+declare
+  t text;
+  c text;
+  typ text;
+  udt text;
+  expr text;
+  sql text;
+  tables text[] := array[
+    'site_settings',
+    'pdf_templates',
+    'home_hero',
+    'home_trust_items',
+    'home_about',
+    'home_stats',
+    'home_cta',
+    'site_images',
+    'blog_posts',
+    'testimonials',
+    'services',
+    'industries',
+    'why_choose_us',
+    'process_steps',
+    'products',
+    'product_categories',
+    'company_documents',
+    'assistant_questions',
+    'locations',
+    'contact_messages',
+    'quotations',
+    'receipts'
+  ];
+  blocked text[] := array[
+    'key', 'slug',
+    'email', 'phone', 'whatsapp',
+    'full_name', 'contact_person', 'customer_name', 'company_name',
+    'client_name', 'company',
+    'website', 'url', 'image_url', 'overlay_url', 'bg_image_url',
+    'featured_image_url', 'attachment_urls', 'document_urls',
+    'pdf_url', 'reply_pdf_url', 'file_path',
+    'logo_url', 'favicon_url', 'og_image_url', 'header_logo_url',
+    'google_maps_url', 'google_maps_embed_url',
+    'rfq_number', 'quotation_number', 'receipt_number',
+    'message', 'subject'
+  ];
+begin
+  foreach t in array tables loop
+    if to_regclass(format('public.%I', t)) is null then
+      continue;
+    end if;
 
--- Also update inactive templates for consistency
-UPDATE public.pdf_templates SET
-  header_company_name = 'Barnor Business Solutions',
-  header_contact = 'barnorsolutions@gmail.com  •  +233 55 427 3445  •  Accra, Ghana',
-  footer_text = 'Barnor Business Solutions  •  One Partner. Endless Solutions.  •  Simplifying procurement for organisations across Ghana and Beyond.',
-  subject_template = REPLACE(subject_template, 'GNAB', 'Barnor'),
-  body_template = REPLACE(body_template, 'GNAB', 'Barnor'),
-  terms_template = REPLACE(terms_template, 'GNAB', 'Barnor');
+    for c, typ, udt in
+      select column_name, data_type, udt_name
+      from information_schema.columns
+      where table_schema = 'public'
+        and table_name = t
+        and column_name <> all(blocked)
+        and is_generated = 'NEVER'
+        and data_type in ('text', 'character varying', 'character', 'jsonb', 'json', 'ARRAY')
+      order by ordinal_position
+    loop
+      -- Only text[] arrays are safe to round-trip through ::text.
+      if typ = 'ARRAY' and udt <> '_text' then
+        continue;
+      end if;
+
+      expr := format(
+        'regexp_replace(' ||
+        'replace(replace(replace(%1$I::text, ''GNAB'', ''Barnor''), ''Gnab'', ''Barnor''), ''gnab'', ''barnor''), ' ||
+        '''Barnor Business Solutions'', ''Barnor Business Solution'', ''gi'')',
+        c
+      );
+
+      if typ = 'jsonb' then
+        sql := format(
+          'update public.%I set %I = (%s)::jsonb where %I::text ~* ''gnab|Barnor Business Solutions''',
+          t, c, expr, c
+        );
+      elsif typ = 'json' then
+        sql := format(
+          'update public.%I set %I = (%s)::json where %I::text ~* ''gnab|Barnor Business Solutions''',
+          t, c, expr, c
+        );
+      elsif typ = 'ARRAY' then
+        sql := format(
+          'update public.%I set %I = (%s)::text[] where %I::text ~* ''gnab|Barnor Business Solutions''',
+          t, c, expr, c
+        );
+      else
+        sql := format(
+          'update public.%I set %I = %s where %I ~* ''gnab|Barnor Business Solutions''',
+          t, c, expr, c
+        );
+      end if;
+
+      execute sql;
+    end loop;
+  end loop;
+end
+$brand$;
 
 -- ------------------------------------------------------------
--- 3. home_hero — hero badge & CTA
+-- 3. site_settings — brand values and legacy key names
 -- ------------------------------------------------------------
-UPDATE public.home_hero SET
-  badge = 'Welcome to Barnor Business Solutions',
-  subtitle = 'We simplify procurement through reliable sourcing, competitive pricing and timely delivery — across Ghana and beyond.'
-WHERE badge = 'Welcome to GNAB Business Solutions';
+do $settings$
+declare
+  old_key text;
+  new_key text;
+begin
+  if to_regclass('public.site_settings') is null then
+    return;
+  end if;
+
+  -- Core brand name (always enforced)
+  update public.site_settings
+  set value = 'Barnor Business Solution', updated_at = now()
+  where key = 'company_name';
+  insert into public.site_settings (key, value)
+  values ('company_name', 'Barnor Business Solution')
+  on conflict (key) do nothing;
+
+  update public.site_settings
+  set value = 'Barnor Business Solution | One Partner. Endless Solutions.', updated_at = now()
+  where key = 'seo_title';
+  insert into public.site_settings (key, value)
+  values ('seo_title', 'Barnor Business Solution | One Partner. Endless Solutions.')
+  on conflict (key) do nothing;
+
+  -- Brand assets — only replace legacy/empty values, never an admin upload
+  update public.site_settings
+  set value = '/brand/barnor-logo.png', updated_at = now()
+  where key = 'logo_url'
+    and (
+      value is null
+      or value = ''
+      or value like '%1788397307996-wb35sl%'
+      or value like '%FTPqfBS%'
+      or value ~* 'gnab'
+      or value in ('/favicon.svg', '/og-image.svg')
+    );
+  insert into public.site_settings (key, value)
+  values ('logo_url', '/brand/barnor-logo.png')
+  on conflict (key) do nothing;
+
+  update public.site_settings
+  set value = '/favicon.svg', updated_at = now()
+  where key = 'favicon_url'
+    and (
+      value is null
+      or value = ''
+      or value like '%1788397307996-wb35sl%'
+      or value like '%FTPqfBS%'
+      or value ~* 'gnab'
+      or value in ('/og-image.svg', '/brand/barnor-logo.png')
+    );
+  insert into public.site_settings (key, value)
+  values ('favicon_url', '/favicon.svg')
+  on conflict (key) do nothing;
+
+  update public.site_settings
+  set value = '/brand/barnor-og.png', updated_at = now()
+  where key = 'og_image_url'
+    and (
+      value is null
+      or value = ''
+      or value like '%1788397307996-wb35sl%'
+      or value like '%FTPqfBS%'
+      or value ~* 'gnab'
+      or value in ('/favicon.svg', '/brand/barnor-logo.png')
+    );
+  insert into public.site_settings (key, value)
+  values ('og_image_url', '/brand/barnor-og.png')
+  on conflict (key) do nothing;
+
+  -- Rename any legacy key containing gnab (conflict-safe)
+  for old_key in
+    select key from public.site_settings where key ~* 'gnab'
+  loop
+    new_key := regexp_replace(old_key, 'gnab', 'barnor', 'gi');
+    if new_key <> old_key then
+      if exists (select 1 from public.site_settings where key = new_key) then
+        delete from public.site_settings where key = old_key;
+      else
+        update public.site_settings set key = new_key where key = old_key;
+      end if;
+    end if;
+  end loop;
+
+  -- Ensure the keys the current UI reads always exist
+  insert into public.site_settings (key, value)
+  values
+    ('whyus_comparison_barnor_title', 'The Barnor Way'),
+    ('whyus_comparison_barnor_bullets', '["One partner for everything","Transparent, competitive pricing","Quotation within 24 hours","After-sales support that stays"]')
+  on conflict (key) do nothing;
+end
+$settings$;
 
 -- ------------------------------------------------------------
--- 4. home_about — about section
+-- 4. PDF templates — point every legacy logo at the new artwork
 -- ------------------------------------------------------------
-UPDATE public.home_about SET
-  paragraph1 = 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.'
-WHERE paragraph1 = 'GNAB Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.';
+do $pdf$
+begin
+  if to_regclass('public.pdf_templates') is null then
+    return;
+  end if;
+
+  update public.pdf_templates
+  set header_logo_url = '/brand/barnor-logo.png'
+  where header_logo_url is null
+     or header_logo_url = ''
+     or header_logo_url like '%1788397307996-wb35sl%'
+     or header_logo_url like '%FTPqfBS%'
+     or header_logo_url ~* 'gnab'
+     or header_logo_url in ('/favicon.svg', '/og-image.svg');
+end
+$pdf$;
 
 -- ------------------------------------------------------------
--- 5. home_cta — CTA section
+-- 5. Admin-only notes — safe to rewrite (customer fields untouched)
 -- ------------------------------------------------------------
-UPDATE public.home_cta SET
-  subtitle = 'Let Barnor handle your sourcing, pricing and delivery — one partner, endless solutions. Your free quotation lands within 24 hours.'
-WHERE subtitle = 'Let GNAB handle your sourcing, pricing and delivery — one partner, endless solutions. Your free quotation lands within 24 hours.';
-
--- ------------------------------------------------------------
--- 6. site_images — alt text for accessibility/SEO
--- ------------------------------------------------------------
-UPDATE public.site_images SET
-  alt_text = REPLACE(REPLACE(REPLACE(alt_text, 'GNAB team', 'Barnor team'), 'GNAB logistics', 'Barnor logistics'), 'GNAB ', 'Barnor ')
-WHERE alt_text ILIKE '%GNAB%';
-
--- ------------------------------------------------------------
--- 7. blog_posts — any existing posts with GNAB in title/content
--- ------------------------------------------------------------
-UPDATE public.blog_posts SET
-  title = REPLACE(REPLACE(title, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor '),
-  content = REPLACE(REPLACE(content, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor '),
-  excerpt = REPLACE(REPLACE(excerpt, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor '),
-  meta_title = REPLACE(REPLACE(meta_title, 'GNAB Business Solutions', 'Barnor Business Solutions'), '| GNAB', '| Barnor'),
-  meta_description = REPLACE(REPLACE(meta_description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
-WHERE 
-  title ILIKE '%GNAB%' OR
-  content ILIKE '%GNAB%' OR
-  excerpt ILIKE '%GNAB%' OR
-  meta_title ILIKE '%GNAB%' OR
-  meta_description ILIKE '%GNAB%';
-
--- ------------------------------------------------------------
--- 8. testimonials — sample/default content
--- ------------------------------------------------------------
-UPDATE public.testimonials SET
-  quote = REPLACE(REPLACE(quote, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
-WHERE quote ILIKE '%GNAB%';
-
--- ------------------------------------------------------------
--- 9. quote_requests — RFQ numbers (keep format, just update display if needed)
--- Note: RFQ numbers like GNAB-2026-XXXXXX are historical identifiers
--- We keep them as-is for audit trail, but new ones use BARN- prefix via code
-
--- ------------------------------------------------------------
--- 10. quotations — quotation items descriptions
--- ------------------------------------------------------------
-UPDATE public.quotations SET
-  items = (
-    SELECT jsonb_agg(
-      CASE 
-        WHEN (elem->>'description') ILIKE '%GNAB%' THEN
-          jsonb_set(elem, '{description}', to_jsonb(REPLACE(elem->>'description', 'GNAB Business Solutions', 'Barnor Business Solutions')))
-        ELSE elem
-      END
+do $notes$
+begin
+  if to_regclass('public.quote_requests') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'quote_requests' and column_name = 'internal_notes'
+     ) then
+    update public.quote_requests
+    set internal_notes = regexp_replace(
+      replace(replace(replace(internal_notes, 'GNAB', 'Barnor'), 'Gnab', 'Barnor'), 'gnab', 'barnor'),
+      'Barnor Business Solutions', 'Barnor Business Solution', 'gi'
     )
-    FROM jsonb_array_elements(items) AS elem
-  )
-WHERE items @> '[{"description": "GNAB"}]';
+    where internal_notes ~* 'gnab|Barnor Business Solutions';
+  end if;
 
--- ------------------------------------------------------------
--- 11. receipts — receipt items descriptions
--- ------------------------------------------------------------
-UPDATE public.receipts SET
-  items = (
-    SELECT jsonb_agg(
-      CASE 
-        WHEN (elem->>'description') ILIKE '%GNAB%' THEN
-          jsonb_set(elem, '{description}', to_jsonb(REPLACE(elem->>'description', 'GNAB Business Solutions', 'Barnor Business Solutions')))
-        ELSE elem
-      END
+  if to_regclass('public.suppliers') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'suppliers' and column_name = 'internal_notes'
+     ) then
+    update public.suppliers
+    set internal_notes = regexp_replace(
+      replace(replace(replace(internal_notes, 'GNAB', 'Barnor'), 'Gnab', 'Barnor'), 'gnab', 'barnor'),
+      'Barnor Business Solutions', 'Barnor Business Solution', 'gi'
     )
-    FROM jsonb_array_elements(items) AS elem
-  )
-WHERE items @> '[{"description": "GNAB"}]';
+    where internal_notes ~* 'gnab|Barnor Business Solutions';
+  end if;
+end
+$notes$;
 
 -- ------------------------------------------------------------
--- 12. assistant_questions — admin Q&A content
+-- 6. Historical document numbers — GNAB-… → BARN-… (conflict-safe)
 -- ------------------------------------------------------------
-UPDATE public.assistant_questions SET
-  question = REPLACE(REPLACE(question, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor '),
-  answer = REPLACE(REPLACE(answer, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
-WHERE question ILIKE '%GNAB%' OR answer ILIKE '%GNAB%';
+do $numbers$
+declare
+  r record;
+  candidate text;
+  suffix int;
+begin
+  -- RFQ numbers
+  if to_regclass('public.quote_requests') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'quote_requests' and column_name = 'rfq_number'
+     ) then
+    for r in
+      select id, rfq_number from public.quote_requests where rfq_number ~* 'gnab'
+    loop
+      candidate := regexp_replace(r.rfq_number, 'gnab', 'BARN', 'gi');
+      suffix := 1;
+      while exists (
+        select 1 from public.quote_requests
+        where rfq_number = candidate and id <> r.id
+      ) loop
+        suffix := suffix + 1;
+        candidate := regexp_replace(r.rfq_number, 'gnab', 'BARN', 'gi') || '-' || suffix;
+      end loop;
+      update public.quote_requests set rfq_number = candidate where id = r.id;
+    end loop;
+  end if;
+
+  -- Quotation numbers
+  if to_regclass('public.quotations') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'quotations' and column_name = 'quotation_number'
+     ) then
+    for r in
+      select id, quotation_number from public.quotations where quotation_number ~* 'gnab'
+    loop
+      candidate := regexp_replace(r.quotation_number, 'gnab', 'BARN', 'gi');
+      suffix := 1;
+      while exists (
+        select 1 from public.quotations
+        where quotation_number = candidate and id <> r.id
+      ) loop
+        suffix := suffix + 1;
+        candidate := regexp_replace(r.quotation_number, 'gnab', 'BARN', 'gi') || '-' || suffix;
+      end loop;
+      update public.quotations set quotation_number = candidate where id = r.id;
+    end loop;
+  end if;
+
+  -- Receipt numbers
+  if to_regclass('public.receipts') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'receipts' and column_name = 'receipt_number'
+     ) then
+    for r in
+      select id, receipt_number from public.receipts where receipt_number ~* 'gnab'
+    loop
+      candidate := regexp_replace(r.receipt_number, 'gnab', 'BARN', 'gi');
+      suffix := 1;
+      while exists (
+        select 1 from public.receipts
+        where receipt_number = candidate and id <> r.id
+      ) loop
+        suffix := suffix + 1;
+        candidate := regexp_replace(r.receipt_number, 'gnab', 'BARN', 'gi') || '-' || suffix;
+      end loop;
+      update public.receipts set receipt_number = candidate where id = r.id;
+    end loop;
+  end if;
+end
+$numbers$;
 
 -- ------------------------------------------------------------
--- 13. contact_messages — admin replies
+-- 7. Exact legacy self-brand aliases in operational records
 -- ------------------------------------------------------------
-UPDATE public.contact_messages SET
-  admin_reply = REPLACE(REPLACE(admin_reply, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
-WHERE admin_reply ILIKE '%GNAB%';
+-- These are historical records created under the previous trading name,
+-- not arbitrary third-party customer identities. Only exact aliases are
+-- rewritten; real customer data is left untouched.
+do $aliases$
+declare
+  r record;
+begin
+  for r in
+    select * from (values
+      ('quote_requests', 'company_name'),
+      ('quotations', 'company_name'),
+      ('receipts', 'company_name'),
+      ('suppliers', 'company_name'),
+      ('testimonials', 'company')
+    ) as v(table_name, column_name)
+  loop
+    if to_regclass(format('public.%I', r.table_name)) is not null
+       and exists (
+         select 1 from information_schema.columns
+         where table_schema = 'public'
+           and table_name = r.table_name
+           and column_name = r.column_name
+       ) then
+      execute format(
+        'update public.%1$I set %2$I = case lower(btrim(%2$I)) ' ||
+        'when ''gnab it'' then ''Barnor IT'' ' ||
+        'when ''gnab it live'' then ''Barnor IT LIVE'' ' ||
+        'when ''gnab business solutions'' then ''Barnor Business Solution'' ' ||
+        'else %2$I end ' ||
+        'where lower(btrim(%2$I)) in (''gnab it'', ''gnab it live'', ''gnab business solutions'')',
+        r.table_name, r.column_name
+      );
+    end if;
+  end loop;
+
+  -- Internal assignee label on historical RFQs
+  if to_regclass('public.quote_requests') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'quote_requests' and column_name = 'assigned_to'
+     ) then
+    update public.quote_requests
+    set assigned_to = regexp_replace(
+      replace(replace(replace(assigned_to, 'GNAB', 'Barnor'), 'Gnab', 'Barnor'), 'gnab', 'barnor'),
+      'Barnor Business Solutions', 'Barnor Business Solution', 'gi'
+    )
+    where assigned_to ~* 'gnab|Barnor Business Solutions';
+  end if;
+
+  -- Old brand email inside historical test messages (message body only)
+  if to_regclass('public.contact_messages') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'contact_messages' and column_name = 'message'
+     ) then
+    update public.contact_messages
+    set message = replace(message, 'gnabsolutions@gmail.com', 'barnorsolutions@gmail.com')
+    where message ilike '%gnabsolutions@gmail.com%';
+  end if;
+
+  -- Downloads: update the DB path only when the renamed storage object
+  -- actually exists (move it first in Storage; see README rollout notes).
+  if to_regclass('public.company_documents') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'company_documents' and column_name = 'file_path'
+     )
+     and to_regclass('storage.objects') is not null then
+    update public.company_documents d
+    set file_path = regexp_replace(
+      replace(replace(replace(d.file_path, 'GNAB', 'Barnor'), 'Gnab', 'Barnor'), 'gnab', 'barnor'),
+      'Barnor Business Solutions', 'Barnor Business Solution', 'gi'
+    )
+    where d.file_path ~* 'gnab|Barnor Business Solutions'
+      and exists (
+        select 1 from storage.objects o
+        where o.bucket_id = 'documents'
+          and o.name = regexp_replace(
+            replace(replace(replace(d.file_path, 'GNAB', 'Barnor'), 'Gnab', 'Barnor'), 'gnab', 'barnor'),
+            'Barnor Business Solutions', 'Barnor Business Solution', 'gi'
+          )
+      );
+  end if;
+end
+$aliases$;
 
 -- ------------------------------------------------------------
--- 14. services — footer_label if any reference GNAB
+-- 8. Verification report
 -- ------------------------------------------------------------
-UPDATE public.services SET
-  footer_label = REPLACE(footer_label, 'GNAB', 'Barnor'),
-  name = REPLACE(name, 'GNAB', 'Barnor')
-WHERE footer_label ILIKE '%GNAB%' OR name ILIKE '%GNAB%';
+do $report$
+declare
+  t text;
+  c text;
+  typ text;
+  udt text;
+  n bigint;
+  tables text[] := array[
+    'site_settings',
+    'pdf_templates',
+    'home_hero',
+    'home_trust_items',
+    'home_about',
+    'home_stats',
+    'home_cta',
+    'site_images',
+    'blog_posts',
+    'testimonials',
+    'services',
+    'industries',
+    'why_choose_us',
+    'process_steps',
+    'products',
+    'product_categories',
+    'company_documents',
+    'assistant_questions',
+    'locations',
+    'contact_messages',
+    'quotations',
+    'receipts'
+  ];
+  blocked text[] := array[
+    'key', 'slug',
+    'email', 'phone', 'whatsapp',
+    'full_name', 'contact_person', 'customer_name', 'company_name',
+    'client_name', 'company',
+    'website', 'url', 'image_url', 'overlay_url', 'bg_image_url',
+    'featured_image_url', 'attachment_urls', 'document_urls',
+    'pdf_url', 'reply_pdf_url', 'file_path',
+    'logo_url', 'favicon_url', 'og_image_url', 'header_logo_url',
+    'google_maps_url', 'google_maps_embed_url',
+    'rfq_number', 'quotation_number', 'receipt_number',
+    'message', 'subject'
+  ];
+begin
+  foreach t in array tables loop
+    if to_regclass(format('public.%I', t)) is null then
+      continue;
+    end if;
 
--- ------------------------------------------------------------
--- 15. industries — any reference
--- ------------------------------------------------------------
-UPDATE public.industries SET
-  name = REPLACE(name, 'GNAB', 'Barnor'),
-  description = REPLACE(REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
-WHERE name ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
+    for c, typ, udt in
+      select column_name, data_type, udt_name
+      from information_schema.columns
+      where table_schema = 'public'
+        and table_name = t
+        and column_name <> all(blocked)
+        and is_generated = 'NEVER'
+        and data_type in ('text', 'character varying', 'character', 'jsonb', 'json', 'ARRAY')
+      loop
+        if typ = 'ARRAY' and udt <> '_text' then
+          continue;
+        end if;
 
--- ------------------------------------------------------------
--- 16. why_choose_us — any reference
--- ------------------------------------------------------------
-UPDATE public.why_choose_us SET
-  title = REPLACE(title, 'GNAB', 'Barnor'),
-  description = REPLACE(REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
-WHERE title ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
+        begin
+          execute format(
+            'select count(*) from public.%I where %I::text ~* ''gnab''',
+            t, c
+          ) into n;
 
--- ------------------------------------------------------------
--- 17. process_steps — any reference
--- ------------------------------------------------------------
-UPDATE public.process_steps SET
-  title = REPLACE(title, 'GNAB', 'Barnor'),
-  description = REPLACE(REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
-WHERE title ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
+          if n > 0 then
+            insert into _brand_cleanup_report (table_name, column_name, remaining)
+            values (t, c, n);
+          end if;
+        exception when others then
+          -- Defensive: never let the report fail the migration
+          null;
+        end;
+      end loop;
+  end loop;
 
--- ------------------------------------------------------------
--- 18. products — any reference in name/description
--- ------------------------------------------------------------
-UPDATE public.products SET
-  name = REPLACE(name, 'GNAB', 'Barnor'),
-  short_description = REPLACE(REPLACE(short_description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor '),
-  description = REPLACE(REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
-WHERE name ILIKE '%GNAB%' OR short_description ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
+  -- Also check legacy settings keys and document numbers explicitly
+  if to_regclass('public.site_settings') is not null then
+    select count(*) into n from public.site_settings where key ~* 'gnab';
+    if n > 0 then
+      insert into _brand_cleanup_report (table_name, column_name, remaining)
+      values ('site_settings', 'key', n);
+    end if;
+  end if;
 
--- ------------------------------------------------------------
--- 19. company_documents — file names/descriptions
--- ------------------------------------------------------------
-UPDATE public.company_documents SET
-  file_name = REPLACE(file_name, 'GNAB', 'Barnor')
-WHERE file_name ILIKE '%GNAB%';
+  if to_regclass('public.quote_requests') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'quote_requests' and column_name = 'internal_notes'
+     ) then
+    select count(*) into n from public.quote_requests where internal_notes ~* 'gnab';
+    if n > 0 then
+      insert into _brand_cleanup_report (table_name, column_name, remaining)
+      values ('quote_requests', 'internal_notes', n);
+    end if;
+  end if;
 
--- ------------------------------------------------------------
--- 20. suppliers (supplier registrations) — company names if they reference GNAB
--- ------------------------------------------------------------
-UPDATE public.suppliers SET
-  company_name = REPLACE(company_name, 'GNAB', 'Barnor'),
-  description = REPLACE(REPLACE(description, 'GNAB Business Solutions', 'Barnor Business Solutions'), 'GNAB ', 'Barnor ')
-WHERE company_name ILIKE '%GNAB%' OR description ILIKE '%GNAB%';
+  if to_regclass('public.suppliers') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'suppliers' and column_name = 'internal_notes'
+     ) then
+    select count(*) into n from public.suppliers where internal_notes ~* 'gnab';
+    if n > 0 then
+      insert into _brand_cleanup_report (table_name, column_name, remaining)
+      values ('suppliers', 'internal_notes', n);
+    end if;
+  end if;
 
--- ------------------------------------------------------------
--- 21. Verification queries — run these to confirm
--- ------------------------------------------------------------
--- SELECT key, value FROM public.site_settings WHERE value ILIKE '%GNAB%';
--- SELECT id, header_company_name, header_contact, footer_text, subject_template FROM public.pdf_templates WHERE header_company_name ILIKE '%GNAB%' OR header_contact ILIKE '%GNAB%' OR footer_text ILIKE '%GNAB%' OR subject_template ILIKE '%GNAB%';
--- SELECT id, badge, subtitle FROM public.home_hero WHERE badge ILIKE '%GNAB%' OR subtitle ILIKE '%GNAB%';
--- SELECT id, paragraph1 FROM public.home_about WHERE paragraph1 ILIKE '%GNAB%';
--- SELECT id, subtitle FROM public.home_cta WHERE subtitle ILIKE '%GNAB%';
--- SELECT id, alt_text FROM public.site_images WHERE alt_text ILIKE '%GNAB%';
--- SELECT id, title, excerpt, meta_title FROM public.blog_posts WHERE title ILIKE '%GNAB%' OR excerpt ILIKE '%GNAB%' OR meta_title ILIKE '%GNAB%';
--- SELECT id, quote FROM public.testimonials WHERE quote ILIKE '%GNAB%';
--- SELECT id, question, answer FROM public.assistant_questions WHERE question ILIKE '%GNAB%' OR answer ILIKE '%GNAB%';
--- SELECT id, admin_reply FROM public.contact_messages WHERE admin_reply ILIKE '%GNAB%';
--- SELECT id, footer_label, name FROM public.services WHERE footer_label ILIKE '%GNAB%' OR name ILIKE '%GNAB%';
+  if to_regclass('public.quote_requests') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'quote_requests' and column_name = 'rfq_number'
+     ) then
+    select count(*) into n from public.quote_requests where rfq_number ~* 'gnab';
+    if n > 0 then
+      insert into _brand_cleanup_report (table_name, column_name, remaining)
+      values ('quote_requests', 'rfq_number', n);
+    end if;
+  end if;
 
--- ------------------------------------------------------------
+  if to_regclass('public.quotations') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'quotations' and column_name = 'quotation_number'
+     ) then
+    select count(*) into n from public.quotations where quotation_number ~* 'gnab';
+    if n > 0 then
+      insert into _brand_cleanup_report (table_name, column_name, remaining)
+      values ('quotations', 'quotation_number', n);
+    end if;
+  end if;
+
+  if to_regclass('public.receipts') is not null
+     and exists (
+       select 1 from information_schema.columns
+       where table_schema = 'public' and table_name = 'receipts' and column_name = 'receipt_number'
+     ) then
+    select count(*) into n from public.receipts where receipt_number ~* 'gnab';
+    if n > 0 then
+      insert into _brand_cleanup_report (table_name, column_name, remaining)
+      values ('receipts', 'receipt_number', n);
+    end if;
+  end if;
+end
+$report$;
+
+-- Final summary: both values should be 0.
+select
+  (select count(*) from _brand_cleanup_report) as columns_with_gnab,
+  (select coalesce(sum(remaining), 0) from _brand_cleanup_report) as total_occurrences;
+
+-- Detailed list (empty = clean)
+select table_name, column_name, remaining
+from _brand_cleanup_report
+order by table_name, column_name;
+
 -- End of migration 040
--- ============================================================

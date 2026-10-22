@@ -37,7 +37,7 @@ export default function AboutPage() {
   const s = useSiteSettings()
   const heroImg = useSiteImage('about_hero', IMAGES.about2)
   const warehouseImg = useSiteImage('about_warehouse', IMAGES.warehouse)
-  useEffect(() => { setPageMeta('About Us | Barnor Business Solutions', COMPANY.description, heroImg) }, [heroImg])
+  useEffect(() => { setPageMeta('About Us | Barnor Business Solution', COMPANY.description, heroImg) }, [heroImg])
 
   const pillars: { value: string; label: string }[] = (() => {
     try {
@@ -82,7 +82,7 @@ export default function AboutPage() {
               />
               <Reveal delay={0.1}>
                 <p className="-mt-4 text-[17px] leading-relaxed text-ink-light">
-                  {s.about_story_p1 || 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.'}
+                  {s.about_story_p1 || 'Barnor Business Solution is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.'}
                 </p>
                 <p className="mt-5 text-[17px] leading-relaxed text-ink-light">
                   {s.about_story_p2 || 'We serve businesses, government institutions, NGOs, schools, hospitals, hotels and SMEs across Ghana with reliable, efficient and cost-effective procurement solutions.'}

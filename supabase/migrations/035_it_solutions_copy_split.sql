@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB — 035 IT Solutions copy sharpening (review follow-up)
+-- Barnor — 035 IT Solutions copy sharpening (review follow-up)
 -- 1. Hardware/digital split added to the service description so the
 --    two IT categories are never confused (hardware stays under
 --    IT Equipment). Digital work is scoped, not shipped.

@@ -33,7 +33,7 @@ export default function TestimonialsPage() {
   const [rating, setRating] = useState(5)
 
   useEffect(() => {
-    setPageMeta('Testimonials | Barnor Business Solutions', 'Real feedback from the businesses and institutions we serve across Ghana.', IMAGES.hero3)
+    setPageMeta('Testimonials | Barnor Business Solution', 'Real feedback from the businesses and institutions we serve across Ghana.', IMAGES.hero3)
     void fetchApprovedTestimonials().then(setItems)
   }, [])
 
@@ -180,7 +180,7 @@ export default function TestimonialsPage() {
                     rows={5}
                     required
                     minLength={20}
-                    placeholder="Tell others about your experience with Barnor Business Solutions..."
+                    placeholder="Tell others about your experience with Barnor Business Solution..."
                     className={`${inputClass} resize-none`}
                   />
                 </Field>

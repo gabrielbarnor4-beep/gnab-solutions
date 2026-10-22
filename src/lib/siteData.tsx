@@ -1,7 +1,19 @@
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 import { supabase, getPublicUrl } from '@/lib/supabase'
 import { CATALOGUE } from '@/lib/catalogue'
-import { COMPANY, CONTACT } from '@/lib/utils'
+import { BRAND_LOGO, BRAND_OG_IMAGE, COMPANY, CONTACT, resolveBrandAsset, resolveBrandLogo, scrubBrandText } from '@/lib/utils'
+
+/** Absolute URL for share previews / structured data (relative paths are fine in <img>). */
+function absoluteUrl(url: string): string {
+  if (typeof window === 'undefined') return url
+  try {
+    return new URL(url, window.location.origin).href
+  } catch {
+    return url
+  }
+}
+
+
 
 /* ------------------------------------------------------------------ */
 /* Settings — DB values layered over safe defaults                     */
@@ -196,16 +208,16 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   phone: CONTACT.phone,
   whatsapp: CONTACT.whatsapp,
   address: CONTACT.address,
-  logo_url: CONTACT.logo, // your real Barnor logo — admin can replace via Settings → Branding → Company Logo (media/branding), mirrored live everywhere
+  logo_url: BRAND_LOGO, // self-hosted Barnor logo — admin can replace via Settings → Branding → Company Logo
   social_linkedin: '',
   social_facebook: '',
   social_twitter: '',
   social_instagram: '',
-  seo_title: 'Barnor Business Solutions | One Partner. Endless Solutions.',
+  seo_title: 'Barnor Business Solution | One Partner. Endless Solutions.',
   seo_description: COMPANY.description,
   footer_text: 'Simplifying procurement for organisations across Ghana and Beyond.',
-  favicon_url: CONTACT.logo, // same real logo by default — admin can set a distinct square favicon via Settings → Branding → Favicon
-  og_image_url: CONTACT.logo, // same real logo by default — admin can set a 1200×630 OG image via Settings → Branding → OG Image
+  favicon_url: '/favicon.svg', // self-hosted favicon — admin can replace via Settings → Branding → Favicon
+  og_image_url: BRAND_OG_IMAGE, // self-hosted 1200×630 social card — admin can replace via Settings → Branding → OG Image
   google_maps_embed_url: '',
   google_maps_url: '',
   hours_weekday: '8:00 – 17:00',
@@ -227,7 +239,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   about_hero_subtitle: COMPANY.description,
   about_story_eyebrow: 'Our Story',
   about_story_title: 'Built on Trust, Driven by Results',
-  about_story_p1: 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.',
+  about_story_p1: 'Barnor Business Solution is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.',
   about_story_p2: 'We serve businesses, government institutions, NGOs, schools, hospitals, hotels and SMEs across Ghana with reliable, efficient and cost-effective procurement solutions.',
   about_pillars: JSON.stringify([{value: "100+", label: "Trusted Suppliers"}, {value: "500+", label: "Products Sourced"}, {value: "24h", label: "Quote Turnaround"}, {value: "100%", label: "Commitment"}]),
   about_mission_title: 'Our Mission',
@@ -271,7 +283,7 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   contact_form_title: 'Send Us a Message',
   contact_form_subtitle: 'We typically reply within a few hours.',
   contact_form_success_title: 'Message Sent Successfully',
-  contact_form_success_desc: 'Thank you for contacting Barnor Business Solutions. We will respond as soon as possible.',
+  contact_form_success_desc: 'Thank you for contacting Barnor Business Solution. We will respond as soon as possible.',
   quote_hero_title: 'Get Your Free Quotation',
   quote_hero_subtitle: 'Tell us what you need — receive a competitive, transparent quotation within 24 hours.',
   quote_how_it_works_title: 'How It Works',
@@ -379,7 +391,12 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
         setSettings((prev) => {
           const next = { ...prev }
           for (const { key, value } of data) {
-            if (key in next && value) (next as unknown as Record<string, string>)[key] = value
+            if (!(key in next) || !value) continue
+            const target = next as unknown as Record<string, string>
+            if (key === 'logo_url') target[key] = resolveBrandLogo(value)
+            else if (key === 'favicon_url') target[key] = resolveBrandAsset(value, '/favicon.svg')
+            else if (key === 'og_image_url') target[key] = resolveBrandAsset(value, BRAND_OG_IMAGE)
+            else target[key] = scrubBrandText(value)
           }
           return next
         })
@@ -394,7 +411,7 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
   // a simple, spec-compliant update that works in every browser). We now just update existing tags'
   // href/content in place — Safari, Chrome, Firefox all re-fetch when href changes.
   useEffect(() => {
-    const rawHref = settings.favicon_url?.trim() || settings.logo_url?.trim() || DEFAULT_SETTINGS.favicon_url
+    const rawHref = resolveBrandAsset(settings.favicon_url?.trim() || settings.logo_url?.trim(), '/favicon.svg')
     if (rawHref) {
       // Update every existing favicon tag in place (no removal needed)
       document.querySelectorAll<HTMLLinkElement>('link[rel="icon"], link[rel="shortcut icon"], link[rel="apple-touch-icon"]').forEach((el) => {
@@ -408,7 +425,10 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
         document.head.appendChild(link)
       }
     }
-    const ogImage = settings.og_image_url?.trim() || settings.favicon_url?.trim() || settings.logo_url?.trim() || DEFAULT_SETTINGS.og_image_url
+    const ogImage = resolveBrandAsset(
+      settings.og_image_url?.trim() || settings.favicon_url?.trim() || settings.logo_url?.trim(),
+      BRAND_OG_IMAGE,
+    )
     if (ogImage) {
       let meta = document.querySelector<HTMLMetaElement>('meta[property="og:image"]')
       if (!meta) {
@@ -416,7 +436,7 @@ export function SiteSettingsProvider({ children }: { children: ReactNode }) {
         meta.setAttribute('property', 'og:image')
         document.head.appendChild(meta)
       }
-      meta.setAttribute('content', ogImage)
+      meta.setAttribute('content', absoluteUrl(ogImage))
     }
   }, [settings.favicon_url, settings.logo_url, settings.og_image_url])
 
@@ -871,13 +891,14 @@ function upsertMeta(attr: 'name' | 'property', key: string, content: string) {
 
 /** Sets <title>, description, canonical and Open Graph tags for the current page. */
 export function setPageMeta(title: string, description?: string, image?: string) {
-  document.title = title
+  document.title = scrubBrandText(title)
   if (description) {
-    upsertMeta('name', 'description', description)
-    upsertMeta('property', 'og:description', description)
+    const cleanDescription = scrubBrandText(description)
+    upsertMeta('name', 'description', cleanDescription)
+    upsertMeta('property', 'og:description', cleanDescription)
   }
-  upsertMeta('property', 'og:title', title)
-  if (image) upsertMeta('property', 'og:image', image)
+  upsertMeta('property', 'og:title', scrubBrandText(title))
+  if (image) upsertMeta('property', 'og:image', absoluteUrl(image))
   // canonical — well mirrored
   let canon = document.querySelector<HTMLLinkElement>('link[rel="canonical"]')
   if (!canon) {
@@ -905,8 +926,8 @@ export function setOrganizationJsonLd() {
     '@context': 'https://schema.org',
     '@type': 'Organization',
     name: COMPANY.name,
-    url: typeof window !== 'undefined' ? window.location.origin : 'https://gnab-solutions.vercel.app',
-    logo: CONTACT.logo,
+    url: typeof window !== 'undefined' ? window.location.origin : 'https://barnor-solutions.vercel.app',
+    logo: absoluteUrl(resolveBrandLogo(CONTACT.logo)),
     description: COMPANY.description,
     address: { '@type': 'PostalAddress', addressLocality: 'Accra', addressCountry: 'GH' },
     contactPoint: { '@type': 'ContactPoint', telephone: CONTACT.phoneRaw, contactType: 'sales', email: CONTACT.email },

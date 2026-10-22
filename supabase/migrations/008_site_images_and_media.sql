@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 008 — Site Images / Media Library
+-- Barnor 008 — Site Images / Media Library
 -- Lets admins control EVERY image on the public site:
 --  upload file OR paste URL, choose where it appears,
 --  reorder, enable/disable, trash retained 30 days.

@@ -5,6 +5,7 @@ import { PageIntro } from '@/components/admin/AdminLayout'
 import { ErrorBanner, Skeletons } from '@/components/admin/bits'
 import { inputClass } from '@/components/ui'
 import { fetchAllPdfTemplates, type PdfTemplate } from '@/lib/pdf'
+import { resolveBrandLogo } from '@/lib/utils'
 
 const TYPE_LABEL: Record<PdfTemplate['type'], { label: string; icon: typeof FileText; desc: string }> = {
   quotation: { label: 'Quotation', icon: FileText, desc: 'Sent from Quotes → New Quotation → Save & Email PDF. Header, table, totals and terms are editable.' },
@@ -17,7 +18,7 @@ const TYPE_LABEL: Record<PdfTemplate['type'], { label: string; icon: typeof File
 const isPackageType = (t: PdfTemplate['type']) => t === 'website_package' || t === 'erp_discovery'
 
 function TemplateForm({ tpl, onSaved }: { tpl: PdfTemplate; onSaved: () => void }) {
-  const [draft, setDraft] = useState<PdfTemplate>(tpl)
+  const [draft, setDraft] = useState<PdfTemplate>({ ...tpl, header_logo_url: resolveBrandLogo(tpl.header_logo_url) })
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState('')
   const [ok, setOk] = useState(false)
@@ -78,7 +79,7 @@ function TemplateForm({ tpl, onSaved }: { tpl: PdfTemplate; onSaved: () => void 
         <p className="text-xs font-bold uppercase tracking-wide text-navy">Live PDF preview — header as it will appear</p>
         <div className="mt-3 overflow-hidden rounded-xl border bg-white shadow-soft">
           <div className="flex items-center gap-3 px-4 py-3" style={{ background: draft.primary_color }}>
-            <img src={draft.header_logo_url} alt="" className="h-8 w-8 rounded bg-white p-1" onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')} />
+            <img src={resolveBrandLogo(draft.header_logo_url)} alt="" className="h-8 w-8 rounded bg-white p-1" onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')} />
             <div>
               <p className="text-sm font-bold text-white">{draft.header_company_name}</p>
               <p className="text-[10px] tracking-wide text-white/80" style={{ color: draft.accent_color }}>{draft.header_tagline}</p>
@@ -155,7 +156,7 @@ function TemplateForm({ tpl, onSaved }: { tpl: PdfTemplate; onSaved: () => void 
             <p className="text-sm font-bold text-navy">Payment — modes + account details (shows as “How to Pay” in the PDF)</p>
             <p className="mt-1 text-xs text-ink-light">Leave either blank to hide it. Account details are the real destination the customer pays to — fill them once here and every PDF carries them.</p>
             <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Accepted modes *</span><input value={draft.payment_options_template ?? ''} onChange={(e) => set('payment_options_template', e.target.value)} className={inputClass} placeholder="Cash • Cheque • Mobile Money • Bank Transfer" /></label>
-            <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Account details (bank / MoMo)</span><textarea rows={3} value={draft.account_details_template ?? ''} onChange={(e) => set('account_details_template', e.target.value)} className={`${inputClass} resize-none`} placeholder={'Bank: GCB Bank • Account: 1234567890 • Name: Barnor Business Solutions\nMoMo: 055 427 3445 (Barnor Business Solutions)'} /></label>
+            <label className="mt-3 block"><span className="mb-1 block text-xs font-semibold text-ink-light">Account details (bank / MoMo)</span><textarea rows={3} value={draft.account_details_template ?? ''} onChange={(e) => set('account_details_template', e.target.value)} className={`${inputClass} resize-none`} placeholder={'Bank: GCB Bank • Account: 1234567890 • Name: Barnor Business Solution\nMoMo: 055 427 3445 (Barnor Business Solution)'} /></label>
           </div>
         )}
         <label className="block"><span className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-ink-light">Terms template</span><textarea rows={3} value={draft.terms_template ?? ''} onChange={(e) => set('terms_template', e.target.value)} className={`${inputClass} resize-none`} placeholder="Prices valid for 14 days..." /></label>

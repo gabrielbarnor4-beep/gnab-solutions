@@ -16,7 +16,7 @@ export default function BlogListPage() {
   const [cat, setCat] = useState('All')
 
   useEffect(() => {
-    setPageMeta('Blog & Insights | Barnor Business Solutions', 'Procurement guides, industry trends and company news from Barnor Business Solutions.', IMAGES.hero2)
+    setPageMeta('Blog & Insights | Barnor Business Solution', 'Procurement guides, industry trends and company news from Barnor Business Solution.', IMAGES.hero2)
     void fetchPublishedPosts().then((p) => {
       setPosts(p)
       setLoading(false)

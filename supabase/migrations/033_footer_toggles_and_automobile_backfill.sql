@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB — 033 Footer toggles + automobile backfill
+-- Barnor — 033 Footer toggles + automobile backfill
 -- 1. Guarantees Automobile service/category exist even if 032
 --    was never run on this database (the reported "missing
 --    automobile in Home/Quote/Admin" root cause).

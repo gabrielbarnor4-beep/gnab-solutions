@@ -10,9 +10,9 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'og-image.svg', 'icons.svg', 'robots.txt'],
+      includeAssets: ['favicon.svg', 'og-image.svg', 'icons.svg', 'robots.txt', 'apple-touch-icon.png', 'brand/barnor-logo.png', 'brand/barnor-og.png'],
       manifest: {
-        name: 'Barnor Business Solutions',
+        name: 'Barnor Business Solution',
         short_name: 'Barnor',
         description: "Ghana's trusted procurement and supply partner — One Partner. Endless Solutions.",
         theme_color: '#0B2E59',
@@ -20,6 +20,7 @@ export default defineConfig({
         display: 'standalone',
         icons: [
           { src: '/favicon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any maskable' },
+          { src: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png', purpose: 'any' },
         ],
       },
       workbox: {

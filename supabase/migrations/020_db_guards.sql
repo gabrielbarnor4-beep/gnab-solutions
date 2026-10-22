@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 020 — DB guards against flooding / storage bloat
+-- Barnor 020 — DB guards against flooding / storage bloat
 -- 1A/3B: message length, attachment count, file-type safety
 -- Client already compresses images to 1280w webp; DB is last line.
 -- ============================================================

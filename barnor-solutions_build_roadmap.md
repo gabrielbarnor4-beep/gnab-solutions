@@ -2,7 +2,7 @@
 
 > **One document to rebuild the entire platform without missing a function, feature, or pixel.**
 > Stack: **React 19 + TypeScript 6 + Vite 6 + Tailwind 4 + Supabase (Auth/Postgres/Storage/Edge) + Framer Motion + Leaflet + jsPDF**
-> Repo: `gnab-solutions` — private, `type: module` — `0.0.0`
+> Repo: `barnor-solutions` — private, `type: module` — `0.0.0`
 > Last verified: **2026-10-07** — `vite build ~2.7s` `2.5M dist` `tsc -b` 0 `oxlint` 0 warnings `vitest` 101/101 — **35** content routes `200` (13 public + 22 admin incl. `/admin/pages`, `/admin/receipts`, `/admin/pdf-templates`; + `/admin/login`, `/admin/reset-password`, 404, `/admin` redirect = 39 `<Route>` total), 11 catalogues (132 items), migrations `001→038`
 > **Latest:** Agro & Foodstuffs 11th catalogue (`038`: yam/maize/cocoa/fruits/vegetables as intermediary, Ghana + worldwide delivery, end-to-end in Home/Services/Products/Quote/Supplier/Assistant/Footer + quote regression tests) + Downloads auto-activate fix (upload auto-publishes when none active, active-delete promotes newest — footer never stuck on “being updated”) + footer fallback links include Agro. Before that: Payment options + account details on templates (How-to-Pay section), receipt mode + reference display, package reseeds with real GHS (retainer care, ERP scope) — `037`. Before that: assistant intelligence pass — IT Solutions intent (websites/ERP/SEO/hosting with scoping→proposal→training path), quote-validity/payment, bulk + standing orders, blog, after-sales, custom-sourcing chip, dismissive guard (no more junk in the unanswered queue), plural + phrase-bonus product search, system prompt with all 10 catalogues + /blog + no-invention rule. Before that: 10th catalogue **IT Solutions & Digital Services** (`034`); 9th catalogue **Automobile** (`032`/`033` + slug unification); **footer per-item toggles**; **mobile full-screen sheet**.
 
@@ -32,7 +32,7 @@
 
 ## Executive Summary
 
-**Barnor Business Solutions** — *"One Partner. Endless Solutions."* — is a corporate procurement platform for Ghana and West Africa. One call to Barnor replaces 100+ suppliers.
+**Barnor Business Solution** — *"One Partner. Endless Solutions."* — is a corporate procurement platform for Ghana and West Africa. One call to Barnor replaces 100+ suppliers.
 
 **Public promise:** *Simplify procurement through reliable sourcing, competitive pricing and timely delivery — across Ghana and beyond.* One quote, one delivery, one after-sales owner.
 
@@ -115,7 +115,7 @@ Simplify procurement through reliable sourcing, competitive pricing and timely d
 | Auth/DB/Storage/Edge | Supabase JS 2 | `anon_key` client, `is_admin()` RLS, 3 buckets `media/documents/attachments` | `2.112.3` |
 | Motion | Framer Motion 13 | `Reveal`, `stagger`, `Counter` 1600ms, `AnimatePresence` | `13.1.1` |
 | Map | Leaflet 1.9 + OSRM `router.project-osrm.org` | Free, no key, `tile.openstreetmap.org`, driving `overview=full&geometries=geojson` | `1.9.4` |
-| PDF | jsPDF 4 | `generateGnabPdf` navy `#0B2E59` gold `#D4AF37` A4 | `4.2.1` |
+| PDF | jsPDF 4 | `generateBarnorPdf` navy `#0B2E59` gold `#D4AF37` A4 | `4.2.1` |
 | Icons | lucide-react 1 + `ICON_OPTIONS` 40+ | `Building2…ArrowRight`, `ICON_MAP` | `1.33.0` |
 | Email | Brevo (pref) + Resend fallback via `send-email` edge | `api.brevo.com/v3/smtp/email` → `api.resend.com/emails` | — |
 | LLM | Gemini 2.0-flash → 1.5-flash fallback via `gemini-chat` | `temperature 0.4 max 1024` | — |
@@ -170,7 +170,7 @@ src/
     catalogue.ts         # CATALOGUE 10x12 =120 (incl. automobile-services + it-solutions-digital-services), catalogueBySlug, TOTAL_PRODUCTS + slug unification: slugifyCategory, canonicalCatalogueSlug (DB variant → static slug via exact/substring/token-overlap), catalogueTitleForSlug (slug → exact dropdown title), SERVICE_CATEGORY_OPTIONS (single source for admin dropdowns)
     iconOptions.ts       # ICON_OPTIONS 40+, ICON_MAP, getIconByName
     assistant.ts         # ChatMessage, WELCOME_MESSAGE 3x, AssistantFaq cached 30s, logUnansweredQuestion (asked_count + Formspree), localBrain (regex intents, 10 catalogues incl. Automobile + IT Solutions), findProducts word-score 5/3/1, SYSTEM_PROMPT (10 catalogues), geminiReply (x-goog-api-key), getAssistantReply (FAQ→LLM→local + buildRelevantGeneric)
-    pdf.ts               # PdfTemplate + interpolate + fetchPdfTemplate/fetchAllPdfTemplates + generateGnabPdf (jsPDF A4, template-aware primary/accent/header/footer, lazy import jspdf), uploadPdfAndGetUrl (documents)
+    pdf.ts               # PdfTemplate + interpolate + fetchPdfTemplate/fetchAllPdfTemplates + generateBarnorPdf (jsPDF A4, template-aware primary/accent/header/footer, lazy import jspdf), uploadPdfAndGetUrl (documents)
   components/
     ErrorBoundary.tsx    # class, 60vh Oops
     layout/Header.tsx    # sticky z-[1000] isolate, top bar AnimatePresence height, respects header_show_top_bar + header_show_phone/email/tagline per-item (Header Display admin), rAF scroll >16, glass saturate 180% blur 18px + fallback, logo 48→36 hover scale, tagline always visible flex justify-between 7-8px gold, full nav xl 10 pill motion.layoutId, compact lg 6+More dropdown, CTA btn-shine sweep, hamburger Menu/X → mobile FULL-SCREEN sheet (own 64px logo + X bar, opaque, z-[70] above chat, role dialog aria-modal, staggered links, own scroll + safe-area, body lock, ESC) — sheet lives OUTSIDE the glass bar (glass backdrop-filter traps fixed descendants) and carries its own header (phone browsers can unstick the sticky bar while scroll is locked), so it opens identically from hero or footer
@@ -231,7 +231,7 @@ scripts/serve_spa.py     # SimpleHTTP SPA fallback
 | `025_favicon_og` | `site_settings` `favicon_url`, `og_image_url` (imgur defaults at the time) | Admin-decidable tab icon + social image via Settings → Branding |
 | `026_selfhost_brand_assets` | rewrites `logo_url/favicon_url/og_image_url` + `pdf_templates.header_logo_url` from imgur to `/favicon.svg` + `/og-image.svg` | Kills imgur dependency — defaults ship with `dist` (`public/`) |
 | `027_footer_custom_links` | `services.footer_label`, `services.footer_path` (nullable; null = auto name → slug) | Per-service footer label/destination override without renaming the service |
-| `028_restore_real_logo` | sets `logo_url/favicon_url/og_image_url` (+ pdf logos) to the real Supabase-hosted brand logo `media/branding/1788397307996-wb35sl.jpg` (insert if missing) | Real Barnor logo everywhere by default, still fully replaceable via Settings → Branding |
+| `028_restore_real_logo` | sets `logo_url` to `/brand/barnor-logo.png`, `favicon_url` to `/favicon.svg`, `og_image_url` to `/brand/barnor-og.png` (+ pdf logos) (insert if missing) | New Barnor branding everywhere by default, still fully replaceable via Settings → Branding |
 | `029_design_options` | `site_settings` 20 keys: `home_hero_eyebrow_style/title_size/align`, `page_hero_eyebrow_style/align/title_size`, `cta_eyebrow_style/align/title_size/theme`, `about/services/industries/products/process/whyus_cta_title_highlight`, `footer_quick_links_title/services_title/contact_title/heading_style` | Heading design system — one admin choice styles Home hero, all inner heroes, all 7 CTA cards and footer headings; public reads via `useSiteSettings()` with fallbacks (`lib/design.ts` `splitHighlight/slugify/titleSizeClass/ctaThemeClass`) |
 | `030_cta_features` | `site_settings` 18 keys: `about/services/industries/products/process/whyus_cta_feature1/2/3` (defaults `24h response / 100% commitment / No obligation until you approve`) | Per-page CTA feature strips — like Home `home_cta.feature1-3`; edited in Admin → Site Pages (same tab as CTA copy), rendered by shared `PremiumCTA features=` prop with hardcoded fallback |
 | `031_anon_is_admin_grant` | `grant execute on function public.is_admin() to anon` | Fixes "permission denied for function is_admin" for logged-out visitors: anon could not evaluate admin-branch RLS policies, so public reads (locations map, catalogue content) failed for visitors while working for logged-in admins — looked like a browser difference, was a login-state difference. Safe: `is_admin()` is `SECURITY DEFINER` returning false for anon, grants no access, only lets `public_*` policies evaluate |
@@ -292,7 +292,7 @@ All `ProtectedRoute` + `AdminLayout` **22 links** (Dashboard/Home/Site Pages/✨
 | Site Pages | `/admin/pages` | `site_settings` page chrome (11 tabs: About/Services/Industries/Products/Process/Why Us/Contact/Quote/Supplier/Testimonials/Blog) + ✨ Design tab | 11 content tabs edit hero/section/CTA text per page (incl. per-page CTA gold highlight `about/services/industries/products/process/whyus_cta_title_highlight` **+ feature strip `*_cta_feature1-3` (`030`, like Home CTA)**); **✨ Design tab** = one place for `home_hero_*`, `page_hero_*`, `cta_*` (eyebrow style pill/minimal/tag, title size compact/standard/grand, align left/center, `cta_theme` navy-gold/emerald/midnight) with live preview note — mirrors Home hero, all inner heroes, all 7 CTA cards, no rebuild |
 | Footer | `/admin/footer` | `site_settings footer_*` + `services.show_in_footer` | **Full mirror**: toggle `footer_show_brand/quick/services/contact/socials/bottom`, edit Quick Links as objects `{name,path,visible}` with **per-item Shown/Hidden toggle + reorder + add/edit/delete + restore-defaults (11 incl. Reviews + Become a Supplier)** — decides what each link opens and whether it appears; **managed Contact column**: unlimited items (email/phone/whatsapp/address/hours/link/text) each with **toggle + order** (order = top-to-bottom on site), save syncs legacy `email/phone/address`; toggle `services.show_in_footer` (no 6-limit, **Automobile + Custom Procurement & Sourcing show when flagged** — `fetchFooterServices(20)`). **Column headings:** rename Quick Links/Services/Contact (`footer_quick_links_title/services_title/contact_title`) + one style for all three (`footer_heading_style` classic/gold-bar/gold-highlight via `FooterHeading`) — same gold family as COT headings |
 | Storage Manager | `/admin/uploads` | `storage.objects` all buckets + 17 soft-delete tables | **Files:** list **all** files **recursively** `walk('')` + pagination `limit 1000 offset` (handles >1000 + nested `contact/2024/09`), total used `/1GB` bar, by folder `contact/quotes/suppliers/root`, search, filter, preview, **Delete** `storage.remove([fullPath])` + `removeUrlFromDb` (cleans `contact_messages/quote_requests/suppliers` arrays), bulk delete |
-| Quotes | `/admin/quotes` | `quote_requests` + `quotations` + `documents` | Package-template selector + one-click standard items for IT RFQs (auto-suggested website vs ERP-discovery). Full RFQ `new→closed` 8 enum, `assigned_to`, `internal_notes`, soft-delete 30d, **Generate PDF via template** `fetchPdfTemplate('quotation')` + `interpolate {{quotation_number}}` → `generateGnabPdf({..., template})` → `documents`, **Send email** `send-email` edge with template subject/body colors, attachments viewer, **Issue Receipt** when `won` → `/admin/receipts?rfq=` |
+| Quotes | `/admin/quotes` | `quote_requests` + `quotations` + `documents` | Package-template selector + one-click standard items for IT RFQs (auto-suggested website vs ERP-discovery). Full RFQ `new→closed` 8 enum, `assigned_to`, `internal_notes`, soft-delete 30d, **Generate PDF via template** `fetchPdfTemplate('quotation')` + `interpolate {{quotation_number}}` → `generateBarnorPdf({..., template})` → `documents`, **Send email** `send-email` edge with template subject/body colors, attachments viewer, **Issue Receipt** when `won` → `/admin/receipts?rfq=` |
 | Receipts | `/admin/receipts` | `receipts` + `quotations` + `quote_requests` | `RCPT-YYYY-XXXX`, link to won RFQ + sent quotation, items/totals/balance, `payment_method` select (Cash/Cheque/MoMo/Transfer/Other) + `payment_reference` (cheque no./MoMo txn/bank ref, shown as Paid-Via on PDF + email) + `payment_date`, `status draft/issued/paid/cancelled`, generate PDF via `receipt` template + email via `send-email`, soft-delete 30d, auto-fill from `?rfq=` |
 | PDF Templates | `/admin/pdf-templates` | `pdf_templates` | 5 tabs `quotation/website_package/erp_discovery/message_reply/receipt` — edit `subject/title/subtitle/header (company/tagline/contact/logo + primary/accent colors)/body/table_head/totals/terms/footer` + `payment options/account details` (How-to-Pay section) + package `standard items`, live header preview, `interpolate {{variables}}`, `fetchPdfTemplate` + fallback, one active per type |
 | Messages | `/admin/messages` | `contact_messages` | `new/replied/closed`, `admin_reply` + `reply_pdf_url`, PDF via `message_reply` template + email |
@@ -354,7 +354,7 @@ All `ProtectedRoute` + `AdminLayout` **22 links** (Dashboard/Home/Site Pages/✨
 * **RLS:** `015` forces `with check (status='new' AND assigned_to null AND internal_notes null)` + triggers `enforce_*` caps `5000 chars / 5 attachments` + email regex constraints 3. `020` adds `message_len 5000`, `attachments_len <=5`, `quote 20–2000`.
 * **Storage:** `attachments` bucket `public` + `public_upload_attachments anon+auth`, `public_read_attachments`, `admin_delete_attachments` (`is_admin`). `media/documents` admin-only. New `021` trigger `check_attachments_size` 5MB + `rate_limits` table + `check_rate_limit(key,limit,window)` definer.
 * **Edge:** `send-email` + `gemini-chat` both `getCorsHeaders` (`ALLOWED_ORIGIN` strict, `Vary Origin`, `Allow-Methods POST`), `auth` required (`authorization/apikey` except `localhost`), `isAllowedPdfUrl` only `https` + `*.supabase.co/storage/v1/object/public/` of project, `MAX_PDF_BYTES 5MB`, `MAX_*` guards, `arrayBufferToBase64` 8192 chunk, 5s timeout, generic `Failed to send` errors.
-* **Client:** `canSubmit(key,5)` 5/min `localStorage gnab_rl_` + `recordSubmit` on success, honeypot `website_hp` (not `website` — real supplier website), `isAllowedAttachment` `ALLOWED_ATTACHMENT_TYPES/EXTS` + `MAX_MB 5` + `files.length <=5` + `message <=5000` in `Contact/Quote/Supplier/Testimonial` forms. `ImageUploader` compresses `>300KB` to `1280w webp 0.72`.
+* **Client:** `canSubmit(key,5)` 5/min `localStorage barnor_rl_` + `recordSubmit` on success, honeypot `website_hp` (not `website` — real supplier website), `isAllowedAttachment` `ALLOWED_ATTACHMENT_TYPES/EXTS` + `MAX_MB 5` + `files.length <=5` + `message <=5000` in `Contact/Quote/Supplier/Testimonial` forms. `ImageUploader` compresses `>300KB` to `1280w webp 0.72`.
 
 ---
 
@@ -362,7 +362,7 @@ All `ProtectedRoute` + `AdminLayout` **22 links** (Dashboard/Home/Site Pages/✨
 
 * **Images:** `imgSrcSet(url, [400,800,1200,1600])` → `w=400&fm=webp` (Unsplash only), `sizes` (`100vw` hero, `50vw` about), `loading="lazy"` `decoding="async"` `fetchPriority="high"` hero first slide, `ImageUploader` compress 1280w webp.
 * **Code-split:** `App.tsx` lazy `13+22`; `vite.config.ts` `manualChunks: vendor/motion/supabase/pdf/leaflet`, `chunkSizeWarningLimit 600`, `modulePreload false`, `leaflet` dynamic `import('leaflet')` + CSS lazy, `jspdf` `await import('jspdf')` in `pdf.ts` — initial `index ~120k` + `Home ~28k` + `motion ~130k`; `leaflet 150k`/`pdf 392k` only on demand.
-* **SEO:** `setPageMeta(title,desc,image)` on **all 13 public pages** (was 2) — incl. blog, testimonials and supplier registration, `setOrganizationJsonLd()` on Home (`@type Organization` + address + contactPoint), `public/sitemap.xml` 11 static urls (excludes `/supplier-registration` + dynamic `/blog/:slug` by design) + `robots.txt` (`Allow /` + `Sitemap: https://gnab-solutions.vercel.app/sitemap.xml`), `og:image` self-hosted — `favicon_url`/`og_image_url` default to the real Supabase-hosted logo `media/branding/1788397307996-wb35sl.jpg` (`028`), replaceable via Settings → Branding.
+* **SEO:** `setPageMeta(title,desc,image)` on **all 13 public pages** (was 2) — incl. blog, testimonials and supplier registration, `setOrganizationJsonLd()` on Home (`@type Organization` + address + contactPoint), `public/sitemap.xml` 11 static urls (excludes `/supplier-registration` + dynamic `/blog/:slug` by design) + `robots.txt` (`Allow /` + `Sitemap: https://barnor-solutions.vercel.app/sitemap.xml`), `og:image` self-hosted — `favicon_url`/`og_image_url` default to `/favicon.svg` and `/brand/barnor-og.png` (`028`), replaceable via Settings → Branding.
 * **Motion:** `useReducedMotion` respects `prefers-reduced-motion` for hero 5s + testimonial 6s intervals.
 
 ---
@@ -382,8 +382,8 @@ GEMINI_API_KEY=...
 # via supabase secrets set — at least one for email
 BREVO_API_KEY=...   # preferred, sender verify, 300/day free, port 443
 RESEND_API_KEY=...
-FROM_EMAIL=Barnor Business Solutions <barnorsolutions@gmail.com>
-ALLOWED_ORIGIN=https://gnab-solutions.vercel.app  # optional CORS lockdown, defaults safe localhost
+FROM_EMAIL=Barnor Business Solution <barnorsolutions@gmail.com>
+ALLOWED_ORIGIN=https://barnor-solutions.vercel.app  # optional CORS lockdown, defaults safe localhost
 SUPABASE_URL / SUPABASE_ANON_KEY injected by Supabase Edge automatically
 ```
 
@@ -395,12 +395,12 @@ SUPABASE_URL / SUPABASE_ANON_KEY injected by Supabase Edge automatically
 
 **Recommended: Vercel (best for Vite, free forever personal, you choose subdomain).**
 
-1. **GitHub:** `github.com` → New repo `gnab-solutions` → `git init && git add . && git commit -m "launch" && git branch -M main && git remote add origin https://github.com/YOURNAME/gnab-solutions.git && git push -u origin main`
-2. **Vercel:** `vercel.com` → Sign in with GitHub → Add New Project → Import `gnab-solutions` → auto-detects `npm run build` / `dist` → **Environment Variables** add 3 `VITE_*` from `.env` → **Project Name** type your URL freedom e.g. `gnab-solutions` → `https://gnab-solutions.vercel.app` (if taken try `gnab-ghana`) → Deploy 2 min → live.
+1. **GitHub:** `github.com` → New repo `barnor-solutions` → `git init && git add . && git commit -m "launch" && git branch -M main && git remote add origin https://github.com/YOURNAME/barnor-solutions.git && git push -u origin main`
+2. **Vercel:** `vercel.com` → Sign in with GitHub → Add New Project → Import `barnor-solutions` → auto-detects `npm run build` / `dist` → **Environment Variables** add 3 `VITE_*` from `.env` → **Project Name** type your URL freedom e.g. `barnor-solutions` → `https://barnor-solutions.vercel.app` (if taken try `barnor-ghana`) → Deploy 2 min → live.
 3. **Lock CORS:** Supabase Dashboard → Settings → API → `ALLOWED_ORIGIN` set to `https://YOURNAME.vercel.app` → `supabase secrets set GEMINI_API_KEY=...` → redeploy edge functions.
-4. **Custom free subdomain (optional):** `is-a.dev` → claim `gnab.is-a.dev` → Vercel → Settings → Domains → Add → `gnab.is-a.dev` — still free, no purchase.
+4. **Custom free subdomain (optional):** `is-a.dev` → claim `barnor.is-a.dev` → Vercel → Settings → Domains → Add → `barnor.is-a.dev` — still free, no purchase.
 
-**Alternative:** Netlify `netlify.com` → Add new site → Import from GitHub → same env vars → site name `gnab-solutions` → `https://gnab-solutions.netlify.app`.
+**Alternative:** Netlify `netlify.com` → Add new site → Import from GitHub → same env vars → site name `barnor-solutions` → `https://barnor-solutions.netlify.app`.
 
 ---
 
@@ -419,7 +419,7 @@ SUPABASE_URL / SUPABASE_ANON_KEY injected by Supabase Edge automatically
 ## Operational Runbook
 
 **First run (one-time):**
-1. Run migrations `001`→`038` in order in Supabase Dashboard → SQL Editor (or `supabase db push`). `022` adds `receipts` + `pdf_templates` (3 seeds) + extends purge to `receipts`; `024` adds per-page CTA copy; `025→026→028` settle brand assets on the real Supabase-hosted logo; `027` adds per-service footer label/path; `029` adds the 20-key heading design system (hero/COT/footer); `030` adds per-page CTA feature strips (18 keys); `031` grants anon execute on `is_admin()` (public reads for logged-out visitors); `032` adds the Automobile catalogue (category + service + 12 products); `033` backfills `032` if missed + seeds `footer_contact_items` + repairs the `018` quick-links default (adds Reviews/Contact/Supplier); `034` adds the IT Solutions & Digital Services catalogue (category + service + 12 products); `035` sharpens its copy (hardware/digital split + ERP reword); `036` adds website-package + ERP-discovery quote templates (`default_items` + seeds); `037` adds template payment options + account details, receipt references, and reseeds packages with real GHS (retainer care, ERP scope); `038` adds the Agro & Foodstuffs catalogue (category + service + 12 products, intermediary + Ghana/worldwide copy).
+1. Run migrations `001`→`038` in order in Supabase Dashboard → SQL Editor (or `supabase db push`). `022` adds `receipts` + `pdf_templates` (3 seeds) + extends purge to `receipts`; `024` adds per-page CTA copy; `025→026→028` settle brand assets on the self-hosted Barnor logo, favicon and OG card; `027` adds per-service footer label/path; `029` adds the 20-key heading design system (hero/COT/footer); `030` adds per-page CTA feature strips (18 keys); `031` grants anon execute on `is_admin()` (public reads for logged-out visitors); `032` adds the Automobile catalogue (category + service + 12 products); `033` backfills `032` if missed + seeds `footer_contact_items` + repairs the `018` quick-links default (adds Reviews/Contact/Supplier); `034` adds the IT Solutions & Digital Services catalogue (category + service + 12 products); `035` sharpens its copy (hardware/digital split + ERP reword); `036` adds website-package + ERP-discovery quote templates (`default_items` + seeds); `037` adds template payment options + account details, receipt references, and reseeds packages with real GHS (retainer care, ERP scope); `038` adds the Agro & Foodstuffs catalogue (category + service + 12 products, intermediary + Ghana/worldwide copy).
 2. Set `attachments` bucket max 5MB in Dashboard → Storage → `attachments` Edit → 5MB + `image/*, .pdf` only (enforced server-side by `021` trigger).
 3. Create first admin: sign up at `/admin/login` with any email → `claim_first_admin()` auto-claims when `admin_users` empty, else an existing admin adds you.
 4. Seed `site_images` via `009` (14), verify `Admin → Media` shows 14, `Admin → Settings` shows branding + header toggles, `Admin → PDF Templates` shows 5 tabs (quotation/website_package/erp_discovery/message_reply/receipt), `Admin → Site Pages → ✨ Design` shows Hero/CTA/Footer design cards, `Admin → Footer` shows column heading text + style.
@@ -466,7 +466,7 @@ SUPABASE_URL / SUPABASE_ANON_KEY injected by Supabase Edge automatically
 
 ## Future Roadmap
 
-Done since v1 (kept for history): assistant intelligence pass (IT Solutions + validity/payment + bulk + blog + after-sales intents, dismissive guard, plural/phrase search, 10-catalogue system prompt) + IT quote fieldset (scope/current/users/timeline via isITSolutionsCategory/formatITProjectDetails) + hardware/digital split copy (`035`); 10th catalogue IT Solutions & Digital Services (`034`, build-in-house + source framing); `strict` + `noUncheckedIndexedAccess` on + `supabase gen types` checked in; `vitest` 97 + Playwright honeypot e2e; Supabase `?width=&quality=` transform in `getPublicUrl`; `vite-plugin-pwa` offline (`/`, `/services`, `/products`); PostHog funnel (`quote_requested`, `contact_sent`, `assistant_question`); per-service `footer_label/path` (`027`); self-hosted brand assets (`026`→`028`); heading design system (`029`); 9th catalogue Automobile end-to-end + slug unification (`032`/`033`, `canonicalCatalogueSlug`/`catalogueTitleForSlug`/`SERVICE_CATEGORY_OPTIONS`); footer per-item quick-link toggles + managed contact column with shared parsers (`033`, default 11 links + 3 contact items); mobile full-screen menu sheet with own nav bar (glass-trap + sticky-reset proof); quote package templates (`036`); template payment options + receipt references + GHS reseeds (`037`); 11th catalogue Agro & Foodstuffs end-to-end (`038`, intermediary + Ghana/worldwide framing, agro assistant intent, quote dropdown/slug regression tests, 101/101); Downloads never-stuck (auto-activate on upload when none active, auto-promote newest on active delete); P2 trust + SEO batch (footer services 2-col, Products empty-state → assistant deep-link via `gnab:open-assistant`, agro proof panel on `/quote` via `isAgroCategory`, per-page `og:image` on all 12 static public pages, build-time `scripts/generate-sitemap.mjs` static + live blog slugs via `prebuild`, 102/102).
+Done since v1 (kept for history): assistant intelligence pass (IT Solutions + validity/payment + bulk + blog + after-sales intents, dismissive guard, plural/phrase search, 10-catalogue system prompt) + IT quote fieldset (scope/current/users/timeline via isITSolutionsCategory/formatITProjectDetails) + hardware/digital split copy (`035`); 10th catalogue IT Solutions & Digital Services (`034`, build-in-house + source framing); `strict` + `noUncheckedIndexedAccess` on + `supabase gen types` checked in; `vitest` 97 + Playwright honeypot e2e; Supabase `?width=&quality=` transform in `getPublicUrl`; `vite-plugin-pwa` offline (`/`, `/services`, `/products`); PostHog funnel (`quote_requested`, `contact_sent`, `assistant_question`); per-service `footer_label/path` (`027`); self-hosted brand assets (`026`→`028`); heading design system (`029`); 9th catalogue Automobile end-to-end + slug unification (`032`/`033`, `canonicalCatalogueSlug`/`catalogueTitleForSlug`/`SERVICE_CATEGORY_OPTIONS`); footer per-item quick-link toggles + managed contact column with shared parsers (`033`, default 11 links + 3 contact items); mobile full-screen menu sheet with own nav bar (glass-trap + sticky-reset proof); quote package templates (`036`); template payment options + receipt references + GHS reseeds (`037`); 11th catalogue Agro & Foodstuffs end-to-end (`038`, intermediary + Ghana/worldwide framing, agro assistant intent, quote dropdown/slug regression tests, 101/101); Downloads never-stuck (auto-activate on upload when none active, auto-promote newest on active delete); P2 trust + SEO batch (footer services 2-col, Products empty-state → assistant deep-link via `barnor:open-assistant`, agro proof panel on `/quote` via `isAgroCategory`, per-page `og:image` on all 12 static public pages, build-time `scripts/generate-sitemap.mjs` static + live blog slugs via `prebuild`, 102/102).
 
 ## Recommended Improvements (2026-10 review — prioritised)
 
@@ -610,7 +610,7 @@ sequenceDiagram
     F->>S: insert quote_requests (rfq_number BARN-YYYY-xxxx, status new, enforced by 015 trigger)
     F->>FS: POST FormData + attachment_urls
     A->>S: select where status=new
-    A->>PDF: generateGnabPdf(title, customer, table, totals) -- lazy import jspdf
+    A->>PDF: generateBarnorPdf(title, customer, table, totals) -- lazy import jspdf
     PDF->>S: storage.documents upload + getPublicUrl
     A->>E: POST {to, subject, html, pdfUrl} + auth
     E->>B: Brevo api.brevo.com/v3/smtp/email (attach base64 5MB) fallback Resend
@@ -630,7 +630,7 @@ graph LR
     Prod[npm run build] --> TSC[tsc -b]
     TSC --> ViteBuild[vite build ~3.5s]
     ViteBuild --> Chunks[ vendor 234k + supabase 220k + motion 129k + leaflet 150k + pdf 391k lazy + index 115k ]
-    Chunks --> Vercel[Vercel free: gnab-solutions.vercel.app]
+    Chunks --> Vercel[Vercel free: barnor-solutions.vercel.app]
     Vercel --> Edge[Edge Functions gemini-chat/send-email]
     Edge --> Gemini[Gemini 2.0 + Brevo/Resend]
 ```
@@ -679,7 +679,7 @@ graph TD
 | **Security** | RLS `is_admin`, 015 triggers, honeypot `website_hp`, 5/min limit, 5MB/file allowlist, 020 guards | Turnstile captcha, Upstash Redis strict limit, Snyk |
 | **Storage** | 1GB free, `attachments` public 5+ allowlist, `media/documents` admin-only, 1280w compress, Supabase `?width=&quality=` transform in `getPublicUrl` | S3 lifecycle to Glacier |
 | **SEO** | `setPageMeta` per route, `Organization` json-ld, `sitemap.xml` + `robots.txt`, self-hosted brand logo + `og:image` (`028`) | `vite-plugin-sitemap` dynamic + `canonical` |
-| **Deploy** | Vercel free `gnab-solutions.vercel.app` + `ALLOWED_ORIGIN` | Custom `gnab.is-a.dev` + Cloudflare R2 |
+| **Deploy** | Vercel free `barnor-solutions.vercel.app` + `ALLOWED_ORIGIN` | Custom `barnor.is-a.dev` + Cloudflare R2 |
 
 ---
 

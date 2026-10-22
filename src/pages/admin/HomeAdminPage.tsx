@@ -32,7 +32,7 @@ function IconSelect({ value, onChange }: { value: string; onChange: (v: string) 
 
 // Fallbacks mirror exactly what HomePage shows when DB is empty
 const FALLBACK_HERO = {
-  badge: 'Welcome to Barnor Business Solutions',
+  badge: 'Welcome to Barnor Business Solution',
   title_prefix: 'Your Trusted',
   title_highlight: 'Procurement & Supply',
   title_suffix: 'Partner',
@@ -59,7 +59,7 @@ const FALLBACK_ABOUT = {
   eyebrow: 'About Us',
   title_prefix: 'Who We',
   title_highlight: 'Are',
-  paragraph1: 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.',
+  paragraph1: 'Barnor Business Solution is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.',
   paragraph2: 'From office stationery to industrial equipment, we handle it all with professionalism and efficiency — so your business never stops running.',
   badge_value: '10+',
   badge_label: 'Years of Excellence',

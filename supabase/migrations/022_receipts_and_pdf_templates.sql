@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 022 — Receipts + Editable PDF Templates
+-- Barnor 022 — Receipts + Editable PDF Templates
 -- Adds receipts (issued after quotation won) and pdf_templates
 -- for quotation / message_reply / receipt PDFs
 -- ============================================================
@@ -60,17 +60,17 @@ create table if not exists public.pdf_templates (
   -- PDF content templates
   title_template text not null default '',
   subtitle_template text,
-  header_company_name text not null default 'Barnor Business Solutions',
+  header_company_name text not null default 'Barnor Business Solution',
   header_tagline text not null default 'One Partner. Endless Solutions.',
   header_contact text not null default 'barnorsolutions@gmail.com  •  +233 55 427 3445  •  Accra, Ghana',
-  header_logo_url text not null default 'https://i.imgur.com/FTPqfBS.png',
+  header_logo_url text not null default '/brand/barnor-logo.png',
   primary_color text not null default '#0B2E59',
   accent_color text not null default '#D4AF37',
   body_template text,
   table_head jsonb not null default '[]'::jsonb,
   totals_template jsonb not null default '[]'::jsonb,
   terms_template text,
-  footer_text text not null default 'Barnor Business Solutions  •  One Partner. Endless Solutions.  •  Simplifying procurement for organisations across Ghana and Beyond.',
+  footer_text text not null default 'Barnor Business Solution  •  One Partner. Endless Solutions.  •  Simplifying procurement for organisations across Ghana and Beyond.',
   footer_note text not null default 'This document was generated electronically and is valid without signature.',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now(),
@@ -93,7 +93,7 @@ create policy "admin_all_pdf_templates" on public.pdf_templates for all using (p
 insert into public.pdf_templates (type, name, subject_template, title_template, subtitle_template, body_template, table_head, totals_template, terms_template, is_active)
 values
   ('quotation', 'Default Quotation', 'Your Barnor Quotation {{quotation_number}} — {{rfq_number}}', 'Quotation {{quotation_number}}', 'In response to {{rfq_number}} — {{products_preview}}', null, '["Description","Qty","Unit Price (GHS)","Total (GHS)"]'::jsonb, '["Subtotal","Total Amount"]'::jsonb, 'Prices valid for 14 days. Delivery as per quotation. Payment terms: 50% advance, 50% on delivery.', true),
-  ('message_reply', 'Default Message Reply', 'Re: {{subject}} — Barnor Business Solutions', 'Response to Your Message', 'Re: {{subject}}', '{{admin_reply}}', '[]'::jsonb, '[]'::jsonb, null, true),
+  ('message_reply', 'Default Message Reply', 'Re: {{subject}} — Barnor Business Solution', 'Response to Your Message', 'Re: {{subject}}', '{{admin_reply}}', '[]'::jsonb, '[]'::jsonb, null, true),
   ('receipt', 'Default Receipt', 'Your Barnor Receipt {{receipt_number}} — {{rfq_number}}', 'Receipt {{receipt_number}}', 'Payment received for {{rfq_number}} — {{products_preview}}', null, '["Description","Qty","Unit Price (GHS)","Total (GHS)"]'::jsonb, '["Subtotal","Discount","Tax","Total Amount","Amount Paid","Balance Due"]'::jsonb, 'Thank you for your business. Payment received. This receipt is valid without signature.', true)
 on conflict do nothing;
 

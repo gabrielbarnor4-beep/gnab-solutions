@@ -71,8 +71,21 @@ describe('pdf interpolate', () => {
 })
 
 describe('env guard', () => {
-  it('CONTACT logo is your real brand logo', async () => {
+  it('CONTACT logo is the self-hosted Barnor logo', async () => {
     const { CONTACT } = await import('@/lib/utils')
-    expect(CONTACT.logo).toBe('https://dkbzvndtolkvuuxeaooh.supabase.co/storage/v1/object/public/media/branding/1788397307996-wb35sl.jpg')
+    expect(CONTACT.logo).toBe('/brand/barnor-logo.png')
+  })
+  it('never renders the legacy brand logo URL', async () => {
+    const { resolveBrandLogo } = await import('@/lib/utils')
+    expect(resolveBrandLogo('https://dkbzvndtolkvuuxeaooh.supabase.co/storage/v1/object/public/media/branding/1788397307996-wb35sl.jpg')).toBe('/brand/barnor-logo.png')
+    expect(resolveBrandLogo('https://i.imgur.com/FTPqfBS.png')).toBe('/brand/barnor-logo.png')
+    expect(resolveBrandLogo('https://example.com/gnab/logo.png')).toBe('/brand/barnor-logo.png')
+    expect(resolveBrandLogo('/brand/custom.png')).toBe('/brand/custom.png')
+  })
+  it('scrubs legacy brand text and normalises to the singular name', async () => {
+    const { scrubBrandText } = await import('@/lib/utils')
+    expect(scrubBrandText('GNAB Business Solutions')).toBe('Barnor Business Solution')
+    expect(scrubBrandText('gnabsolutions@gmail.com')).toBe('barnorsolutions@gmail.com')
+    expect(scrubBrandText('https://gnab-solutions.vercel.app')).toBe('https://barnor-solutions.vercel.app')
   })
 })

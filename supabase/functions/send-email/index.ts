@@ -1,6 +1,6 @@
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 const BREVO_API_KEY = Deno.env.get('BREVO_API_KEY')
-const FROM_EMAIL = Deno.env.get('FROM_EMAIL') ?? 'Barnor Business Solutions <barnorsolutions@gmail.com>'
+const FROM_EMAIL = Deno.env.get('FROM_EMAIL') ?? 'Barnor Business Solution <barnorsolutions@gmail.com>'
 const ALLOWED_ORIGIN = Deno.env.get('ALLOWED_ORIGIN') ?? ''
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL') ?? ''
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
@@ -31,7 +31,7 @@ function json(body: unknown, status = 200, extraHeaders: Record<string, string> 
 function parseFrom(from: string): { email: string; name: string } {
   const m = from.match(/^(.*)<(.*)>$/)
   if (m) return { name: m[1].trim(), email: m[2].trim() }
-  return { name: 'Barnor Business Solutions', email: from.trim() }
+  return { name: 'Barnor Business Solution', email: from.trim() }
 }
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -93,7 +93,7 @@ Deno.serve(async (req) => {
   try { body = await req.json() } catch { return json({ error: 'Invalid JSON' }, 400, corsHeaders) }
 
   const to = body.to?.trim()
-  const subject = (body.subject?.trim() ?? 'Message from Barnor Business Solutions').slice(0, MAX_SUBJECT_LEN)
+  const subject = (body.subject?.trim() ?? 'Message from Barnor Business Solution').slice(0, MAX_SUBJECT_LEN)
   let html = body.html ?? body.text ?? ''
   const pdfUrl = body.pdfUrl?.trim() || undefined
 

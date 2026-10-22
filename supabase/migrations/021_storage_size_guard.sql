@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 021 — Storage size guard (server-side)
+-- Barnor 021 — Storage size guard (server-side)
 -- Enforces 5MB per file in attachments bucket at DB level,
 -- so even if client bypasses JS check, Supabase rejects.
 -- Also adds rate-limit helper table for future server-side

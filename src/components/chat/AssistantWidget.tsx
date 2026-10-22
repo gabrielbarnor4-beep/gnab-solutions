@@ -108,8 +108,8 @@ export default function AssistantWidget() {
       const msg = (e as CustomEvent<string | undefined>).detail
       if (typeof msg === 'string' && msg.trim()) setInput(msg)
     }
-    window.addEventListener('gnab:open-assistant', opener as EventListener)
-    return () => window.removeEventListener('gnab:open-assistant', opener as EventListener)
+    window.addEventListener('barnor:open-assistant', opener as EventListener)
+    return () => window.removeEventListener('barnor:open-assistant', opener as EventListener)
   }, [])
 
   if (pathname.startsWith('/admin')) return null

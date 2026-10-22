@@ -1,10 +1,12 @@
 import { canonicalCatalogueSlug } from '@/lib/catalogue'
+import { BRAND_LOGO, resolveBrandLogo, scrubBrandText } from '@/lib/utils'
 
 const NAVY = '#0B2E59'
 const GOLD = '#D4AF37'
-// Default brand logo — admin can override per-template via Admin → PDF Templates → header_logo_url
-// Also overridden at call sites by site_settings.logo_url when provided
-const LOGO_URL = 'https://dkbzvndtolkvuuxeaooh.supabase.co/storage/v1/object/public/media/branding/1788397307996-wb35sl.jpg'
+// Default brand logo — self-hosted so it always matches the current wordmark.
+// Admin can override per-template via Admin → PDF Templates → header_logo_url.
+// Legacy logo URLs from old databases are transparently ignored.
+const LOGO_URL = BRAND_LOGO
 
 export type PdfTemplateType = 'quotation' | 'message_reply' | 'receipt' | 'website_package' | 'erp_discovery'
 
@@ -62,6 +64,30 @@ export function interpolate(template: string | null | undefined, vars: Record<st
   return template.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] ?? `{{${key}}}`)
 }
 
+/** Clean legacy brand strings and logo URLs as soon as a template is loaded. */
+function sanitizeTemplate(t: PdfTemplate): PdfTemplate {
+  const clean = (v: string | null | undefined) => (v == null ? v : scrubBrandText(v))
+  return {
+    ...t,
+    header_company_name: scrubBrandText(t.header_company_name ?? ''),
+    header_tagline: scrubBrandText(t.header_tagline ?? ''),
+    header_contact: scrubBrandText(t.header_contact ?? ''),
+    header_logo_url: resolveBrandLogo(t.header_logo_url),
+    footer_text: scrubBrandText(t.footer_text ?? ''),
+    footer_note: scrubBrandText(t.footer_note ?? ''),
+    subject_template: scrubBrandText(t.subject_template ?? ''),
+    title_template: scrubBrandText(t.title_template ?? ''),
+    subtitle_template: clean(t.subtitle_template) ?? null,
+    body_template: clean(t.body_template) ?? null,
+    terms_template: clean(t.terms_template) ?? null,
+    payment_options_template: scrubBrandText(t.payment_options_template ?? ''),
+    account_details_template: scrubBrandText(t.account_details_template ?? ''),
+    table_head: (t.table_head ?? []).map(scrubBrandText),
+    totals_template: (t.totals_template ?? []).map(scrubBrandText),
+    default_items: (t.default_items ?? []).map((it) => ({ ...it, description: scrubBrandText(it.description) })),
+  }
+}
+
 export async function fetchPdfTemplate(type: PdfTemplate['type']): Promise<PdfTemplate | null> {
   try {
     const { supabase } = await import('@/lib/supabase')
@@ -75,14 +101,14 @@ export async function fetchPdfTemplate(type: PdfTemplate['type']): Promise<PdfTe
           .filter((it) => it && typeof it.description === 'string')
           .map((it) => ({ description: it.description, quantity: Number(it.quantity) || 0, unit_price: Number(it.unit_price) || 0 }))
       }
-      return {
+      return sanitizeTemplate({
         ...t,
         table_head: Array.isArray(t.table_head) ? t.table_head : JSON.parse(t.table_head || '[]'),
         totals_template: Array.isArray(t.totals_template) ? t.totals_template : JSON.parse(t.totals_template || '[]'),
         default_items: normItems(t.default_items),
         payment_options_template: typeof t.payment_options_template === 'string' ? t.payment_options_template : '',
         account_details_template: typeof t.account_details_template === 'string' ? t.account_details_template : '',
-      } as PdfTemplate
+      } as PdfTemplate)
     }
   } catch { /* fallback */ }
   return null
@@ -92,7 +118,7 @@ export async function fetchAllPdfTemplates(): Promise<PdfTemplate[]> {
   try {
     const { supabase } = await import('@/lib/supabase')
     const { data, error } = await supabase.from('pdf_templates').select('*').order('type').order('created_at')
-    if (!error && data) return data as PdfTemplate[]
+    if (!error && data) return (data as PdfTemplate[]).map(sanitizeTemplate)
   } catch { /* ignore */ }
   return []
 }
@@ -150,19 +176,23 @@ interface PdfOpts {
   logoUrl?: string
 }
 
-export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate | null }): Promise<Blob> {
+export async function generateBarnorPdf(opts: PdfOpts & { template?: PdfTemplate | null }): Promise<Blob> {
   const { default: jsPDF } = await import('jspdf')
   const doc = new jsPDF({ unit: 'pt', format: 'a4' })
   // Use editable template colors/header if provided, else defaults — well mirrored
   const tpl = opts.template ?? null
   const primary = tpl?.primary_color || NAVY
   const accent = tpl?.accent_color || GOLD
-  const logoUrl = tpl?.header_logo_url || LOGO_URL
-  const headerName = tpl?.header_company_name || 'Barnor Business Solutions'
-  const headerTagline = tpl?.header_tagline || 'One Partner. Endless Solutions.'
-  const headerContact = tpl?.header_contact || 'barnorsolutions@gmail.com  •  +233 55 427 3445  •  Accra, Ghana'
-  const footerMain = tpl?.footer_text || 'Barnor Business Solutions  •  One Partner. Endless Solutions.  •  Simplifying procurement for organisations across Ghana and Beyond.'
-  const footerNoteTpl = tpl?.footer_note || 'This document was generated electronically and is valid without signature.'
+  const logoCandidates = [...new Set([
+    resolveBrandLogo(tpl?.header_logo_url),
+    resolveBrandLogo(opts.logoUrl),
+    LOGO_URL,
+  ])]
+  const headerName = scrubBrandText(tpl?.header_company_name || 'Barnor Business Solution')
+  const headerTagline = scrubBrandText(tpl?.header_tagline || 'One Partner. Endless Solutions.')
+  const headerContact = scrubBrandText(tpl?.header_contact || 'barnorsolutions@gmail.com  •  +233 55 427 3445  •  Accra, Ghana')
+  const footerMain = scrubBrandText(tpl?.footer_text || 'Barnor Business Solution  •  One Partner. Endless Solutions.  •  Simplifying procurement for organisations across Ghana and Beyond.')
+  const footerNoteTpl = scrubBrandText(tpl?.footer_note || 'This document was generated electronically and is valid without signature.')
   const W = doc.internal.pageSize.getWidth()
   const H = doc.internal.pageSize.getHeight()
   const margin = 40
@@ -172,11 +202,8 @@ export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate |
   doc.setFillColor(primary)
   doc.rect(0, 0, W, 72, 'F')
 
-  // Logo — try in order: template logo → live site logo → built-in default.
-  // Each candidate is attempted in turn: a broken template URL, an SVG, or a
-  // WEBP (all of which jsPDF cannot embed raw) must never blank the header —
-  // the next candidate is tried until one actually renders.
-  const logoCandidates = [...new Set([logoUrl, tpl?.header_logo_url, opts.logoUrl, LOGO_URL].filter((u): u is string => !!u))]
+  // Logo — candidates are de-duplicated above. A broken template URL, an SVG,
+  // or a WEBP (all of which jsPDF cannot embed raw) must never blank the header.
   for (const candidate of logoCandidates) {
     const logoData = await loadImageAsDataUrl(candidate)
     if (!logoData || logoData.startsWith('data:image/svg')) continue
@@ -208,13 +235,13 @@ export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate |
   doc.setTextColor(primary)
   doc.setFont('helvetica', 'bold')
   doc.setFontSize(18)
-  doc.text(opts.title, margin, y)
+  doc.text(scrubBrandText(opts.title), margin, y)
   y += 18
   if (opts.subtitle) {
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(10)
     doc.setTextColor('#64748B')
-    const lines = doc.splitTextToSize(opts.subtitle, W - margin * 2)
+    const lines = doc.splitTextToSize(scrubBrandText(opts.subtitle), W - margin * 2)
     doc.text(lines, margin, y)
     y += lines.length * 12 + 8
   }
@@ -230,9 +257,9 @@ export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate |
     for (const [k, v] of Object.entries(opts.meta)) {
       if (!v) continue
       doc.setFont('helvetica', 'bold')
-      doc.text(`${k}:`, margin, y)
+      doc.text(scrubBrandText(`${k}:`), margin, y)
       doc.setFont('helvetica', 'normal')
-      doc.text(v, margin + 90, y)
+      doc.text(scrubBrandText(v), margin + 90, y)
       y += 12
     }
     y += 4
@@ -259,7 +286,7 @@ export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate |
     doc.setFontSize(10)
     doc.setTextColor('#334155')
     // Strip markdown bold for PDF
-    const plain = opts.bodyHtml.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    const plain = scrubBrandText(opts.bodyHtml.replace(/\*\*(.*?)\*\*/g, '$1').replace(/\[([^\]]+)\]\([^)]+\)/g, '$1'))
     const lines = doc.splitTextToSize(plain, W - margin * 2)
     // Check page overflow
     if (y + lines.length * 12 > H - 80) {
@@ -279,7 +306,7 @@ export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate |
     doc.setTextColor('#FFFFFF')
     doc.setFont('helvetica', 'bold')
     doc.setFontSize(8)
-    opts.table.head.forEach((h, i) => doc.text(h, margin + 8 + i * colW, y + 14))
+    opts.table.head.forEach((h, i) => doc.text(scrubBrandText(h), margin + 8 + i * colW, y + 14))
     y += 22
     // Rows
     doc.setFont('helvetica', 'normal')
@@ -295,7 +322,8 @@ export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate |
       doc.setDrawColor('#E2E8F0')
       doc.rect(margin, y, W - margin * 2, 18, 'D')
       row.forEach((cell, ci) => {
-        const txt = doc.splitTextToSize(cell, colW - 12)[0] ?? cell
+        const cleanCell = scrubBrandText(cell)
+        const txt = doc.splitTextToSize(cleanCell, colW - 12)[0] ?? cleanCell
         doc.text(txt, margin + 8 + ci * colW, y + 12)
       })
       y += 18
@@ -308,19 +336,21 @@ export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate |
     const boxW = 200
     const boxX = W - margin - boxW
     for (const t of opts.totals) {
-      doc.setFont('helvetica', t.label.toLowerCase().includes('total') ? 'bold' : 'normal')
+      const label = scrubBrandText(t.label)
+      const value = scrubBrandText(t.value)
+      doc.setFont('helvetica', label.toLowerCase().includes('total') ? 'bold' : 'normal')
       doc.setFontSize(9)
-      doc.setTextColor(t.label.toLowerCase().includes('total') ? primary : '#475569')
-      doc.text(t.label, boxX, y)
-      doc.text(t.value, boxX + boxW - doc.getTextWidth(t.value), y)
+      doc.setTextColor(label.toLowerCase().includes('total') ? primary : '#475569')
+      doc.text(label, boxX, y)
+      doc.text(value, boxX + boxW - doc.getTextWidth(value), y)
       y += 14
     }
     y += 6
   }
 
   // How to Pay — payment options + account details from the template
-  const payOptions = opts.payment?.options?.trim() ?? ''
-  const payAccounts = opts.payment?.accounts?.trim() ?? ''
+  const payOptions = scrubBrandText(opts.payment?.options?.trim() ?? '')
+  const payAccounts = scrubBrandText(opts.payment?.accounts?.trim() ?? '')
   if (payOptions || payAccounts) {
     if (y > H - 140) { doc.addPage(); y = 40 }
     doc.setFont('helvetica', 'bold')
@@ -361,7 +391,7 @@ export async function generateGnabPdf(opts: PdfOpts & { template?: PdfTemplate |
     doc.setFont('helvetica', 'normal')
     doc.setFontSize(8)
     doc.setTextColor('#64748B')
-    const lines = doc.splitTextToSize(opts.terms, W - margin * 2)
+    const lines = doc.splitTextToSize(scrubBrandText(opts.terms), W - margin * 2)
     doc.text(lines, margin, y)
     y += lines.length * 10 + 12
   }

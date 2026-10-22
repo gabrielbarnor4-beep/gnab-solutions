@@ -139,7 +139,7 @@ export default function DashboardPage() {
     <div>
       <PageIntro
         title="Welcome back 👋"
-        description="Here is what is happening across Barnor Business Solutions today — including new Home, Footer, Receipts and Uploads."
+        description="Here is what is happening across Barnor Business Solution today — including new Home, Footer, Receipts and Uploads."
       />
 
       <ErrorBanner message={error} onDismiss={() => setError('')} />

@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB — 037 Payment options, account details + package reseeds
+-- Barnor — 037 Payment options, account details + package reseeds
 -- 1. pdf_templates: editable payment options (accepted modes) +
 --    account details (bank / MoMo the customer pays to). Rendered as
 --    a "How to Pay" section in quotation + package PDFs when set.

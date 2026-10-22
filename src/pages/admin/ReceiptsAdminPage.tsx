@@ -6,7 +6,7 @@ import { supabase } from '@/lib/supabase'
 import { PageIntro } from '@/components/admin/AdminLayout'
 import { Badge, Drawer, EmptyState, ErrorBanner, Skeletons } from '@/components/admin/bits'
 import { inputClass } from '@/components/ui'
-import { fetchPdfTemplate, formatPaymentLine, generateGnabPdf, interpolate, uploadPdfAndGetUrl } from '@/lib/pdf'
+import { fetchPdfTemplate, formatPaymentLine, generateBarnorPdf, interpolate, uploadPdfAndGetUrl } from '@/lib/pdf'
 import { useSiteSettings } from '@/lib/siteData'
 import { useQuerySearch } from '@/components/admin/AdminSearch'
 
@@ -222,7 +222,7 @@ export default function ReceiptsAdminPage() {
     const totalsLabels = tpl?.totals_template?.length ? tpl.totals_template : ['Subtotal', 'Discount', 'Tax', 'Total Amount', 'Amount Paid', 'Balance Due']
 
     const paidVia = formatPaymentLine(editing.payment_method, editing.payment_reference)
-    const pdfBlob = await generateGnabPdf({
+    const pdfBlob = await generateBarnorPdf({
       title,
       subtitle,
       customer: { name: editing.customer_name!, company: editing.company_name || undefined, email: editing.email!, phone: editing.phone || undefined },
@@ -294,7 +294,7 @@ export default function ReceiptsAdminPage() {
       const customBody = emailBody.trim()
       const paidViaLine = paidVia !== '—' ? `<p>Paid via <strong>${paidVia}</strong>.</p>` : ''
       const bodyHtml = customBody ? `<div style="white-space:pre-wrap">${customBody.replace(/\n/g, '<br>')}</div>` : `<p>Dear ${editing.customer_name},</p><p>Thank you for your payment. Please find your receipt <strong>${receiptNumber}</strong> attached as a premium PDF and linked below.</p>${paidViaLine}`
-      const emailHtml = `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:${tpl?.primary_color || '#0B2E59'};color:white;padding:24px;border-radius:16px 16px 0 0"><h2 style="margin:0;color:white">${tpl?.header_company_name || 'Barnor Business Solutions'}</h2><p style="margin:4px 0 0;color:${tpl?.accent_color || '#D4AF37'};font-size:12px;letter-spacing:1px">${tpl?.header_tagline || 'One Partner. Endless Solutions.'}</p></div><div style="padding:24px;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 16px 16px"><p>Dear ${editing.customer_name},</p>${bodyHtml}${pdfUrl ? `<p style="margin-top:16px"><a href="${pdfUrl}" style="display:inline-block;background:${tpl?.primary_color || '#0B2E59'};color:white;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:600">Download Receipt PDF</a></p>` : ''}<p style="color:#64748B;font-size:12px;margin-top:24px">${tpl?.header_contact || 'barnorsolutions@gmail.com • +233 55 427 3445 • Accra, Ghana'}</p></div></div>`
+      const emailHtml = `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:${tpl?.primary_color || '#0B2E59'};color:white;padding:24px;border-radius:16px 16px 0 0"><h2 style="margin:0;color:white">${tpl?.header_company_name || 'Barnor Business Solution'}</h2><p style="margin:4px 0 0;color:${tpl?.accent_color || '#D4AF37'};font-size:12px;letter-spacing:1px">${tpl?.header_tagline || 'One Partner. Endless Solutions.'}</p></div><div style="padding:24px;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 16px 16px"><p>Dear ${editing.customer_name},</p>${bodyHtml}${pdfUrl ? `<p style="margin-top:16px"><a href="${pdfUrl}" style="display:inline-block;background:${tpl?.primary_color || '#0B2E59'};color:white;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:600">Download Receipt PDF</a></p>` : ''}<p style="color:#64748B;font-size:12px;margin-top:24px">${tpl?.header_contact || 'barnorsolutions@gmail.com • +233 55 427 3445 • Accra, Ghana'}</p></div></div>`
       try {
         const { data, error: fnErr } = await supabase.functions.invoke('send-email', { body: { to: editing.email, subject, html: emailHtml, pdfUrl } })
         if (fnErr) throw new Error((fnErr as Error).message || JSON.stringify(fnErr))

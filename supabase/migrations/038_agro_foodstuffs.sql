@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB — 038 Agro & Foodstuffs
+-- Barnor — 038 Agro & Foodstuffs
 -- Adds the 11th service catalogue (farm produce sourced as
 -- intermediary between vetted farmers/suppliers and customers,
 -- delivered anywhere in Ghana or worldwide).

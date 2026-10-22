@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB Business Solutions — Business data tables
+-- Barnor Business Solution — Business data tables
 -- quote_requests (RFQ pipeline) + suppliers (registrations)
 -- Public: may submit only. Admins (admin_users): full access.
 -- ============================================================

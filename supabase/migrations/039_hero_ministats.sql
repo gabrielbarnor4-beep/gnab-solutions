@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB — 039 Hero mini-stats
+-- Barnor — 039 Hero mini-stats
 -- Makes the three mini-stats under the Home hero
 -- (100+ Suppliers / 500+ Products / 24h Response) editable in
 -- Admin → Home → Hero instead of hardcoded in HomePage.

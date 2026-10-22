@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 007 — Full CMS (industries, why_choose_us, process_steps)
+-- Barnor 007 — Full CMS (industries, why_choose_us, process_steps)
 -- + 30-day soft-delete retention for EVERY deletable entity
 -- + seeds for services/products so admin reflects live site
 -- Run in Supabase Dashboard → SQL Editor → Run

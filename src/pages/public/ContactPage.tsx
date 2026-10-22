@@ -184,7 +184,7 @@ function ContactMap({
 export default function ContactPage() {
   const s = useSiteSettings()
   useEffect(() => {
-    setPageMeta('Contact Us | Barnor Business Solutions', 'Questions, requests or partnerships — our team responds within hours, not days.', IMAGES.about2)
+    setPageMeta('Contact Us | Barnor Business Solution', 'Questions, requests or partnerships — our team responds within hours, not days.', IMAGES.about2)
   }, [])
   const [locations, setLocations] = useState<Loc[]>([])
   const [locLoading, setLocLoading] = useState(true)
@@ -419,7 +419,7 @@ export default function ContactPage() {
                     <CheckCircle2 size={64} strokeWidth={1.4} className="text-brand-green-500" />
                     <h3 className="mt-7 font-display text-2xl font-bold text-navy">{s.contact_form_success_title || 'Message Sent Successfully'}</h3>
                     <p className="mt-3 max-w-sm leading-relaxed text-ink-light">
-                      {s.contact_form_success_desc || 'Thank you for contacting Barnor Business Solutions. We will respond as soon as possible.'}
+                      {s.contact_form_success_desc || 'Thank you for contacting Barnor Business Solution. We will respond as soon as possible.'}
                     </p>
                     <button onClick={() => setSubmitted(false)} className="mt-8 text-sm font-semibold text-brand-green-600 hover:underline">
                       Send another message
@@ -430,6 +430,7 @@ export default function ContactPage() {
                     <h3 className="font-display text-2xl font-bold text-navy">{s.contact_form_title || 'Send Us a Message'}</h3>
                     <p className="mt-2 text-sm text-ink-light">{s.contact_form_subtitle || 'We typically reply within a few hours.'}</p>
                     <form onSubmit={handleSubmit} className="mt-9 space-y-6">
+                      <input type="hidden" name="_subject" value="New Contact Message — Barnor Business Solution" />
                       <input type="text" name="website_hp" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
                       <div className="grid gap-6 md:grid-cols-2">
                         <Field label="Full Name" required>

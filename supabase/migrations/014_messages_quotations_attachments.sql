@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 014 — Contact messages, quotations, attachments
+-- Barnor 014 — Contact messages, quotations, attachments
 -- Also adds soft-delete 30d for messages and quotations
 -- Run in Supabase Dashboard → SQL Editor → Run
 -- ============================================================

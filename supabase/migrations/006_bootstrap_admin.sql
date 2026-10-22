@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB Business Solutions — First-admin bootstrap + admin management
+-- Barnor Business Solution — First-admin bootstrap + admin management
 -- Allows the very first authenticated user to claim admin when
 -- admin_users is empty, without needing Dashboard SQL.
 -- After one admin exists, only admins can add others.

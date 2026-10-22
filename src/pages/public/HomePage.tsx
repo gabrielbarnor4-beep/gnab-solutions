@@ -33,7 +33,7 @@ import {
   Truck,
   Wallet,
 } from 'lucide-react'
-import { IMAGES, imgSrcSet } from '@/lib/utils'
+import { IMAGES, imgSrcSet, scrubBrandText } from '@/lib/utils'
 import { ctaThemeClass, titleSizeClass } from '@/lib/design'
 import {
   ButtonLink,
@@ -214,6 +214,19 @@ export default function HomePage() {
   const ctaCentered = (settings.cta_align || 'center') !== 'left'
   const reduce = useReducedMotion()
   const displayHero = heroImages ?? HERO_IMAGES
+  const heroBadge = scrubBrandText(heroData?.badge ?? 'Welcome to Barnor Business Solution')
+  const heroSubtitle = scrubBrandText(
+    heroData?.subtitle ??
+      'We simplify procurement through reliable sourcing, competitive pricing and timely delivery — across Ghana and beyond.',
+  )
+  const aboutParagraph1 = scrubBrandText(
+    aboutData?.paragraph1 ??
+      'Barnor Business Solution is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.',
+  )
+  const aboutParagraph2 = scrubBrandText(
+    aboutData?.paragraph2 ??
+      'From office stationery to industrial equipment, we handle it all with professionalism and efficiency — so your business never stops running.',
+  )
 
   useEffect(() => {
     void fetchApprovedTestimonials().then((list) => {
@@ -252,7 +265,7 @@ export default function HomePage() {
         setServicesLive(rows.map((r) => ({ icon: iconByName[r.name] ?? iconByName[r.category ?? ''] ?? FileText, title: r.name, slug: canonicalCatalogueSlug(r.name), desc: r.short_description ?? '' })))
       }
     })
-    setPageMeta('Barnor Business Solutions | One Partner. Endless Solutions.', 'Ghana\'s trusted partner for corporate procurement, sourcing and supply — reliable sourcing, competitive pricing, timely delivery.', IMAGES.hero1)
+    setPageMeta('Barnor Business Solution | One Partner. Endless Solutions.', 'Ghana\'s trusted partner for corporate procurement, sourcing and supply — reliable sourcing, competitive pricing, timely delivery.', IMAGES.hero1)
     setOrganizationJsonLd()
     void fetchHomeHero().then((h) => { if (h) setHeroData(h) })
     void fetchHomeTrust().then((rows) => { if (rows.length > 0) setTrustLive(rows.map((r) => ({ icon: (ICON_MAP[r.icon] ?? ShieldCheck), label: r.label }))) })
@@ -320,7 +333,7 @@ export default function HomePage() {
             {heroEyebrowStyle === 'minimal' ? (
               <p className={`mb-6 inline-flex items-center gap-3 text-[13px] font-semibold uppercase tracking-[0.18em] text-gold-400 ${heroCentered ? 'mx-auto' : ''}`}>
                 <span className="h-px w-8 bg-current opacity-60" aria-hidden />
-                {heroData?.badge ?? 'Welcome to Barnor Business Solutions'}
+                {heroBadge}
                 <span className="h-px w-8 bg-current opacity-60" aria-hidden />
               </p>
             ) : heroEyebrowStyle === 'tag' ? (
@@ -328,11 +341,11 @@ export default function HomePage() {
                 <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-gold-400 text-navy" aria-hidden>
                   <Sparkles size={14} />
                 </span>
-                {heroData?.badge ?? 'Welcome to Barnor Business Solutions'}
+                {heroBadge}
               </p>
             ) : (
               <p className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-5 py-2 text-[13px] font-semibold uppercase tracking-[0.18em] text-gold-400 backdrop-blur-sm">
-                <Sparkles size={14} /> {heroData?.badge ?? 'Welcome to Barnor Business Solutions'}
+                <Sparkles size={14} /> {heroBadge}
               </p>
             )}
             <h1 className={titleSizeClass(heroTitleSize, 'home-hero')}>
@@ -341,7 +354,7 @@ export default function HomePage() {
               {heroData?.title_suffix ?? 'Partner'}
             </h1>
             <p className={`mt-7 max-w-xl text-lg leading-relaxed text-navy-100/85 md:text-xl ${heroCentered ? 'mx-auto text-center' : ''}`}>
-              {heroData?.subtitle ?? 'We simplify procurement through reliable sourcing, competitive pricing and timely delivery — across Ghana and beyond.'}
+              {heroSubtitle}
             </p>
             <div className={`mt-10 flex flex-col gap-4 sm:flex-row ${heroCentered ? 'items-center justify-center' : ''}`}>
               <ButtonLink to={heroData?.primary_link ?? '/quote'} size="lg">
@@ -431,10 +444,10 @@ export default function HomePage() {
               />
               <Reveal delay={0.1}>
                 <p className="-mt-6 text-[17px] leading-relaxed text-ink-light">
-                  {aboutData?.paragraph1 ?? 'Barnor Business Solutions is a trusted procurement and supply partner providing organizations with a single point of contact for sourcing, purchasing and delivering quality products across multiple industries.'}
+                  {aboutParagraph1}
                 </p>
                 <p className="mt-5 text-[17px] leading-relaxed text-ink-light">
-                  {aboutData?.paragraph2 ?? 'From office stationery to industrial equipment, we handle it all with professionalism and efficiency — so your business never stops running.'}
+                  {aboutParagraph2}
                 </p>
                 <div className="mt-9 flex flex-wrap items-center gap-6">
                   <ButtonLink to={aboutData?.primary_link ?? '/about'} variant="outlineNavy">

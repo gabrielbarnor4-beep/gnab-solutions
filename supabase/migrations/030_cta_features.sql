@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 030 — Per-page CTA feature strips (like Home's CTA)
+-- Barnor 030 — Per-page CTA feature strips (like Home's CTA)
 -- Home's CTA card has editable feature1/2/3 (home_cta table).
 -- Inner pages hardcoded "24h response / 100% commitment /
 -- No obligation" — these keys make each page's strip editable

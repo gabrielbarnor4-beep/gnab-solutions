@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import { PageIntro } from '@/components/admin/AdminLayout'
 import { Badge, Drawer, EmptyState, ErrorBanner, Pagination, Skeletons, type Tone } from '@/components/admin/bits'
 import { inputClass } from '@/components/ui'
-import { fetchPdfTemplate, generateGnabPdf, interpolate, suggestQuotePackage, uploadPdfAndGetUrl, type QuotePackageType } from '@/lib/pdf'
+import { fetchPdfTemplate, generateBarnorPdf, interpolate, suggestQuotePackage, uploadPdfAndGetUrl, type QuotePackageType } from '@/lib/pdf'
 import { isITSolutionsCategory } from '@/lib/catalogue'
 import { useSiteSettings } from '@/lib/siteData'
 import { useQuerySearch } from '@/components/admin/AdminSearch'
@@ -149,7 +149,7 @@ export default function QuotesAdminPage() {
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = `gnab-quote-requests-${new Date().toISOString().slice(0, 10)}.csv`
+    a.download = `barnor-quote-requests-${new Date().toISOString().slice(0, 10)}.csv`
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -195,7 +195,7 @@ export default function QuotesAdminPage() {
     let tpl = await fetchPdfTemplate(usePkg)
     if (!tpl && usePkg !== 'quotation') tpl = await fetchPdfTemplate('quotation')
     const vars = { quotation_number: qNumber, rfq_number: selected.rfq_number, customer_name: selected.full_name, company_name: selected.company_name ?? '', email: selected.email, date: new Date().toLocaleDateString('en-GB'), products_preview: selected.products_or_services.slice(0, 80) }
-    const pdfBlob = await generateGnabPdf({
+    const pdfBlob = await generateBarnorPdf({
       title: interpolate(tpl?.title_template || `Quotation ${qNumber}`, vars),
       subtitle: interpolate(tpl?.subtitle_template || `In response to ${selected.rfq_number} — ${selected.products_or_services.slice(0, 80)}`, vars),
       customer: { name: selected.full_name, company: selected.company_name ?? undefined, email: selected.email, phone: selected.phone },
@@ -234,7 +234,7 @@ export default function QuotesAdminPage() {
       const bodyHtml = customBody
         ? `<div style="white-space:pre-wrap">${customBody.replace(/\n/g, '<br>')}</div>`
         : tpl?.body_template ? `<div style="white-space:pre-wrap">${interpolate(tpl.body_template, vars).replace(/\n/g, '<br>')}</div>` : `<p>Thank you for your enquiry <strong>${selected.rfq_number}</strong>. Please find your quotation <strong>${qNumber}</strong> attached as a premium PDF and linked below.</p>`
-      const emailHtml = `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:${tpl?.primary_color || '#0B2E59'};color:white;padding:24px;border-radius:16px 16px 0 0"><h2 style="margin:0;color:white">${tpl?.header_company_name || 'Barnor Business Solutions'}</h2><p style="margin:4px 0 0;color:${tpl?.accent_color || '#D4AF37'};font-size:12px;letter-spacing:1px">${tpl?.header_tagline || 'One Partner. Endless Solutions.'}</p></div><div style="padding:24px;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 16px 16px"><p>Dear ${selected.full_name},</p>${bodyHtml}${pdfUrl ? `<p style="margin-top:16px"><a href="${pdfUrl}" style="display:inline-block;background:${tpl?.primary_color || '#0B2E59'};color:white;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:600">Download Quotation PDF</a></p>` : ''}<p style="color:#64748B;font-size:12px;margin-top:24px">Valid until ${quoteMeta.valid_until || '14 days'} • Questions? Reply to this email or call +233 55 427 3445</p></div></div>`
+      const emailHtml = `<div style="font-family:Inter,Arial,sans-serif;max-width:600px;margin:0 auto"><div style="background:${tpl?.primary_color || '#0B2E59'};color:white;padding:24px;border-radius:16px 16px 0 0"><h2 style="margin:0;color:white">${tpl?.header_company_name || 'Barnor Business Solution'}</h2><p style="margin:4px 0 0;color:${tpl?.accent_color || '#D4AF37'};font-size:12px;letter-spacing:1px">${tpl?.header_tagline || 'One Partner. Endless Solutions.'}</p></div><div style="padding:24px;border:1px solid #E2E8F0;border-top:none;border-radius:0 0 16px 16px"><p>Dear ${selected.full_name},</p>${bodyHtml}${pdfUrl ? `<p style="margin-top:16px"><a href="${pdfUrl}" style="display:inline-block;background:${tpl?.primary_color || '#0B2E59'};color:white;padding:12px 24px;border-radius:999px;text-decoration:none;font-weight:600">Download Quotation PDF</a></p>` : ''}<p style="color:#64748B;font-size:12px;margin-top:24px">Valid until ${quoteMeta.valid_until || '14 days'} • Questions? Reply to this email or call +233 55 427 3445</p></div></div>`
       try {
         const { data, error: fnErr } = await supabase.functions.invoke('send-email', { body: { to: selected.email, subject, html: emailHtml, pdfUrl } })
         if (fnErr) throw new Error((fnErr as Error).message || JSON.stringify(fnErr))

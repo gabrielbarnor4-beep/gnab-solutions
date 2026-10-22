@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 012 — Business Locations (multiple) for interactive map
+-- Barnor 012 — Business Locations (multiple) for interactive map
 -- Run in Supabase Dashboard → SQL Editor → Run
 -- ============================================================
 

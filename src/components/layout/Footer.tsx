@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Clock, Download, Info, Link as LinkIcon, Lock, Mail, MapPin, ArrowUpRight, MessageCircle, Phone } from 'lucide-react'
-import { COMPANY } from '@/lib/utils'
+import { COMPANY, resolveBrandLogo } from '@/lib/utils'
 import { FooterHeading } from '@/components/ui'
 import {
   fetchActiveCompanyProfile,
@@ -94,7 +94,7 @@ export default function Footer() {
     const doc = await fetchActiveCompanyProfile()
     if (!doc) {
       setProfileMsg(
-        'Company Profile is currently being updated. Please check back shortly or contact Barnor Business Solutions for more information.'
+        'Company Profile is currently being updated. Please check back shortly or contact Barnor Business Solution for more information.'
       )
       setTimeout(() => setProfileMsg(''), 8000)
       return
@@ -125,7 +125,7 @@ export default function Footer() {
             <div>
               <Link to="/" className="inline-flex items-center gap-3">
                 <span className="rounded-2xl bg-white p-2.5 shadow-lg">
-                  <img src={s.logo_url} alt={s.company_name} className="h-10 w-auto" />
+                  <img src={resolveBrandLogo(s.logo_url)} alt={s.company_name} className="h-10 w-auto" />
                 </span>
               </Link>
               <p className="mt-6 max-w-sm text-[15px] leading-relaxed text-navy-100/75">{s.company_description}</p>

@@ -14,7 +14,7 @@ const CATEGORIES = [
 export default function SupplierRegistrationPage() {
   const s = useSiteSettings()
   useEffect(() => {
-    setPageMeta('Supplier Registration | Barnor Business Solutions', 'Join our trusted network of suppliers and gain access to procurement opportunities across Ghana.')
+    setPageMeta('Supplier Registration | Barnor Business Solution', 'Join our trusted network of suppliers and gain access to procurement opportunities across Ghana.')
   }, [])
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState('')
@@ -121,7 +121,7 @@ export default function SupplierRegistrationPage() {
               <CheckCircle2 size={64} strokeWidth={1.4} className="text-brand-green-500" />
               <h3 className="mt-7 font-display text-2xl font-bold text-navy">Application Received</h3>
               <p className="mt-4 max-w-md leading-relaxed text-ink-light">
-                Thank you for your interest in partnering with Barnor Business Solutions.
+                Thank you for your interest in partnering with Barnor Business Solution.
                 Our supplier relations team will review your application and contact you shortly.
               </p>
               <button onClick={() => setSubmitted(false)} className="mt-8 text-sm font-semibold text-brand-green-600 hover:underline">
@@ -139,6 +139,7 @@ export default function SupplierRegistrationPage() {
 
               <Reveal delay={0.1}>
                 <form onSubmit={handleSubmit} className="grid gap-6 rounded-[32px] border border-gray-100 bg-white p-8 shadow-lift md:grid-cols-2 md:p-11">
+                  <input type="hidden" name="_subject" value="New Supplier Registration — Barnor Business Solution" />
                   <input type="text" name="website_hp" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
                   <Field label="Company Name" required>
                     <input type="text" name="company_name" required className={inputClass} placeholder="Registered business name" />

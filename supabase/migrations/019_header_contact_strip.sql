@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 019 — Header contact strip per-item visibility
+-- Barnor 019 — Header contact strip per-item visibility
 -- Allows admin to edit what shows on header top bar and
 -- toggle each item individually.
 -- ============================================================

@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url'
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const OUT = resolve(ROOT, 'public', 'sitemap.xml')
-const FALLBACK_BASE = 'https://gnab-solutions.vercel.app'
+const FALLBACK_BASE = 'https://barnor-solutions.vercel.app'
 
 // Static routes mirror App.tsx public routes (excludes /supplier-registration
 // + dynamic /blog/:slug + admin/404 by design).

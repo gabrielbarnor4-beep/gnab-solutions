@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 015 — Harden public insert policies (security fix)
+-- Barnor 015 — Harden public insert policies (security fix)
 -- Prevents anon from setting admin-only columns via public submit
 -- Must be applied in Supabase Dashboard → SQL Editor → Run
 -- ============================================================

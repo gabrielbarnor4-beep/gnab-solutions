@@ -90,7 +90,7 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen flex-col items-center justify-center bg-mist px-4 text-center">
         <h1 className="font-display text-2xl font-bold text-navy">Access Denied</h1>
         <p className="mt-2 max-w-md text-sm leading-relaxed text-ink-light">
-          Your account is authenticated but not authorized as an administrator. Contact Barnor Business Solutions if you believe this is an error.
+          Your account is authenticated but not authorized as an administrator. Contact Barnor Business Solution if you believe this is an error.
         </p>
         <button
           onClick={() => void supabase.auth.signOut()}

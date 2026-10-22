@@ -154,7 +154,7 @@ const FIELDS: Record<Exclude<Tab, 'design'>, { key: string; label: string; type?
   ],
 }
 
-const JSON_KEYS = new Set(['about_pillars','about_values_cards','process_guarantee','whyus_comparison_typical_bullets','whyus_comparison_gnab_bullets'])
+const JSON_KEYS = new Set(['about_pillars','about_values_cards','process_guarantee','whyus_comparison_typical_bullets','whyus_comparison_barnor_bullets'])
 
 export default function PagesAdminPage() {
   const settings = useSiteSettings()

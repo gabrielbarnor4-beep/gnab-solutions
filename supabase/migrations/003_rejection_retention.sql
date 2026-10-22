@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB Business Solutions — Rejected testimonials: 30-day grace period
+-- Barnor Business Solution — Rejected testimonials: 30-day grace period
 -- Rejections become soft-deletes: status = 'rejected' + rejected_at.
 -- A daily pg_cron job permanently purges rejections older than 30 days,
 -- giving admins one month to reconsider ("restore") them.

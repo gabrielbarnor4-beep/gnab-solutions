@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 009 — Seed Media Library so every current site image
+-- Barnor 009 — Seed Media Library so every current site image
 -- appears in /admin/media for instant replace/add.
 -- Idempotent — safe to re-run.
 -- Run in Supabase Dashboard → SQL Editor → Run

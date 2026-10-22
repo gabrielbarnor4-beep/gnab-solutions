@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 018 — Header top bar toggle + Footer visibility config
+-- Barnor 018 — Header top bar toggle + Footer visibility config
 -- Adds site_settings keys for header/footer show/hide.
 -- Footer Services already uses services.show_in_footer (017).
 -- ============================================================

@@ -12,7 +12,7 @@ import { Button, Field, PageHero, Reveal, inputClass } from '@/components/ui'
 export default function QuotePage() {
   const s = useSiteSettings()
   useEffect(() => {
-    setPageMeta('Request a Quote | Barnor Business Solutions', 'Tell us what you need — receive a competitive, transparent quotation within 24 hours.', IMAGES.hero2)
+    setPageMeta('Request a Quote | Barnor Business Solution', 'Tell us what you need — receive a competitive, transparent quotation within 24 hours.', IMAGES.hero2)
   }, [])
   const [params] = useSearchParams()
   const catParam = params.get('category') ?? ''
@@ -194,7 +194,7 @@ export default function QuotePage() {
                   >
                     <CheckCircle2 size={72} strokeWidth={1.3} className="text-brand-green-500" />
                     <h3 className="mt-8 max-w-md font-display text-2xl font-bold leading-snug text-navy">
-                      Thank you for contacting Barnor Business Solutions.
+                      Thank you for contacting Barnor Business Solution.
                     </h3>
                     <p className="mt-4 max-w-sm leading-relaxed text-ink-light">
                       Your quotation request has been received and we will respond as soon as possible.
@@ -207,6 +207,7 @@ export default function QuotePage() {
                   <>
                     <h3 className="font-display text-2xl font-bold text-navy">{s.quote_form_title || 'Your Request Details'}</h3>
                     <form onSubmit={handleSubmit} className="mt-8 grid gap-6 md:grid-cols-2">
+                      <input type="hidden" name="_subject" value="New Quote Request — Barnor Business Solution" />
                       <input type="text" name="website_hp" tabIndex={-1} autoComplete="off" className="hidden" aria-hidden="true" />
                       <Field label="Full Name" required>
                         <input type="text" name="full_name" required placeholder="Your full name" className={inputClass} />
@@ -320,7 +321,7 @@ export default function QuotePage() {
                           <Send size={17} /> Submit Quote Request
                         </Button>
                         <p className="mt-4 text-center text-xs text-gray-400">
-                          By submitting, you agree to be contacted by Barnor Business Solutions regarding your request.
+                          By submitting, you agree to be contacted by Barnor Business Solution regarding your request.
                         </p>
                       </div>
                     </form>

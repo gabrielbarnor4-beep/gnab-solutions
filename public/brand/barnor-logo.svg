@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1254 1254" width="1254" height="1254" role="img" aria-label="Barnor Business Solution">
+  <rect width="1254" height="1254" fill="#ffffff"/>
+
+  <!-- Navy ring with a clean opening at the bottom -->
+  <circle cx="627" cy="580" r="540" fill="none" stroke="#0B2E59" stroke-width="26"
+          stroke-dasharray="3130 263" stroke-linecap="round" transform="rotate(90 627 580)"/>
+
+  <!-- Green accent arc, lower-left -->
+  <circle cx="627" cy="580" r="480" fill="none" stroke="#2E9E3E" stroke-width="18"
+          stroke-dasharray="700 2316" stroke-linecap="round" transform="rotate(140 627 580)"/>
+
+  <!-- Wordmark -->
+  <text x="627" y="610" text-anchor="middle" font-family="Arial, Helvetica, sans-serif"
+        font-weight="800" font-size="180" letter-spacing="6" fill="#0B2E59">BARNOR</text>
+  <text x="627" y="700" text-anchor="middle" font-family="Arial, Helvetica, sans-serif"
+        font-weight="700" font-size="50" letter-spacing="8" fill="#2E9E3E">BUSINESS SOLUTION</text>
+
+  <!-- Tagline -->
+  <text x="627" y="1195" text-anchor="middle" font-family="Arial, Helvetica, sans-serif"
+        font-weight="600" font-size="32" letter-spacing="3" fill="#0B2E59">ONE PARTNER. ENDLESS SOLUTIONS.</text>
+</svg>

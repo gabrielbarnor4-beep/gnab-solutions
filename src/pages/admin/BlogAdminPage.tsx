@@ -31,7 +31,7 @@ const slugify = (s: string) =>
 
 const EMPTY: Post = {
   id: '', title: '', slug: '', excerpt: '', content: '', featured_image_url: '',
-  author: 'Barnor Business Solutions', category: 'Company News', tags: [], status: 'draft',
+  author: 'Barnor Business Solution', category: 'Company News', tags: [], status: 'draft',
   meta_title: '', meta_description: '', published_at: null,
 }
 

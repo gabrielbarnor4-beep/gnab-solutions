@@ -23,7 +23,7 @@ export default function BlogPostPage() {
       setPost(p ?? 'missing')
       if (p) {
         setPageMeta(
-          p.meta_title || `${p.title} | Barnor Business Solutions`,
+          p.meta_title || `${p.title} | Barnor Business Solution`,
           p.meta_description || p.excerpt || undefined,
           p.featured_image_url || undefined
         )

@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 029 — Heading design system (premium options, admin-driven)
+-- Barnor 029 — Heading design system (premium options, admin-driven)
 -- Home hero + inner heroes + CTA cards + footer headings share one
 -- gold-family design language, controlled from Admin with no rebuild.
 -- All keys are read via useSiteSettings() with hardcoded fallbacks,

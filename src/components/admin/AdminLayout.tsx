@@ -27,7 +27,7 @@ import {
   LayoutTemplate,
 } from 'lucide-react'
 import { supabase } from '@/lib/supabase'
-import { COMPANY, cn } from '@/lib/utils'
+import { COMPANY, cn, resolveBrandLogo } from '@/lib/utils'
 import { useSiteSettings } from '@/lib/siteData'
 import AdminSearch from '@/components/admin/AdminSearch'
 
@@ -73,7 +73,7 @@ export default function AdminLayout() {
     <div className="flex h-full flex-col bg-gradient-to-b from-navy-800 via-navy-700 to-navy-900">
       <div className="flex items-center gap-3 border-b border-white/10 px-6 py-5">
         <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white p-1.5 shadow-lg overflow-hidden">
-          <img src={logo_url || 'https://dkbzvndtolkvuuxeaooh.supabase.co/storage/v1/object/public/media/branding/1788397307996-wb35sl.jpg'} alt={COMPANY.name} className="h-full w-auto object-contain" />
+          <img src={resolveBrandLogo(logo_url)} alt={COMPANY.name} className="h-full w-auto object-contain" />
         </span>
         <div>
           <p className="font-display text-sm font-bold text-white">Barnor Admin</p>

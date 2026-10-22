@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB — 032 Automobile Services & Spares
+-- Barnor — 032 Automobile Services & Spares
 -- Adds the 9th service catalogue so Admin mirrors the site.
 -- Idempotent: safe to re-run (on conflict / where not exists).
 -- Run after 001→031 in Supabase SQL Editor.

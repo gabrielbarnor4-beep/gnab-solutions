@@ -15,6 +15,42 @@ function requireEnv(name: string): string {
 
 export const FORMSPREE_ENDPOINT = requireEnv('VITE_FORMSPREE_ENDPOINT')
 
+/** Self-hosted brand logo. Served from /public so it can never point at the old artwork. */
+export const BRAND_LOGO = '/brand/barnor-logo.png'
+/** Default social-share card (1200×630). */
+export const BRAND_OG_IMAGE = '/brand/barnor-og.png'
+
+/**
+ * Older databases still contain the original logo URLs in site_settings
+ * and pdf_templates. Never render those again — transparently swap them for the
+ * new self-hosted logo even before the SQL cleanup is run.
+ */
+const LEGACY_LOGO_MARKERS = ['1788397307996-wb35sl', 'FTPqfBS']
+export function resolveBrandAsset(url: string | null | undefined, fallback: string): string {
+  const value = url?.trim()
+  if (!value) return fallback
+  const looksLikeOldBrand = value.toLowerCase().includes('gnab')
+  return LEGACY_LOGO_MARKERS.some((marker) => value.includes(marker)) || looksLikeOldBrand
+    ? fallback
+    : value
+}
+export function resolveBrandLogo(url?: string | null): string {
+  return resolveBrandAsset(url, BRAND_LOGO)
+}
+
+/**
+ * Last line of defence: even if an old database row still contains the previous
+ * brand, never render it. The SQL cleanup (migration 040) is the source of truth,
+ * but this keeps public pages and admin previews clean during rollout.
+ */
+export function scrubBrandText(value: string): string {
+  return value
+    .replace(/GNAB/g, 'Barnor')
+    .replace(/Gnab/g, 'Barnor')
+    .replace(/gnab/g, 'barnor')
+    .replace(/Barnor Business Solutions/gi, 'Barnor Business Solution')
+}
+
 export const CONTACT = {
   email: 'barnorsolutions@gmail.com',
   phone: '+233 55 427 3445',
@@ -22,11 +58,11 @@ export const CONTACT = {
   whatsapp: '+233 27 547 3098',
   whatsappLink: 'https://wa.me/233275473098',
   address: 'Accra Business District, Greater Accra, Ghana',
-  logo: 'https://dkbzvndtolkvuuxeaooh.supabase.co/storage/v1/object/public/media/branding/1788397307996-wb35sl.jpg',
+  logo: BRAND_LOGO,
 } as const
 
 export const COMPANY = {
-  name: 'Barnor Business Solutions',
+  name: 'Barnor Business Solution',
   shortName: 'Barnor',
   tagline: 'One Partner. Endless Solutions.',
   mission:
@@ -119,7 +155,7 @@ export const INDUSTRIES_LIST = [
 ] as const
 
 // 2 + 3B: client-side rate-limit (5/min) + honeypot + file caps
-const RATE_KEY_PREFIX = 'gnab_rl_'
+const RATE_KEY_PREFIX = 'barnor_rl_'
 export function canSubmit(key: string, limit = 5, windowMs = 60000): boolean {
   try {
     const raw = localStorage.getItem(RATE_KEY_PREFIX + key)

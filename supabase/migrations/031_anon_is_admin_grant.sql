@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 031 — Let anonymous visitors evaluate is_admin() (fix map + public reads)
+-- Barnor 031 — Let anonymous visitors evaluate is_admin() (fix map + public reads)
 -- Symptom: logged-out visitors get "permission denied for function
 -- is_admin" on public reads (e.g. /contact locations), while logged-in
 -- admins see everything fine — looks like a "browser difference" but is

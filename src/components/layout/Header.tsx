@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, ChevronDown, Mail, Menu, Phone, X } from 'lucide-react'
-import { NAV_LINKS, cn } from '@/lib/utils'
+import { NAV_LINKS, cn, resolveBrandLogo } from '@/lib/utils'
 import { useSiteSettings } from '@/lib/siteData.tsx'
 
 export default function Header() {
@@ -11,6 +11,7 @@ export default function Header() {
   const [scrolled, setScrolled] = useState(false)
   const location = useLocation()
   const s = useSiteSettings()
+  const logoSrc = resolveBrandLogo(s.logo_url)
   const moreRef = useRef<HTMLDivElement>(null)
 
   // Scroll — rAF throttled, premium smooth
@@ -142,7 +143,7 @@ export default function Header() {
             <Link to="/" className="group flex flex-shrink-0 items-center gap-2 sm:gap-3 min-w-0 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-gold-300/50 rounded-xl justify-self-start" aria-label={`${s.company_name} home`}>
               <span className="relative flex-shrink-0">
                 <img
-                  src={s.logo_url}
+                  src={logoSrc}
                   alt={s.company_name}
                   width={48}
                   height={48}
@@ -153,7 +154,7 @@ export default function Header() {
               </span>
               <span className="flex min-w-0 flex-col leading-[0.95] sm:leading-tight">
                 <span className="truncate font-display text-[14px] font-bold tracking-tight text-navy sm:text-[15px] xl:text-[16px]">
-                  Barnor <span className="font-semibold text-brand-green-500">Business Solutions</span>
+                  Barnor <span className="font-semibold text-brand-green-500">Business Solution</span>
                 </span>
                 <span className="flex w-full justify-between text-[7px] font-medium uppercase tracking-[0.14em] text-gold-600 sm:text-[7.5px] xl:text-[8px] leading-none" aria-hidden>
                   <span>One</span><span>Partner.</span><span>Endless</span><span>Solutions.</span>
@@ -304,7 +305,7 @@ export default function Header() {
                 aria-label={`${s.company_name} home`}
               >
                 <img
-                  src={s.logo_url}
+                  src={logoSrc}
                   alt={s.company_name}
                   width={48}
                   height={48}
@@ -313,7 +314,7 @@ export default function Header() {
                 />
                 <span className="flex min-w-0 flex-col leading-[0.95]">
                   <span className="truncate font-display text-[14px] font-bold tracking-tight text-navy sm:text-[15px]">
-                    Barnor <span className="font-semibold text-brand-green-500">Business Solutions</span>
+                    Barnor <span className="font-semibold text-brand-green-500">Business Solution</span>
                   </span>
                   <span className="flex w-full justify-between text-[7px] font-medium uppercase tracking-[0.14em] text-gold-600 sm:text-[7.5px]" aria-hidden>
                     <span>One</span><span>Partner.</span><span>Endless</span><span>Solutions.</span>

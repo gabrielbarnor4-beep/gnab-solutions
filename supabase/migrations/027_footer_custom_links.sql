@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB 027 — Custom footer label/path per service
+-- Barnor 027 — Custom footer label/path per service
 -- Lets admin override footer link label and destination
 -- per-service without renaming the service itself.
 -- ============================================================

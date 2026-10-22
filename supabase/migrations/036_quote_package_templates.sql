@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB — 036 Quote package templates (website + ERP discovery)
+-- Barnor — 036 Quote package templates (website + ERP discovery)
 -- Extends pdf_templates with two IT Solutions package types so the
 -- sales process is standardized: a website package (pages / CMS /
 -- maintenance retainer) and a fixed-fee ERP discovery engagement.

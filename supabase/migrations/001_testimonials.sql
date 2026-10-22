@@ -1,5 +1,5 @@
 -- ============================================================
--- GNAB Business Solutions — Testimonials
+-- Barnor Business Solution — Testimonials
 -- Run this in: Supabase Dashboard → SQL Editor → New query → Run
 -- ============================================================
 
